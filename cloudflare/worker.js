@@ -8,7 +8,7 @@
 // Configuration
 const CONFIG = {
   // Domains that are allowed to access the site
-  allowedDomains: ['www.www.www.www.bunnylovesoaps.com'],
+  allowedDomains: ['tomato-restaurant.pages.dev'],
   
   // Search engine user agents that should be allowed
   searchEngines: [
@@ -42,7 +42,7 @@ const CONFIG = {
   apiKey: 'tomato-api-key-9c8b7a6d5e4f3g2h1i',
   
   // API endpoint to log bot visits
-  logEndpoint: 'https://www.www.www.www.bunnylovesoaps.com/api/log',
+  logEndpoint: 'https://tomato-restaurant.pages.dev/api/log',
   
   // Admin URL that should be protected
   adminUrl: '/admin',
@@ -163,6 +163,7 @@ async function handleRequest(request) {
       return fetch(request);
     } else {
       // Log unauthorized attempt
+      const userAgent = request.headers.get('User-Agent') || '';
       await logBotVisit(request, userAgent, false);
       
       // Return 403 Forbidden
