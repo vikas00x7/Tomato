@@ -1,0 +1,13 @@
+name = "bot-detection-worker"
+type = "javascript"
+account_id = "your-account-id" # Replace with your Cloudflare account ID
+zone_id = "your-zone-id" # Replace with your domain's Zone ID
+compatibility_date = "2023-09-01"
+
+[env.production]
+route = "bunnylovesoaps.com/*"
+
+[build]
+command = ""
+[build.upload]
+format = "service-worker"

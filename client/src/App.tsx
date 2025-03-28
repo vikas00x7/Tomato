@@ -11,21 +11,32 @@ import About from "./pages/About";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
+import Paywall from "./pages/Paywall";
 
 function Router() {
   return (
     <>
-      <Header />
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/menu" component={Menu} />
-        <Route path="/about" component={About} />
-        <Route path="/blog" component={Blog} />
-        <Route path="/blog/:id" component={BlogPost} />
-        <Route path="/contact" component={Contact} />
-        <Route component={NotFound} />
+        {/* Paywall route doesn't include Header and Footer */}
+        <Route path="/paywall">
+          <Paywall />
+        </Route>
+        
+        {/* All other routes include Header and Footer */}
+        <Route>
+          <Header />
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/menu" component={Menu} />
+            <Route path="/about" component={About} />
+            <Route path="/blog" component={Blog} />
+            <Route path="/blog/:id" component={BlogPost} />
+            <Route path="/contact" component={Contact} />
+            <Route component={NotFound} />
+          </Switch>
+          <Footer />
+        </Route>
       </Switch>
-      <Footer />
     </>
   );
 }
