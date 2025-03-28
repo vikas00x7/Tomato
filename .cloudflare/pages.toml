@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  output_directory = "dist"
+  base = "/"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[site]
+  bucket = "dist"
+  entry-point = "cloudflare"
+
+[env.production]
+  NODE_VERSION = "20"
+  API_KEY = "tomato-api-key-9c8b7a6d5e4f3g2h1i"

@@ -1,0 +1,97 @@
+2025-03-28T10:05:27.163227Z	Cloning repository...
+2025-03-28T10:05:27.790552Z	From https://github.com/vikas00x7/Tomato
+2025-03-28T10:05:27.790965Z	 * branch            6009d06a97c45eefe2c2f57bfcce84e640be19e9 -> FETCH_HEAD
+2025-03-28T10:05:27.791116Z	
+2025-03-28T10:05:27.821508Z	HEAD is now at 6009d06 Create static.yml
+2025-03-28T10:05:27.821936Z	
+2025-03-28T10:05:27.899262Z	
+2025-03-28T10:05:27.899709Z	Using v2 root directory strategy
+2025-03-28T10:05:27.919286Z	Success: Finished cloning repository files
+2025-03-28T10:05:29.714044Z	Checking for configuration in a Wrangler configuration file (BETA)
+2025-03-28T10:05:29.714661Z	
+2025-03-28T10:05:29.716064Z	Found wrangler.toml file. Reading build configuration...
+2025-03-28T10:05:30.814541Z	A wrangler.toml file was found but it does not appear to be valid. Did you mean to use wrangler.toml to configure Pages? If so, then make sure the file is valid and contains the `pages_build_output_dir` property. Skipping file and continuing.
+2025-03-28T10:05:30.892399Z	Detected the following tools from environment: nodejs@16.1.0, npm@9.6.7
+2025-03-28T10:05:30.892878Z	Installing nodejs 16.1.0
+2025-03-28T10:05:31.726184Z	Trying to update node-build... ok
+2025-03-28T10:05:31.827043Z	To follow progress, use 'tail -f /tmp/node-build.20250328100531.494.log' or pass --verbose
+2025-03-28T10:05:31.925765Z	Downloading node-v16.1.0-linux-x64.tar.gz...
+2025-03-28T10:05:32.152312Z	-> https://nodejs.org/dist/v16.1.0/node-v16.1.0-linux-x64.tar.gz
+2025-03-28T10:05:33.617232Z	
+2025-03-28T10:05:33.617495Z	WARNING: node-v16.1.0-linux-x64 is past its end of life and is now unsupported.
+2025-03-28T10:05:33.617643Z	It no longer receives bug fixes or security updates.
+2025-03-28T10:05:33.617752Z	
+2025-03-28T10:05:33.617861Z	Installing node-v16.1.0-linux-x64...
+2025-03-28T10:05:33.899395Z	Installed node-v16.1.0-linux-x64 to /opt/buildhome/.asdf/installs/nodejs/16.1.0
+2025-03-28T10:05:33.899956Z	
+2025-03-28T10:05:34.793839Z	Installing project dependencies: npm clean-install --progress=false
+2025-03-28T10:05:35.611157Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.611448Z	npm WARN EBADENGINE   package: 'connect-pg-simple@10.0.0',
+2025-03-28T10:05:35.611598Z	npm WARN EBADENGINE   required: { node: '^18.18.0 || ^20.9.0 || >=22.0.0' },
+2025-03-28T10:05:35.611838Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.612007Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.612284Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.612374Z	npm WARN EBADENGINE   package: 'esbuild@0.25.0',
+2025-03-28T10:05:35.612476Z	npm WARN EBADENGINE   required: { node: '>=18' },
+2025-03-28T10:05:35.612587Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.612743Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.614373Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.614481Z	npm WARN EBADENGINE   package: 'react-hook-form@7.53.1',
+2025-03-28T10:05:35.614588Z	npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+2025-03-28T10:05:35.61473Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.614841Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.61494Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.615085Z	npm WARN EBADENGINE   package: 'rollup@4.24.4',
+2025-03-28T10:05:35.615218Z	npm WARN EBADENGINE   required: { node: '>=18.0.0', npm: '>=8.0.0' },
+2025-03-28T10:05:35.615331Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.615395Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.615837Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.616147Z	npm WARN EBADENGINE   package: 'tsx@4.19.2',
+2025-03-28T10:05:35.616452Z	npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+2025-03-28T10:05:35.616544Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.616636Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.617154Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.617287Z	npm WARN EBADENGINE   package: 'esbuild@0.23.1',
+2025-03-28T10:05:35.617688Z	npm WARN EBADENGINE   required: { node: '>=18' },
+2025-03-28T10:05:35.618205Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.618403Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.618486Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.61879Z	npm WARN EBADENGINE   package: 'vite@5.4.14',
+2025-03-28T10:05:35.618995Z	npm WARN EBADENGINE   required: { node: '^18.0.0 || >=20.0.0' },
+2025-03-28T10:05:35.61915Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.61927Z	npm WARN EBADENGINE }
+2025-03-28T10:05:35.619341Z	npm WARN EBADENGINE Unsupported engine {
+2025-03-28T10:05:35.6194Z	npm WARN EBADENGINE   package: 'zod-validation-error@3.4.0',
+2025-03-28T10:05:35.619483Z	npm WARN EBADENGINE   required: { node: '>=18.0.0' },
+2025-03-28T10:05:35.619541Z	npm WARN EBADENGINE   current: { node: 'v16.1.0', npm: '7.11.2' }
+2025-03-28T10:05:35.619601Z	npm WARN EBADENGINE }
+2025-03-28T10:05:41.075081Z	npm WARN deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+2025-03-28T10:05:41.295145Z	npm WARN deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+2025-03-28T10:05:47.099463Z	
+2025-03-28T10:05:47.099762Z	added 477 packages, and audited 478 packages in 12s
+2025-03-28T10:05:47.099958Z	
+2025-03-28T10:05:47.100034Z	60 packages are looking for funding
+2025-03-28T10:05:47.100348Z	  run `npm fund` for details
+2025-03-28T10:05:47.140771Z	
+2025-03-28T10:05:47.141071Z	8 moderate severity vulnerabilities
+2025-03-28T10:05:47.141232Z	
+2025-03-28T10:05:47.141364Z	To address issues that do not require attention, run:
+2025-03-28T10:05:47.141732Z	  npm audit fix
+2025-03-28T10:05:47.141826Z	
+2025-03-28T10:05:47.142085Z	To address all issues (including breaking changes), run:
+2025-03-28T10:05:47.14218Z	  npm audit fix --force
+2025-03-28T10:05:47.142747Z	
+2025-03-28T10:05:47.14283Z	Run `npm audit` for details.
+2025-03-28T10:05:47.15674Z	Executing user command: npm run build
+2025-03-28T10:05:47.648927Z	
+2025-03-28T10:05:47.649195Z	> rest-express@1.0.0 build
+2025-03-28T10:05:47.649334Z	> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-03-28T10:05:47.6495Z	
+2025-03-28T10:05:48.085932Z	[31merror during build:
+2025-03-28T10:05:48.08614Z	TypeError: crypto$2.getRandomValues is not a function
+2025-03-28T10:05:48.086688Z	    at resolveConfig (file:///opt/buildhome/repo/node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:66562:16)
+2025-03-28T10:05:48.086908Z	    at async build (file:///opt/buildhome/repo/node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:65395:18)
+2025-03-28T10:05:48.087022Z	    at async CAC.<anonymous> (file:///opt/buildhome/repo/node_modules/vite/dist/node/cli.js:829:5)[39m
+2025-03-28T10:05:48.09939Z	Failed: Error while executing user command. Exited with error code: 1
+2025-03-28T10:05:48.108668Z	Failed: build command exited with code: 1
+2025-03-28T10:05:49.233255Z	Failed: error occurred while running build command

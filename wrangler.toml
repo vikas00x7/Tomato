@@ -1,16 +1,25 @@
-name = "tomato-restaurant"
-main = "cloudflare/worker.js"
-compatibility_date = "2023-10-11"
+name = "tomato-bot-protection"
+type = "javascript"
+account_id = "your-cloudflare-zone-id"
+workers_dev = true
+compatibility_date = "2023-03-28"
 
 [site]
 bucket = "./dist"
-
-[env.production]
-# Production-specific settings
-workers_dev = false
-# Replace with your actual domain when deploying
-route = "bunnylovesoaps.com/*"
-zone_id = "your-cloudflare-zone-id"
+entry-point = "cloudflare"
 
 [build]
 command = "npm run build"
+upload.format = "service-worker"
+
+[env.production]
+zone_id = "your-cloudflare-zone-id"
+route = "bunnylovesoaps.com/*"
+
+[vars]
+API_KEY = "tomato-api-key-9c8b7a6d5e4f3g2h1i"
+
+# Pages configuration
+pages_build_output_dir = "dist"
+compatibility_flags = ["nodejs_compat"]
+nodejs_version = "20"
