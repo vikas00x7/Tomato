@@ -8,9 +8,9 @@ import { z } from "zod";
 const validateApiKey = (req: Request, res: Response, next: Function) => {
   const apiKey = req.headers['x-api-key'];
   
-  // Simple API key validation - in production, use a more secure approach
+  // Using the same API key as defined in the Cloudflare worker
   // This is a placeholder secret - store this securely in environment variables
-  const validApiKey = 'your-secret-api-key-here';
+  const validApiKey = 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
   
   if (!apiKey || apiKey !== validApiKey) {
     return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
@@ -83,6 +83,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ logs });
     } catch (error) {
       console.error('Error retrieving bot logs by IP:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  // API endpoint to download logs as JSON file
+  app.get('/api/logs/export', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Get all logs
+      const logs = await storage.getBotLogs(1000); // Get up to 1000 logs
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename=bot_logs_${new Date().toISOString().slice(0, 10)}.json`);
+      
+      // Send the logs as a JSON file
+      res.status(200).json(logs);
+    } catch (error) {
+      console.error('Error exporting bot logs:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });

@@ -38,8 +38,14 @@ const CONFIG = {
   // Secret value for the bypass token (change this to your own secret)
   bypassTokenValue: 'tomato-restaurant-bypass-8675309',
   
+  // API key for secure server communication
+  apiKey: 'tomato-api-key-9c8b7a6d5e4f3g2h1i',
+  
   // API endpoint to log bot visits
   logEndpoint: 'https://bunnylovesoaps.com/api/log',
+  
+  // Admin URL that should be protected
+  adminUrl: '/admin',
   
   // Paywall URL to redirect bots to
   paywallUrl: '/paywall',
@@ -126,8 +132,8 @@ async function logBotVisit(request, userAgent, isBotConfirmed) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Add an API key or secret to secure the logging endpoint
-        'X-API-Key': 'your-secret-api-key-here'
+        // Use the configured API key for secure communication
+        'X-API-Key': CONFIG.apiKey
       },
       body: JSON.stringify(logData)
     });
@@ -144,6 +150,25 @@ async function logBotVisit(request, userAgent, isBotConfirmed) {
 // Main handler for all requests
 async function handleRequest(request) {
   const url = new URL(request.url);
+  
+  // Protection for Admin route
+  if (url.pathname === CONFIG.adminUrl) {
+    // Check for API key in the request (either in header or query parameter)
+    const apiKeyHeader = request.headers.get('X-API-Key');
+    const params = new URLSearchParams(url.search);
+    const apiKeyParam = params.get('key');
+    
+    if (apiKeyHeader === CONFIG.apiKey || apiKeyParam === CONFIG.apiKey) {
+      // Allow access with valid API key
+      return fetch(request);
+    } else {
+      // Log unauthorized attempt
+      await logBotVisit(request, userAgent, false);
+      
+      // Return 403 Forbidden
+      return new Response('Unauthorized access', { status: 403 });
+    }
+  }
   
   // Skip bot detection for static assets and API routes
   if (
