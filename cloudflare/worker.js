@@ -8,7 +8,7 @@
 // Configuration
 const CONFIG = {
   // Domains that are allowed to access the site
-  allowedDomains: ['bunnylovesoaps.com'],
+  allowedDomains: ['www.www.www.www.bunnylovesoaps.com'],
   
   // Search engine user agents that should be allowed
   searchEngines: [
@@ -42,7 +42,7 @@ const CONFIG = {
   apiKey: 'tomato-api-key-9c8b7a6d5e4f3g2h1i',
   
   // API endpoint to log bot visits
-  logEndpoint: 'https://bunnylovesoaps.com/api/log',
+  logEndpoint: 'https://www.www.www.www.bunnylovesoaps.com/api/log',
   
   // Admin URL that should be protected
   adminUrl: '/admin',
