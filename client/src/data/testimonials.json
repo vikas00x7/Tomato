@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Johnson",
+    "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    "quote": "Tomato completely changed my view on fast-casual dining. The ingredients are incredibly fresh, and you can taste the difference in every bite.",
+    "rating": 5
+  },
+  {
+    "id": 2,
+    "name": "Michael Chen",
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    "quote": "As someone with dietary restrictions, I appreciate how accommodating Tomato is. Their menu is diverse and clearly labeled, making it easy to find delicious options.",
+    "rating": 4.5
+  },
+  {
+    "id": 3,
+    "name": "Jennifer Rodriguez",
+    "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
+    "quote": "The atmosphere at Tomato is just as wonderful as the food. It's become our family's go-to spot for celebrations and casual weeknight dinners alike.",
+    "rating": 5
+  },
+  {
+    "id": 4,
+    "name": "David Thompson",
+    "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    "quote": "I love their commitment to sustainability. Knowing that my meal is not only delicious but also environmentally responsible makes the experience even better.",
+    "rating": 5
+  },
+  {
+    "id": 5,
+    "name": "Lisa Kim",
+    "image": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80",
+    "quote": "The seasonal menu keeps me coming back to see what's new. Their chef is incredibly creative with local ingredients, and I've never had a dish I didn't love.",
+    "rating": 4.5
+  }
+]

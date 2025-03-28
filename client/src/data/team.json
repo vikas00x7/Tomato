@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Maria Rodriguez",
+    "position": "Head Chef",
+    "bio": "With over 15 years of culinary experience across Europe and the United States, Maria brings her passion for seasonal, locally-sourced ingredients to Tomato. She believes that food should tell a story and create connections between people and place.",
+    "image": "https://images.unsplash.com/photo-1583394293214-28ded15ee548?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80"
+  },
+  {
+    "id": 2,
+    "name": "James Wilson",
+    "position": "Founder & CEO",
+    "bio": "James founded Tomato in 2018 with a vision to revolutionize the fast-casual dining experience. With a background in both technology and hospitality, he combines innovation with a deep respect for food traditions and sustainable practices.",
+    "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+  },
+  {
+    "id": 3,
+    "name": "Sarah Chen",
+    "position": "Sustainability Director",
+    "bio": "Sarah oversees our sustainability initiatives, from food sourcing to waste management. With a master's degree in Environmental Science and years of experience in the restaurant industry, she ensures that our operations align with our eco-friendly values.",
+    "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80"
+  },
+  {
+    "id": 4,
+    "name": "Michael Johnson",
+    "position": "Pastry Chef",
+    "bio": "Michael creates our delicious desserts and baked goods, drawing inspiration from classical techniques and seasonal ingredients. His creative approach to pastry has earned numerous accolades and a dedicated following of dessert enthusiasts.",
+    "image": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=677&q=80"
+  },
+  {
+    "id": 5,
+    "name": "Elena Patel",
+    "position": "Operations Manager",
+    "bio": "Elena ensures that all our locations run smoothly, maintaining our high standards of quality and service. With her extensive background in restaurant management, she's the force that keeps the Tomato experience consistent across all our locations.",
+    "image": "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=761&q=80"
+  },
+  {
+    "id": 6,
+    "name": "David Thompson",
+    "position": "Farm Liaison",
+    "bio": "David works directly with our network of local farmers and producers, building strong relationships that ensure we receive the best seasonal ingredients. His deep knowledge of agriculture and food systems is invaluable to our farm-to-table approach.",
+    "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+  }
+]

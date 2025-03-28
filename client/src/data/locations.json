@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "San Francisco - Marina",
+    "address": "123 Chestnut Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94123",
+    "weekdayHours": "Mon-Fri: 11am-9pm",
+    "weekendHours": "Sat-Sun: 10am-10pm",
+    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.966107929324!2d-122.43370058402406!3d37.799274617515076!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580e1873005c1%3A0x9b8519cffaf4f36!2sChestnut%20St%2C%20San%20Francisco%2C%20CA%2094123!5e0!3m2!1sen!2sus"
+  },
+  {
+    "id": 2,
+    "name": "Palo Alto - University Ave",
+    "address": "456 University Avenue",
+    "city": "Palo Alto",
+    "state": "CA",
+    "zip": "94301",
+    "weekdayHours": "Mon-Fri: 11am-9pm",
+    "weekendHours": "Sat-Sun: 10am-10pm",
+    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.2717043851367!2d-122.16394608403351!3d37.44753957982208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbbb4dd7c7e57%3A0x6a5d9fc2087f194c!2sUniversity%20Ave%2C%20Palo%20Alto%2C%20CA%2094301!5e0!3m2!1sen!2sus"
+  },
+  {
+    "id": 3,
+    "name": "Oakland - Temescal",
+    "address": "789 Telegraph Avenue",
+    "city": "Oakland",
+    "state": "CA",
+    "zip": "94609",
+    "weekdayHours": "Mon-Fri: 11am-9pm",
+    "weekendHours": "Sat-Sun: 10am-10pm",
+    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.0320369887795!2d-122.2693384840236!3d37.8237583177588!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80857df9cd4d05e9%3A0x7648328dd8aed577!2sTelegraph%20Ave%2C%20Oakland%2C%20CA%2094609!5e0!3m2!1sen!2sus"
+  }
+]

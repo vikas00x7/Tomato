@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "Garden Fresh Salad",
+    "description": "Local greens, heirloom tomatoes, cucumber, radish, with our house vinaigrette.",
+    "price": 12,
+    "image": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    "category": "Starters",
+    "dietaryTags": ["Vegan", "Gluten-free"]
+  },
+  {
+    "id": 2,
+    "name": "Artisan Margherita Pizza",
+    "description": "Wood-fired crust, San Marzano tomatoes, fresh mozzarella, basil, and olive oil.",
+    "price": 16,
+    "image": "https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=722&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Vegetarian"]
+  },
+  {
+    "id": 3,
+    "name": "Wild Caught Salmon",
+    "description": "Pan-seared salmon with seasonal roasted vegetables and lemon herb sauce.",
+    "price": 24,
+    "image": "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Gluten-free", "Protein-rich"]
+  },
+  {
+    "id": 4,
+    "name": "Truffle Mushroom Risotto",
+    "description": "Arborio rice, wild mushrooms, truffle oil, shaved parmesan, and fresh herbs.",
+    "price": 18,
+    "image": "https://images.unsplash.com/photo-1633964913849-96e4ca3f287c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Vegetarian", "Gluten-free"]
+  },
+  {
+    "id": 5,
+    "name": "Avocado Toast",
+    "description": "Artisan sourdough, smashed avocado, poached eggs, chili flakes, and microgreens.",
+    "price": 14,
+    "image": "https://images.unsplash.com/photo-1603046891744-556223d3bf31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    "category": "Starters",
+    "dietaryTags": ["Vegetarian"]
+  },
+  {
+    "id": 6,
+    "name": "Cauliflower Tacos",
+    "description": "Roasted cauliflower, black bean spread, avocado crema, pickled red onions in corn tortillas.",
+    "price": 15,
+    "image": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Vegan", "Gluten-free"]
+  },
+  {
+    "id": 7,
+    "name": "Grass-Fed Beef Burger",
+    "description": "Locally raised beef, aged cheddar, caramelized onions, special sauce on a brioche bun, with house fries.",
+    "price": 19,
+    "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Protein-rich"]
+  },
+  {
+    "id": 8,
+    "name": "Seasonal Vegetable Soup",
+    "description": "Market vegetables, herb broth, served with artisan bread.",
+    "price": 10,
+    "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80",
+    "category": "Starters",
+    "dietaryTags": ["Vegan", "Gluten-free"]
+  },
+  {
+    "id": 9,
+    "name": "Chocolate Lava Cake",
+    "description": "Warm dark chocolate cake with a molten center, vanilla bean ice cream, and fresh berries.",
+    "price": 11,
+    "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    "category": "Desserts",
+    "dietaryTags": ["Vegetarian"]
+  },
+  {
+    "id": 10,
+    "name": "Seasonal Fruit Crumble",
+    "description": "Local fruits with oat crumble topping, served warm with house-made ice cream.",
+    "price": 10,
+    "image": "https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    "category": "Desserts",
+    "dietaryTags": ["Vegetarian"]
+  },
+  {
+    "id": 11,
+    "name": "Hummus & Crudités",
+    "description": "House-made hummus, fresh market vegetables, and warm flatbread.",
+    "price": 13,
+    "image": "https://images.unsplash.com/photo-1511676045353-970bcc8269b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+    "category": "Starters",
+    "dietaryTags": ["Vegan"]
+  },
+  {
+    "id": 12,
+    "name": "Farm Fresh Omelette",
+    "description": "Three egg omelette with seasonal vegetables, goat cheese, and herbs, served with mixed greens.",
+    "price": 14,
+    "image": "https://images.unsplash.com/photo-1590639894643-5d8add8f5936?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+    "category": "Main Course",
+    "dietaryTags": ["Vegetarian", "Gluten-free", "Protein-rich"]
+  }
+]
