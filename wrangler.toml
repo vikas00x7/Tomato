@@ -1,0 +1,16 @@
+name = "tomato-restaurant"
+main = "cloudflare/worker.js"
+compatibility_date = "2023-10-11"
+
+[site]
+bucket = "./dist"
+
+[env.production]
+# Production-specific settings
+workers_dev = false
+# Replace with your actual domain when deploying
+route = "bunnylovesoaps.com/*"
+zone_id = "your-cloudflare-zone-id"
+
+[build]
+command = "npm run build"
