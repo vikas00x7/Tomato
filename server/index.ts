@@ -42,9 +42,9 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
+    
     console.error("Server error:", err);
-
+    
     // Send response to client but don't throw the error again
     res.status(status).json({ message });
   });
@@ -61,10 +61,10 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 3000;
+  const port = 5000;
   server.listen({
     port,
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
