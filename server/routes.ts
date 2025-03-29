@@ -6,16 +6,23 @@ import { z } from "zod";
 
 // API Key validation middleware
 const validateApiKey = (req: Request, res: Response, next: Function) => {
-  // Check for the API key in multiple header formats
-  const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'] || req.query.key;
+  // Check for the API key in multiple formats
+  let apiKey = req.query.key;
   
-  console.log('Received API key:', apiKey);
+  if (!apiKey) {
+    // Try headers if query param not found
+    const headerKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
+    apiKey = headerKey;
+  }
+  
+  console.log('Validating API key:', apiKey);
   
   // Using the same API key as defined in the Cloudflare worker
   // This is a placeholder secret - store this securely in environment variables
   const validApiKey = 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
   
   if (!apiKey || apiKey !== validApiKey) {
+    console.log('Invalid API key, received:', apiKey);
     return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
   }
   

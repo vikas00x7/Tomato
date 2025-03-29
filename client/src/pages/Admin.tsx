@@ -31,13 +31,8 @@ const AdminPage = () => {
       setLoading(true);
       console.log('Using API key:', apiKey);
       
-      // First try with the header approach
-      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey)}`, {
-        headers: {
-          'X-API-Key': apiKey,
-          'x-api-key': apiKey // Also try lowercase version
-        }
-      });
+      // Use query parameter approach only
+      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey)}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
@@ -68,12 +63,7 @@ const AdminPage = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(`/api/logs/ip/${ipFilter}?key=${encodeURIComponent(apiKey)}`, {
-        headers: {
-          'X-API-Key': apiKey,
-          'x-api-key': apiKey // Also try lowercase version
-        }
-      });
+      const response = await fetch(`/api/logs/ip/${ipFilter}?key=${encodeURIComponent(apiKey)}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
@@ -185,12 +175,7 @@ const AdminPage = () => {
               <Button 
                 onClick={async () => {
                   try {
-                    const response = await fetch(`/api/add-test-log?key=${encodeURIComponent(apiKey)}`, {
-                      headers: {
-                        'X-API-Key': apiKey,
-                        'x-api-key': apiKey
-                      }
-                    });
+                    const response = await fetch(`/api/add-test-log?key=${encodeURIComponent(apiKey)}`);
                     if (response.ok) {
                       toast({
                         title: "Success",
