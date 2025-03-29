@@ -21,7 +21,8 @@ const validateApiKey = (req: Request, res: Response, next: Function) => {
   // This is a placeholder secret - store this securely in environment variables
   const validApiKey = 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
   
-  if (!apiKey || apiKey !== validApiKey) {
+  // Make validation case-insensitive and trim whitespace
+  if (!apiKey || (typeof apiKey === 'string' && apiKey.trim().toLowerCase() !== validApiKey.toLowerCase())) {
     console.log('Invalid API key, received:', apiKey);
     return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
   }

@@ -32,7 +32,18 @@ const AdminPage = () => {
       console.log('Using API key:', apiKey);
       
       // Use query parameter approach only
-      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey)}`);
+      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey.trim())}`);
+      
+      if (response.status === 401) {
+        // Specific error for unauthorized
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid API key. Please check and try again.",
+          variant: "destructive"
+        });
+        setIsAuthenticated(false);
+        return;
+      }
       
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
@@ -41,6 +52,12 @@ const AdminPage = () => {
       const data = await response.json();
       setLogs(data.logs || []);
       setIsAuthenticated(true);
+      
+      // Success toast
+      toast({
+        title: "Success",
+        description: "Authentication successful!",
+      });
     } catch (error) {
       console.error('Error fetching logs:', error);
       toast({
@@ -63,7 +80,7 @@ const AdminPage = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(`/api/logs/ip/${ipFilter}?key=${encodeURIComponent(apiKey)}`);
+      const response = await fetch(`/api/logs/ip/${ipFilter}?key=${encodeURIComponent(apiKey.trim())}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
@@ -86,7 +103,7 @@ const AdminPage = () => {
   // Function to export logs
   const exportLogs = async () => {
     try {
-      window.open(`/api/logs/export?key=${apiKey}`, '_blank');
+      window.open(`/api/logs/export?key=${encodeURIComponent(apiKey.trim())}`, '_blank');
     } catch (error) {
       console.error('Error exporting logs:', error);
       toast({
@@ -175,7 +192,7 @@ const AdminPage = () => {
               <Button 
                 onClick={async () => {
                   try {
-                    const response = await fetch(`/api/add-test-log?key=${encodeURIComponent(apiKey)}`);
+                    const response = await fetch(`/api/add-test-log?key=${encodeURIComponent(apiKey.trim())}`);
                     if (response.ok) {
                       toast({
                         title: "Success",
