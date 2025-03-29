@@ -28,5 +28,35 @@
     "referrer": null,
     "bypassAttempt": false,
     "source": "test-endpoint"
+  },
+  {
+    "id": 1,
+    "timestamp": "2025-03-29T07:57:38.020Z",
+    "ipAddress": "192.168.1.1",
+    "userAgent": "Mozilla/5.0 Test User Agent",
+    "path": "/test-path",
+    "country": "US",
+    "city": null,
+    "isBotConfirmed": true,
+    "fingerprint": null,
+    "headers": null,
+    "referrer": null,
+    "bypassAttempt": false,
+    "source": "test-endpoint"
+  },
+  {
+    "id": 2,
+    "timestamp": "2025-03-29T07:57:39.691Z",
+    "ipAddress": "192.168.1.1",
+    "userAgent": "Mozilla/5.0 Test User Agent",
+    "path": "/test-path",
+    "country": "US",
+    "city": null,
+    "isBotConfirmed": true,
+    "fingerprint": null,
+    "headers": null,
+    "referrer": null,
+    "bypassAttempt": true,
+    "source": "test-endpoint"
   }
 ]

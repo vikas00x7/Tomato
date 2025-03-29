@@ -87,7 +87,7 @@ const Paywall = () => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-API-Key': 'your-secret-api-key-here'
+              'X-API-Key': 'tomato-api-key-9c8b7a6d5e4f3g2h1i'
             },
             body: JSON.stringify({
               timestamp: new Date().toISOString(),
@@ -121,7 +121,7 @@ const Paywall = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-API-Key': 'your-secret-api-key-here'
+          'X-API-Key': 'tomato-api-key-9c8b7a6d5e4f3g2h1i'
         },
         body: JSON.stringify({
           timestamp: new Date().toISOString(),
