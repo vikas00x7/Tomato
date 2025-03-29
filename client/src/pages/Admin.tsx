@@ -29,9 +29,13 @@ const AdminPage = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/logs', {
+      console.log('Using API key:', apiKey);
+      
+      // First try with the header approach
+      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey)}`, {
         headers: {
-          'X-API-Key': apiKey
+          'X-API-Key': apiKey,
+          'x-api-key': apiKey // Also try lowercase version
         }
       });
       
@@ -64,9 +68,10 @@ const AdminPage = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(`/api/logs/ip/${ipFilter}`, {
+      const response = await fetch(`/api/logs/ip/${ipFilter}?key=${encodeURIComponent(apiKey)}`, {
         headers: {
-          'X-API-Key': apiKey
+          'X-API-Key': apiKey,
+          'x-api-key': apiKey // Also try lowercase version
         }
       });
       
@@ -134,19 +139,26 @@ const AdminPage = () => {
       {!isAuthenticated ? (
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Authentication Required</h2>
-          <div className="flex gap-4 mb-4">
-            <Input
-              type="password"
-              placeholder="Enter API Key"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="max-w-md"
-            />
-            <Button onClick={handleAuthenticate}>Authenticate</Button>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleAuthenticate();
+          }} className="mb-4">
+            <div className="flex gap-4">
+              <Input
+                type="password"
+                placeholder="Enter API Key"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="max-w-md"
+                autoFocus
+              />
+              <Button type="submit">Authenticate</Button>
+            </div>
+          </form>
+          <div className="text-sm text-gray-500 space-y-2">
+            <p>You need an API key to access this page. Contact the administrator for access.</p>
+            <p>Default API Key for testing: <code className="bg-gray-100 p-1 rounded">tomato-api-key-9c8b7a6d5e4f3g2h1i</code></p>
           </div>
-          <p className="text-sm text-gray-500">
-            You need an API key to access this page. Contact the administrator for access.
-          </p>
         </Card>
       ) : (
         <>
@@ -169,9 +181,41 @@ const AdminPage = () => {
               </div>
             </Card>
             
-            <Button onClick={exportLogs} className="ml-auto">
-              Export Logs
-            </Button>
+            <div className="ml-auto flex gap-2">
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`/api/add-test-log?key=${encodeURIComponent(apiKey)}`, {
+                      headers: {
+                        'X-API-Key': apiKey,
+                        'x-api-key': apiKey
+                      }
+                    });
+                    if (response.ok) {
+                      toast({
+                        title: "Success",
+                        description: "Test log added successfully",
+                      });
+                      fetchLogs();
+                    } else {
+                      throw new Error('Failed to add test log');
+                    }
+                  } catch (error) {
+                    toast({
+                      title: "Error",
+                      description: "Failed to add test log",
+                      variant: "destructive"
+                    });
+                  }
+                }} 
+                variant="outline"
+              >
+                Add Test Log
+              </Button>
+              <Button onClick={exportLogs}>
+                Export Logs
+              </Button>
+            </div>
           </div>
           
           <Card className="overflow-hidden">

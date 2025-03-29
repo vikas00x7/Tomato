@@ -6,7 +6,10 @@ import { z } from "zod";
 
 // API Key validation middleware
 const validateApiKey = (req: Request, res: Response, next: Function) => {
-  const apiKey = req.headers['x-api-key'];
+  // Check for the API key in multiple header formats
+  const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'] || req.query.key;
+  
+  console.log('Received API key:', apiKey);
   
   // Using the same API key as defined in the Cloudflare worker
   // This is a placeholder secret - store this securely in environment variables
@@ -20,6 +23,28 @@ const validateApiKey = (req: Request, res: Response, next: Function) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Test endpoint to add a sample log (development only)
+  app.get('/api/add-test-log', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const testLog = {
+        ipAddress: '192.168.1.1',
+        userAgent: 'Mozilla/5.0 Test User Agent',
+        path: '/test-path',
+        country: 'US',
+        isBotConfirmed: Math.random() > 0.5,
+        bypassAttempt: Math.random() > 0.7,
+        source: 'test-endpoint',
+        timestamp: new Date()
+      };
+      
+      const log = await storage.createBotLog(testLog);
+      res.status(200).json({ success: true, log });
+    } catch (error) {
+      console.error('Error creating test log:', error);
+      res.status(500).json({ error: 'Failed to create test log' });
+    }
+  });
+
   // API endpoint to log bot visits
   app.post('/api/log', validateApiKey, async (req: Request, res: Response) => {
     try {
