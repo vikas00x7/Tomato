@@ -15,7 +15,9 @@ const TeamMember = ({ member }: TeamMemberProps) => {
       />
       <div className="p-6">
         <h3 className="text-xl font-serif font-bold mb-1">{member.name}</h3>
-        <p className="text-tomato-500 font-medium text-sm mb-4">{member.position}</p>
+        <p className="text-tomato-500 font-medium text-sm mb-4">
+          {member.position}
+        </p>
         <p className="text-gray-600">{member.bio}</p>
       </div>
     </div>

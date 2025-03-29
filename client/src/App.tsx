@@ -22,13 +22,13 @@ function Router() {
         <Route path="/paywall">
           <Paywall />
         </Route>
-        
+
         {/* All other routes include Header and Footer */}
         {/* Admin route doesn't include Header and Footer */}
         <Route path="/admin">
           <Admin />
         </Route>
-        
+
         {/* Regular pages with Header and Footer */}
         <Route>
           <Header />
