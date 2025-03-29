@@ -34,4 +34,45 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
   },
+  server: {
+    port: 3001,
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5001',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        rewrite: (path) => {
+          console.log('Rewriting path:', path);
+          return path;
+        },
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req: any, _res) => {
+            console.log('Proxying request:', req.method, req.url);
+            console.log('Headers:', req.headers);
+            const url = new URL(req.url, `http://${req.headers.host}`);
+            console.log('Query:', Object.fromEntries(url.searchParams));
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received proxy response:', proxyRes.statusCode, req.url);
+            let body = '';
+            proxyRes.on('data', function(chunk) {
+              body += chunk;
+            });
+            proxyRes.on('end', function() {
+              console.log('Response body:', body);
+            });
+          });
+        },
+      }
+    },
+    hmr: {
+      protocol: 'ws',
+      host: '127.0.0.1'
+    }
+  }
 });

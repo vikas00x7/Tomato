@@ -1,37 +1,33 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertBotLogSchema } from "@shared/schema";
 import { z } from "zod";
 
 // API Key validation middleware
-const validateApiKey = (req: Request, res: Response, next: Function) => {
-  // Check for the API key in multiple formats
-  let apiKey = req.query.key;
-  
-  if (!apiKey) {
-    // Try headers if query param not found
-    const headerKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
-    apiKey = headerKey;
+const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
+  console.log('Validating API key...');
+  const apiKey = req.query.key || req.headers['x-api-key'];
+  const expectedApiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
+
+  console.log('Received API key:', apiKey);
+  console.log('Expected API key:', expectedApiKey);
+
+  if (!apiKey || apiKey !== expectedApiKey) {
+    console.log('API key validation failed');
+    return res.status(401).json({ error: 'Invalid API key' });
   }
-  
-  console.log('Validating API key:', apiKey);
-  
-  // Using the same API key as defined in the Cloudflare worker
-  // This is a placeholder secret - store this securely in environment variables
-  const validApiKey = 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
-  
-  if (!apiKey || apiKey !== validApiKey) {
-    console.log('Invalid API key, received:', apiKey);
-    return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
-  }
-  
+
+  console.log('API key validation successful');
   next();
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  console.log('Registering routes...');
+
   // Test endpoint to add a sample log (development only)
   app.get('/api/add-test-log', validateApiKey, async (req: Request, res: Response) => {
+    console.log('GET /api/add-test-log endpoint hit');
     try {
       const testLog = {
         ipAddress: '192.168.1.1',
@@ -45,15 +41,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const log = await storage.createBotLog(testLog);
+      console.log('Created test log:', log);
       res.status(200).json({ success: true, log });
     } catch (error) {
       console.error('Error creating test log:', error);
-      res.status(500).json({ error: 'Failed to create test log' });
+      res.status(500).json({ error: 'Failed to create test log', details: error.message });
     }
   });
 
   // API endpoint to log bot visits
   app.post('/api/log', validateApiKey, async (req: Request, res: Response) => {
+    console.log('POST /api/log endpoint hit');
     try {
       // Extract client IP
       const ip = req.headers['x-forwarded-for'] || 
@@ -76,6 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Store the log in our database
       const log = await storage.createBotLog(validatedData);
+      console.log('Created log:', log);
       
       // Return success
       res.status(200).json({ success: true, id: log.id });
@@ -89,38 +88,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
   
   // API endpoint to get recent bot logs (protected)
   app.get('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    console.log('GET /api/logs endpoint hit');
     try {
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
-      const logs = await storage.getBotLogs(limit);
-      
-      res.status(200).json({ logs });
-    } catch (error) {
-      console.error('Error retrieving bot logs:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      const logs = await storage.getBotLogs();
+      console.log('Retrieved logs:', logs);
+      res.status(200).json({ success: true, logs });
+    } catch (error: unknown) {
+      console.error('Error fetching logs:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch logs', 
+        details: error instanceof Error ? error.message : 'Unknown error' 
+      });
     }
   });
-  
+
   // API endpoint to get logs by IP (protected)
   app.get('/api/logs/ip/:ip', validateApiKey, async (req: Request, res: Response) => {
+    console.log('GET /api/logs/ip/:ip endpoint hit');
     try {
       const { ip } = req.params;
       const logs = await storage.getBotLogsByIp(ip);
+      console.log('Retrieved logs by IP:', logs);
       
       res.status(200).json({ logs });
     } catch (error) {
       console.error('Error retrieving bot logs by IP:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
   
   // API endpoint to download logs as JSON file
   app.get('/api/logs/export', validateApiKey, async (req: Request, res: Response) => {
+    console.log('GET /api/logs/export endpoint hit');
     try {
       // Get all logs
       const logs = await storage.getBotLogs(1000); // Get up to 1000 logs
@@ -133,8 +138,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json(logs);
     } catch (error) {
       console.error('Error exporting bot logs:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Internal server error', details: error.message });
     }
+  });
+
+  // API endpoint to create log
+  app.post('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    console.log('POST /api/logs endpoint hit');
+    try {
+      const log = await storage.createBotLog(req.body);
+      console.log('Created log:', log);
+      res.status(201).json({ success: true, log });
+    } catch (error: unknown) {
+      console.error('Error creating log:', error);
+      res.status(500).json({ 
+        error: 'Failed to create log', 
+        details: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+
+  // Test endpoint
+  app.get('/api/test', (req, res) => {
+    console.log('Test endpoint hit');
+    res.json({ 
+      message: 'API is working', 
+      timestamp: new Date().toISOString(),
+      env: process.env.NODE_ENV || 'development'
+    });
   });
 
   const httpServer = createServer(app);

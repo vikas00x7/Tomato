@@ -13,6 +13,7 @@ import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
 import Paywall from "./pages/Paywall";
 import Admin from "./pages/Admin";
+import Test from "./pages/Test";
 
 function Router() {
   return (
@@ -23,10 +24,14 @@ function Router() {
           <Paywall />
         </Route>
         
-        {/* All other routes include Header and Footer */}
         {/* Admin route doesn't include Header and Footer */}
         <Route path="/admin">
           <Admin />
+        </Route>
+        
+        {/* Test page for debugging */}
+        <Route path="/test">
+          <Test />
         </Route>
         
         {/* Regular pages with Header and Footer */}

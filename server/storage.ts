@@ -13,6 +13,8 @@ import * as path from 'path';
 // modify the interface with any CRUD methods
 // you might need
 
+type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
 export interface IStorage {
   // User methods
   getUser(id: number): Promise<User | undefined>;
@@ -73,8 +75,8 @@ export class MemStorage implements IStorage {
       country: insertLog.country || null,
       city: insertLog.city || null,
       isBotConfirmed: insertLog.isBotConfirmed !== undefined ? insertLog.isBotConfirmed : true,
-      fingerprint: insertLog.fingerprint || null,
-      headers: insertLog.headers || null,
+      fingerprint: insertLog.fingerprint as Json | null || null,
+      headers: insertLog.headers as Json | null || null,
       referrer: insertLog.referrer || null,
       bypassAttempt: insertLog.bypassAttempt !== undefined ? insertLog.bypassAttempt : false,
       source: insertLog.source || null
@@ -111,7 +113,7 @@ export class MemStorage implements IStorage {
 }
 
 // File Storage implementation for bot logs
-export class FileStorage {
+export class FileStorage implements IStorage {
   private logFilePath: string;
 
   constructor(logFilePath = 'logs.json') {
@@ -119,45 +121,84 @@ export class FileStorage {
     this.ensureFileExists();
   }
 
-  private ensureFileExists() {
-    if (!fs.existsSync(this.logFilePath)) {
-      fs.writeFileSync(this.logFilePath, JSON.stringify([]));
+  private ensureFileExists(): void {
+    try {
+      console.log('Ensuring logs file exists:', this.logFilePath);
+      if (!fs.existsSync(this.logFilePath)) {
+        console.log('Creating new logs file');
+        fs.writeFileSync(this.logFilePath, '[]');
+      }
+    } catch (error) {
+      console.error('Error ensuring file exists:', error);
+      throw error;
     }
   }
 
   private readLogs(): BotLog[] {
     try {
-      const fileContent = fs.readFileSync(this.logFilePath, 'utf-8');
-      return JSON.parse(fileContent);
+      console.log('Reading logs from file:', this.logFilePath);
+      if (!fs.existsSync(this.logFilePath)) {
+        console.log('Logs file does not exist, creating empty array');
+        return [];
+      }
+      const data = fs.readFileSync(this.logFilePath, 'utf8');
+      console.log('Raw log data:', data);
+      return JSON.parse(data);
     } catch (error) {
-      console.error('Error reading log file:', error);
+      console.error('Error reading logs:', error);
       return [];
     }
   }
 
-  private writeLogs(logs: BotLog[]) {
+  private writeLogs(logs: BotLog[]): void {
     try {
+      console.log('Writing logs to file:', this.logFilePath);
       fs.writeFileSync(this.logFilePath, JSON.stringify(logs, null, 2));
+      console.log('Successfully wrote logs to file');
     } catch (error) {
-      console.error('Error writing to log file:', error);
+      console.error('Error writing logs:', error);
+      throw error;
     }
+  }
+
+  private getNextId(): number {
+    const logs = this.readLogs();
+    return logs.length > 0 ? Math.max(...logs.map(log => log.id)) + 1 : 1;
   }
 
   // Log a new bot detection entry
-  async logBot(log: BotLog) {
+  async createBotLog(log: InsertBotLog): Promise<BotLog> {
     try {
+      const id = this.getNextId();
+      const now = new Date();
+
+      const botLog: BotLog = { 
+        id, 
+        timestamp: log.timestamp || now,
+        ipAddress: log.ipAddress,
+        userAgent: log.userAgent || null,
+        path: log.path || null,
+        country: log.country || null,
+        city: log.city || null,
+        isBotConfirmed: log.isBotConfirmed !== undefined ? log.isBotConfirmed : true,
+        fingerprint: log.fingerprint as Json | null || null,
+        headers: log.headers as Json | null || null,
+        referrer: log.referrer || null,
+        bypassAttempt: log.bypassAttempt !== undefined ? log.bypassAttempt : false,
+        source: log.source || null
+      };
+
       const logs = this.readLogs();
-      logs.push(log);
+      logs.push(botLog);
       this.writeLogs(logs);
-      return log;
-    } catch (error) {
+      return botLog;
+    } catch (error: any) {
       console.error('Error logging bot to file:', error);
-      return log;
+      throw new Error(`Failed to create bot log: ${error?.message || 'Unknown error'}`);
     }
   }
 
-  // Get all logs
-  async getLogs(limit = 100): Promise<BotLog[]> {
+  async getBotLogs(limit = 100): Promise<BotLog[]> {
     const logs = this.readLogs();
     return logs
       .sort((a, b) => {
@@ -168,8 +209,12 @@ export class FileStorage {
       .slice(0, limit);
   }
 
-  // Get logs by IP address
-  async getLogsByIp(ipAddress: string): Promise<BotLog[]> {
+  async getBotLogById(id: number): Promise<BotLog | undefined> {
+    const logs = this.readLogs();
+    return logs.find(log => log.id === id);
+  }
+
+  async getBotLogsByIp(ipAddress: string): Promise<BotLog[]> {
     const logs = this.readLogs();
     return logs
       .filter(log => log.ipAddress === ipAddress)
@@ -178,6 +223,18 @@ export class FileStorage {
         const dateB = new Date(b.timestamp);
         return dateB.getTime() - dateA.getTime();
       });
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    throw new Error('Method not implemented.');
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    throw new Error('Method not implemented.');
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -210,7 +267,7 @@ export class HybridStorage implements IStorage {
     const botLog = await this.memStorage.createBotLog(log);
 
     // Then also save to file storage
-    await this.fileStorage.logBot(botLog);
+    await this.fileStorage.createBotLog(botLog);
 
     return botLog;
   }
@@ -229,5 +286,5 @@ export class HybridStorage implements IStorage {
   }
 }
 
-// Use our hybrid storage implementation
-export const storage = new HybridStorage();
+// Use file storage implementation only for now
+export const storage = new FileStorage();
