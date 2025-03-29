@@ -42,9 +42,9 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-    
+
     console.error("Server error:", err);
-    
+
     // Send response to client but don't throw the error again
     res.status(status).json({ message });
   });

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomato Restaurant - One-Click CloudFlare Deployment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #e53e3e;
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background-color: #c53030;
+        }
+        .steps {
+            margin-top: 30px;
+        }
+        .step {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .step:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #e53e3e;
+            font-weight: bold;
+        }
+        .note {
+            background-color: #fffaf0;
+            padding: 15px;
+            border-left: 4px solid #e53e3e;
+            margin-top: 20px;
+        }
+        .deploy-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tomato Restaurant - CloudFlare Deployment</h1>
+
+        <p>
+            This page helps you deploy the Tomato Restaurant website to CloudFlare with one-click setup. 
+            Choose your preferred deployment method below.
+        </p>
+
+        <div class="form-group">
+            <label for="domain">Your Domain Name:</label>
+            <input type="text" id="domain" placeholder="e.g., yourdomain.com">
+        </div>
+
+        <div class="form-group">
+            <label for="accountId">CloudFlare Account ID:</label>
+            <input type="text" id="accountId" placeholder="Find this in your CloudFlare dashboard">
+        </div>
+
+        <div class="form-group">
+            <label for="apiKey">API Key (optional):</label>
+            <input type="password" id="apiKey" placeholder="Leave blank to use default key">
+            <small>This key will be used to access the admin panel and secure API endpoints.</small>
+        </div>
+
+        <div class="deploy-links">
+            <a href="https://dash.cloudflare.com/login" class="btn" target="_blank" id="deploy-btn">Deploy to CloudFlare</a>
+            <a href="https://github.com/new" class="btn" style="background-color: #24292e;" target="_blank">Deploy via GitHub</a>
+        </div>
+
+        <div class="steps">
+            <h2>Manual Deployment Steps:</h2>
+            <div class="step">Log in to your CloudFlare dashboard</div>
+            <div class="step">Navigate to Pages in the left sidebar</div>
+            <div class="step">Click "Create a project" and connect your Git repository</div>
+            <div class="step">Set build command to: <code>npm run build</code></div>
+            <div class="step">Set build output directory to: <code>dist</code></div>
+            <div class="step">Add environment variables as specified in the deployment guide</div>
+            <div class="step">Click "Save and Deploy"</div>
+        </div>
+
+        <div class="note">
+            <p><strong>Note:</strong> For detailed instructions and advanced configuration options, please refer to the <code>CLOUDFLARE_DEPLOYMENT_GUIDE.md</code> file in your project.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('deploy-btn').addEventListener('click', function(e) {
+            // Get form values
+            const domain = document.getElementById('domain').value;
+            const accountId = document.getElementById('accountId').value;
+
+            // Simple validation
+            if (!domain || !accountId) {
+                e.preventDefault();
+                alert('Please enter your domain name and CloudFlare Account ID.');
+                return;
+            }
+
+            // In a real implementation, this would prepare deployment parameters
+            // and redirect to CloudFlare with the correct configuration
+
+            // For demo purposes, just redirect to CloudFlare dashboard
+            this.href = 'https://dash.cloudflare.com/' + accountId;
+        });
+    </script>
+</body>
+</html>
