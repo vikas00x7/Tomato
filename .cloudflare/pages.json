@@ -1,0 +1,22 @@
+{
+  "name": "tomato-website",
+  "build": {
+    "command": "npm run build",
+    "output": "dist",
+    "environment": {
+      "NODE_VERSION": "18"
+    }
+  },
+  "routes": [
+    {
+      "pattern": "/api/*",
+      "zone_name": "tomato-restaurant.pages.dev"
+    }
+  ],
+  "env": {
+    "production": {
+      "API_URL": "https://tomato-bot-protection.workers.dev",
+      "API_KEY": "tomato-api-key-9c8b7a6d5e4f3g2h1i"
+    }
+  }
+}

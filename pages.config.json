@@ -1,0 +1,17 @@
+{
+  "name": "tomato-website",
+  "build": {
+    "command": "npm run build",
+    "dist": "dist",
+    "baseDirectory": ".",
+    "nodeVersion": "18"
+  },
+  "routes": [
+    { "pattern": "/api/*", "script": "server/index.ts" },
+    { "pattern": "/*", "static": true }
+  ],
+  "env": {
+    "API_KEY": "tomato-api-key-9c8b7a6d5e4f3g2h1i",
+    "DATABASE_URL": "postgres://user:password@localhost:5432/tomato"
+  }
+}

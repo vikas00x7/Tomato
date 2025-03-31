@@ -31,7 +31,9 @@ export default defineConfig({
   },
   root: path.resolve(__dirname, "client"),
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: 'dist',
+    target: 'esnext',
+    sourcemap: true,
     emptyOutDir: true,
   },
   server: {
@@ -39,9 +41,11 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:5001',
+        target: process.env.NODE_ENV === 'production' 
+          ? 'https://tomato-bot-protection.workers.dev'
+          : 'http://127.0.0.1:5001',
         changeOrigin: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         ws: true,
         rewrite: (path) => {
           console.log('Rewriting path:', path);

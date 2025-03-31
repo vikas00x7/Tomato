@@ -78,6 +78,99 @@ X-API-Key: tomato-api-key-9c8b7a6d5e4f3g2h1i
 - `GET /api/add-test-log` - Add a test log entry (development only)
 - `POST /api/log` - Log a new bot visit
 
+## Local Development Setup
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm (v9 or higher)
+- PostgreSQL (v15 or higher)
+
+### Installation Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/vikas00x7/tomato.git
+   cd tomato
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables:
+   - Create a `.env` file in the root directory
+   - Add the following variables:
+     ```
+     DATABASE_URL=postgresql://user:password@localhost:5432/tomato
+     API_KEY=tomato-api-key-9c8b7a6d5e4f3g2h1i
+     PORT=5001
+     ```
+
+### Running the Development Servers
+1. Start the Express API server:
+   ```bash
+   npm run dev:server
+   ```
+2. Start the Vite development server:
+   ```bash
+   npm run dev:client
+   ```
+
+### Accessing the Application
+- Frontend: http://localhost:3001
+- API Server: http://localhost:5001
+- Admin Page: http://localhost:3001/admin?key=tomato-api-key-9c8b7a6d5e4f3g2h1i
+
+### Running Both Servers Together
+You can run both servers simultaneously using:
+```bash
+npm run dev
+```
+
+## Cloudflare Deployment
+
+### Prerequisites
+- Cloudflare account
+- Wrangler CLI installed (`npm install -g wrangler`)
+- Cloudflare Pages configured
+
+### Deployment Steps
+
+1. Deploy the Worker (Backend):
+   ```bash
+   wrangler deploy
+   ```
+
+2. Deploy to Cloudflare Pages (Frontend):
+   ```bash
+   # Login to Cloudflare
+   wrangler login
+
+   # Build the project
+   npm run build
+
+   # Deploy to Pages
+   wrangler pages publish dist
+   ```
+
+3. Configure Environment Variables:
+   - Go to Cloudflare Dashboard
+   - Navigate to Workers & Pages
+   - Add the following environment variables:
+     ```
+     DATABASE_URL=your_database_url
+     API_KEY=your_api_key
+     ```
+
+4. Set up Custom Domain (Optional):
+   - Go to Cloudflare Pages
+   - Navigate to your project
+   - Click on "Custom Domains"
+   - Add your domain and follow the instructions
+
+### Monitoring
+- View your deployment: https://tomato-restaurant.pages.dev
+- Monitor Worker: Cloudflare Dashboard > Workers
+- View Analytics: Cloudflare Dashboard > Analytics
+
 ## Cloudflare Integration
 
 ### Worker Setup
