@@ -14,7 +14,6 @@ This project is a modern multi-page website for Tomato, a Silicon Valley-style f
 ### Security Features
 - **Advanced Bot Detection**: FingerprintJS integration for client-side fingerprinting
 - **Comprehensive Logging**: Records bot visits with IP, user agent, path, and more
-- **Cloudflare Integration**: Custom worker for traffic filtering at the CDN level
 - **Admin Dashboard**: View and analyze bot activity through a secure admin interface
 - **Dual-Storage System**: Logs stored in both database and flat JSON files
 
@@ -124,11 +123,10 @@ The website implements a comprehensive security system to protect against unwant
 
 ### Bot Detection System
 
-The bot detection system operates on three levels:
+The bot detection system operates on two levels:
 
 1. **Client-Side Detection**: Using FingerprintJS to identify browser fingerprints
 2. **Server-Side Validation**: Express middleware to validate requests
-3. **CDN-Level Filtering**: Cloudflare Worker to filter traffic at the edge
 
 ### Bot Bypass Mechanism
 
@@ -147,37 +145,6 @@ All bot activity is logged for analysis:
 2. **Flat File Backup**: Logs are also written to `logs.json` for redundancy
 3. **Admin Dashboard**: View and analyze bot logs at `/admin`
 
-## Cloudflare Integration
-
-### Worker Setup
-
-1. Copy the worker code from `cloudflare/worker.js`
-2. Create a new Cloudflare Worker in your Cloudflare dashboard
-3. Paste the code and deploy the worker
-4. Set up a route pattern to match your domain (e.g., `*bunnylovesoaps.com/*`)
-5. Update the configuration in the worker:
-   ```js
-   const CONFIG = {
-     allowedDomains: ['your-domain.com'],
-     logEndpoint: 'https://your-domain.com/api/log',
-     // Other configuration options
-   };
-   ```
-
-### Deployment
-
-The project includes a deployment script for Cloudflare:
-
-```
-./deploy-to-cloudflare.sh
-```
-
-Or use the direct upload script:
-
-```
-node cloudflare-direct-upload.js
-```
-
 ## Architecture
 
 The project follows a modern web application pattern:
@@ -186,7 +153,6 @@ The project follows a modern web application pattern:
 - **Backend**: Express.js API 
 - **Database**: PostgreSQL with Drizzle ORM
 - **Bot Detection**: Combination of client-side (FingerprintJS) and server-side techniques
-- **Caching/CDN**: Cloudflare integration for edge caching and bot filtering
 
 ## Contributing
 
