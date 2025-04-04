@@ -13,14 +13,24 @@ import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
 import Paywall from "./pages/Paywall";
 import Admin from "./pages/Admin";
+import Blocked from "./pages/Blocked";
+import { useNavigationLogger } from "./hooks/useNavigationLogger";
 
 function Router() {
+  // Track client-side navigation for logging
+  useNavigationLogger();
+
   return (
     <>
       <Switch>
         {/* Paywall route doesn't include Header and Footer */}
         <Route path="/paywall">
           <Paywall />
+        </Route>
+        
+        {/* Blocked page for unauthorized bots */}
+        <Route path="/blocked">
+          <Blocked />
         </Route>
         
         {/* All other routes include Header and Footer */}

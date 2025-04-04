@@ -1,0 +1,10 @@
+{
+  "allowGooglebot": true,
+  "allowBingbot": true,
+  "allowYandexBot": false,
+  "allowBaiduSpider": false,
+  "allowDuckDuckBot": true,
+  "customAllowedBots": [],
+  "blockedMessage": "Your bot has been blocked from accessing this website. If you believe this is an error, please contact the site administrator.",
+  "blockByDefault": true
+}
