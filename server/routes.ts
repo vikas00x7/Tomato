@@ -262,6 +262,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API endpoint to clear all logs
+  app.delete('/api/logs', async (req: Request, res: Response) => {
+    try {
+      // Validate API key
+      const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
+      console.log('Validating API key for log clearing:', req.query.key);
+      if (req.query.key !== apiKey) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      
+      // Clear all logs
+      await storage.clearLogs();
+      res.json({ success: true, message: 'All logs have been cleared successfully' });
+    } catch (error) {
+      console.error('Error clearing logs:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
   // API endpoint to get IP blacklist
   app.get('/api/ip-blacklist', async (req: Request, res: Response) => {
     try {
@@ -526,24 +545,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ analytics });
     } catch (error) {
       console.error('Error calculating analytics:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-  
-  // API endpoint to clear logs
-  app.delete('/api/logs', async (req: Request, res: Response) => {
-    try {
-      // Validate API key
-      const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
-      console.log('Validating API key:', req.query.key);
-      if (req.query.key !== apiKey) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-      
-      await storage.clearLogs();
-      res.json({ success: true });
-    } catch (error) {
-      console.error('Error clearing logs:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
