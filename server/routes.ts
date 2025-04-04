@@ -414,6 +414,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       
+      // Working_admin branch: Enhanced policy validation
       const { policy } = req.body;
       
       // Validate policy structure
