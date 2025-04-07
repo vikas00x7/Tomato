@@ -288,6 +288,55 @@ const AdminPage = () => {
     }
   };
   
+  // Function to clear all logs
+  const clearAllLogs = async () => {
+    if (!isAuthenticated) return;
+    
+    // Confirm with the user before deleting all logs
+    if (!window.confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey.trim())}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.status === 401) {
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid API key. Please check and try again.",
+          variant: "destructive"
+        });
+        setIsAuthenticated(false);
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error('Failed to clear logs');
+      }
+      
+      // Clear logs locally
+      setLogs([]);
+      setLastLogCount(0);
+      
+      toast({
+        title: "Success",
+        description: "All logs have been cleared successfully.",
+      });
+    } catch (error) {
+      console.error('Error clearing logs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear logs.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -636,6 +685,9 @@ const AdminPage = () => {
                   </Button>
                   <Button onClick={() => {setIpFilter(''); fetchLogs()}} variant="outline" disabled={loading}>
                     Clear
+                  </Button>
+                  <Button onClick={clearAllLogs} variant="destructive" disabled={loading}>
+                    Clear All Logs
                   </Button>
                 </div>
               </Card>
