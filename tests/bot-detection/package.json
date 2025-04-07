@@ -1,0 +1,16 @@
+{
+  "name": "tomato-bot-detection-tests",
+  "version": "1.0.0",
+  "description": "Bot detection testing tools for TomatoWebsite",
+  "scripts": {
+    "test:http": "node bot-tester.js",
+    "test:browser": "node browser-test.js",
+    "test:advanced": "node advanced-bot-test.js",
+    "test:all": "npm run test:http && npm run test:browser"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "playwright": "^1.32.0",
+    "puppeteer": "^19.7.0"
+  }
+}
