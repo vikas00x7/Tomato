@@ -2,37 +2,112 @@ import { Request, Response, NextFunction } from 'express';
 import { storage } from '../storage';
 import geoip from 'geoip-lite';
 
-// Bot detection patterns
+// Bot detection patterns - refined to reduce false positives
 const BOT_USER_AGENT_PATTERNS = [
-  'bot', 'spider', 'crawl', 'scrape', 'headless', 
-  'puppeteer', 'nightmare', 'selenium', 'phantom', 
-  'slurp', 'yahoo', 'bingbot', 'baiduspider', 'yandex'
+  // Search engine bots - high confidence
+  'googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp',
+  
+  // Common crawlers - high confidence
+  'crawler', 'spider', 'ahrefsbot', 'semrushbot',
+  
+  // Automation tools - medium confidence
+  'puppeteer', 'selenium', 'headless', 'phantomjs',
+  
+  // Generic patterns - low confidence (require additional signals)
+  'bot', 'scrape'
+];
+
+// Search engine bots that should be authorized
+const AUTHORIZED_BOT_PATTERNS = [
+  'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'facebookexternalhit', 
+  'twitterbot', 'linkedinbot', 'pinterestbot', 'slurp'
 ];
 
 // List of paths bots are allowed to access without paywall
 const ALLOWED_BOT_PATHS = [
-  '/', '/about', '/contact', // Public pages
+  '/', '/about', '/contact', '/robots.txt', '/sitemap.xml', // Public pages
   '/api/log-navigation'      // API endpoints bots need
 ];
 
-// Check if this visitor is likely a bot
-export const detectBot = (req: Request): {isBot: boolean, authorized: boolean} => {
-  const userAgent = req.headers['user-agent'] || '';
+// Detection confidence levels
+const CONFIDENCE = {
+  LOW: 30,
+  MEDIUM: 60,
+  HIGH: 90,
+  THRESHOLD: 70 // Confidence threshold to mark as a bot
+};
+
+// Check if this visitor is likely a bot with a confidence score
+export const detectBot = (req: Request): {
+  isBot: boolean, 
+  authorized: boolean,
+  confidence: number,
+  reasons: string[]
+} => {
+  const userAgent = (req.headers['user-agent'] || '').toLowerCase();
   const referer = req.headers['referer'] || '';
+  let confidence = 0;
+  const reasons: string[] = [];
   
-  // Basic bot detection via user agent
-  const isBot = BOT_USER_AGENT_PATTERNS.some(pattern => 
-    userAgent.toLowerCase().includes(pattern)
+  // 1. Check for bot patterns in user agent (highest signal)
+  const matchedPattern = BOT_USER_AGENT_PATTERNS.find(pattern => 
+    userAgent.includes(pattern)
   );
   
-  // Determine if this is an authorized bot
-  // Authorized bots typically have verified user agents and valid referer patterns
-  const authorizedBotPatterns = ['googlebot', 'bingbot', 'yandexbot'];
-  const authorized = authorizedBotPatterns.some(pattern => 
-    userAgent.toLowerCase().includes(pattern)
+  if (matchedPattern) {
+    // Assign different confidence based on the matched pattern
+    if (['googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp'].includes(matchedPattern)) {
+      confidence += CONFIDENCE.HIGH;
+      reasons.push(`Search engine bot user agent (${matchedPattern})`);
+    } else if (['crawler', 'spider', 'ahrefsbot', 'semrushbot'].includes(matchedPattern)) {
+      confidence += CONFIDENCE.HIGH;
+      reasons.push(`Known crawler user agent (${matchedPattern})`);
+    } else if (['puppeteer', 'selenium', 'headless', 'phantomjs'].includes(matchedPattern)) {
+      confidence += CONFIDENCE.MEDIUM;
+      reasons.push(`Automation tool detected (${matchedPattern})`);
+    } else {
+      confidence += CONFIDENCE.LOW;
+      reasons.push(`Generic bot pattern (${matchedPattern})`);
+    }
+  }
+  
+  // 2. Check for missing headers that browsers typically have
+  if (!req.headers['accept-language']) {
+    confidence += CONFIDENCE.LOW;
+    reasons.push('Missing Accept-Language header');
+  }
+  
+  // 3. Check for unusual request patterns
+  if (req.headers['sec-fetch-mode'] === 'navigate' && !req.headers['sec-ch-ua']) {
+    confidence += CONFIDENCE.MEDIUM;
+    reasons.push('Missing modern browser identifiers');
+  }
+  
+  // 4. Rapid access pattern check
+  // This would require session storage, using a placeholder for now
+  
+  // 5. Check for authorized bot signatures
+  const isAuthorizedBot = AUTHORIZED_BOT_PATTERNS.some(pattern => 
+    userAgent.includes(pattern)
   );
   
-  return { isBot, authorized };
+  // Authorized bots automatically get high confidence
+  if (isAuthorizedBot) {
+    confidence = CONFIDENCE.HIGH;
+    if (!reasons.length) {
+      reasons.push(`Authorized bot pattern detected (${userAgent})`);
+    }
+  }
+  
+  // Determine if this is a bot based on confidence threshold
+  const isBot = confidence >= CONFIDENCE.THRESHOLD;
+  
+  return { 
+    isBot, 
+    authorized: isAuthorizedBot,
+    confidence,
+    reasons
+  };
 };
 
 // Bot detection middleware
@@ -43,7 +118,7 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
   }
   
   // Detect if visitor is a bot
-  const { isBot, authorized } = detectBot(req);
+  const { isBot, authorized, confidence, reasons } = detectBot(req);
   
   // Extract IP address with proper CloudFlare support
   let ip = 'unknown';
@@ -93,7 +168,9 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
     isBot, 
     authorized, 
     ipAddress: ip,
-    country 
+    country,
+    confidence,
+    reasons
   };
   
   // Log the visit with bot detection results
@@ -104,8 +181,10 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
     timestamp: new Date(),
     country: country,
     isBotConfirmed: isBot,
+    confidence: confidence,
+    reasons: reasons,
     bypassAttempt: false,
-    source: isBot ? (authorized ? 'authorized-bot' : 'unauthorized-bot') : 'server-navigation',
+    source: isBot ? (authorized ? 'authorized-bot' : 'unauthorized-bot') : 'human-visitor',
   };
   
   try {
@@ -124,14 +203,21 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
 export const accessControlMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // If bot detection wasn't run, run it now
   if (!req.botInfo) {
-    const { isBot, authorized } = detectBot(req);
+    const { isBot, authorized, confidence, reasons } = detectBot(req);
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
     const ipAddress = typeof ip === 'string' ? ip : Array.isArray(ip) ? ip[0] : 'unknown';
     
-    req.botInfo = { isBot, authorized, ipAddress, country: 'unknown' };
+    req.botInfo = { 
+      isBot, 
+      authorized, 
+      ipAddress, 
+      country: 'unknown',
+      confidence,
+      reasons
+    };
   }
   
-  const { isBot, authorized } = req.botInfo;
+  const { isBot, authorized, confidence } = req.botInfo;
   
   // If not a bot, allow access immediately
   if (!isBot) {
@@ -140,8 +226,11 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
   
   // If an unauthorized bot, redirect to paywall
   if (isBot && !authorized) {
+    // Log the redirect for debugging
+    console.log(`Redirecting unauthorized bot to paywall. Confidence: ${confidence}%. Path: ${req.path}`);
+    
     // Instead of blocking with 403, redirect to paywall
-    return res.redirect('/paywall?source=bot_detection&returnUrl=' + encodeURIComponent(req.originalUrl || req.url));
+    return res.redirect(`/paywall?source=bot_detection&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
   }
   
   // If an authorized bot, check if path is allowed or needs paywall
@@ -152,7 +241,7 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
     }
     
     // For other paths, redirect to paywall
-    return res.redirect('/paywall?returnPath=' + encodeURIComponent(req.path));
+    return res.redirect(`/paywall?source=authorized_bot&returnPath=${encodeURIComponent(req.path)}`);
   }
   
   // Default case - allow access
@@ -168,6 +257,8 @@ declare global {
         authorized: boolean;
         ipAddress: string;
         country: string;
+        confidence: number;
+        reasons: string[];
       }
     }
   }
