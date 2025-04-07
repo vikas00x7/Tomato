@@ -17,6 +17,30 @@ const BOT_USER_AGENT_PATTERNS = [
   'bot', 'scrape'
 ];
 
+// AI-specific bot patterns - added for AI assistant detection
+const AI_BOT_PATTERNS = [
+  // Official AI assistant user agents
+  'chatgpt', 'gptbot', 'claude-web', 'anthropic', 'bard', 'openai',
+  'cohere', 'perplexity', 'browsergpt', 'ai-assisted', 'ai-browser',
+  
+  // Common AI crawling services
+  'diffbot', 'aimbot', 'botasaurus', 'intelli-bot', 'ai-crawler'
+];
+
+// Professional scraping tools - added for commercial scraper detection
+const SCRAPING_TOOLS_PATTERNS = [
+  'firecrawl', 'octoparse', 'parsehub', 'scrapy', 'scrapinghub',
+  'webscrapingapi', 'scrapingbee', 'brightdata', 'proxycrawl',
+  'datahen', 'webscraper', 'crawlera', 'zyte', 'apify'
+];
+
+// Combine all detection patterns
+const ALL_BOT_PATTERNS = [
+  ...BOT_USER_AGENT_PATTERNS,
+  ...AI_BOT_PATTERNS,
+  ...SCRAPING_TOOLS_PATTERNS
+];
+
 // Search engine bots that should be authorized
 const AUTHORIZED_BOT_PATTERNS = [
   'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'facebookexternalhit', 
@@ -37,37 +61,61 @@ const CONFIDENCE = {
   THRESHOLD: 70 // Confidence threshold to mark as a bot
 };
 
+// Cached timing data to detect behavioral patterns
+const requestTimingCache = new Map<string, {
+  lastRequestTime: number,
+  requestTimes: number[],
+  pageSequence: string[]
+}>();
+
 // Check if this visitor is likely a bot with a confidence score
 export const detectBot = (req: Request): {
   isBot: boolean, 
   authorized: boolean,
   confidence: number,
-  reasons: string[]
+  reasons: string[],
+  botType?: string
 } => {
   const userAgent = (req.headers['user-agent'] || '').toLowerCase();
   const referer = req.headers['referer'] || '';
+  const ip = getClientIp(req);
   let confidence = 0;
   const reasons: string[] = [];
+  let botType: string | undefined;
   
   // 1. Check for bot patterns in user agent (highest signal)
-  const matchedPattern = BOT_USER_AGENT_PATTERNS.find(pattern => 
+  const matchedPattern = ALL_BOT_PATTERNS.find(pattern => 
     userAgent.includes(pattern)
   );
   
   if (matchedPattern) {
-    // Assign different confidence based on the matched pattern
-    if (['googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp'].includes(matchedPattern)) {
+    // Assign different confidence based on the matched pattern type
+    if (BOT_USER_AGENT_PATTERNS.includes(matchedPattern)) {
+      if (['googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp'].includes(matchedPattern)) {
+        confidence += CONFIDENCE.HIGH;
+        reasons.push(`Search engine bot user agent (${matchedPattern})`);
+        botType = 'search_engine';
+      } else if (['crawler', 'spider', 'ahrefsbot', 'semrushbot'].includes(matchedPattern)) {
+        confidence += CONFIDENCE.HIGH;
+        reasons.push(`Known crawler user agent (${matchedPattern})`);
+        botType = 'crawler';
+      } else if (['puppeteer', 'selenium', 'headless', 'phantomjs'].includes(matchedPattern)) {
+        confidence += CONFIDENCE.MEDIUM;
+        reasons.push(`Automation tool detected (${matchedPattern})`);
+        botType = 'automation';
+      } else {
+        confidence += CONFIDENCE.LOW;
+        reasons.push(`Generic bot pattern (${matchedPattern})`);
+        botType = 'generic_bot';
+      }
+    } else if (AI_BOT_PATTERNS.includes(matchedPattern)) {
       confidence += CONFIDENCE.HIGH;
-      reasons.push(`Search engine bot user agent (${matchedPattern})`);
-    } else if (['crawler', 'spider', 'ahrefsbot', 'semrushbot'].includes(matchedPattern)) {
+      reasons.push(`AI assistant bot detected (${matchedPattern})`);
+      botType = 'ai_assistant';
+    } else if (SCRAPING_TOOLS_PATTERNS.includes(matchedPattern)) {
       confidence += CONFIDENCE.HIGH;
-      reasons.push(`Known crawler user agent (${matchedPattern})`);
-    } else if (['puppeteer', 'selenium', 'headless', 'phantomjs'].includes(matchedPattern)) {
-      confidence += CONFIDENCE.MEDIUM;
-      reasons.push(`Automation tool detected (${matchedPattern})`);
-    } else {
-      confidence += CONFIDENCE.LOW;
-      reasons.push(`Generic bot pattern (${matchedPattern})`);
+      reasons.push(`Professional scraping tool detected (${matchedPattern})`);
+      botType = 'scraping_tool';
     }
   }
   
@@ -83,10 +131,28 @@ export const detectBot = (req: Request): {
     reasons.push('Missing modern browser identifiers');
   }
   
-  // 4. Rapid access pattern check
-  // This would require session storage, using a placeholder for now
+  // 4. AI-specific detection: Check for inconsistent header combinations
+  // AI tools sometimes have unusual header combinations
+  if (
+    req.headers['accept'] && 
+    req.headers['accept-language'] &&
+    !req.headers['sec-ch-ua-platform'] && 
+    !req.headers['sec-fetch-dest']
+  ) {
+    confidence += CONFIDENCE.MEDIUM;
+    reasons.push('Inconsistent modern headers (possible AI browser)');
+    botType = botType || 'possible_ai';
+  }
   
-  // 5. Check for authorized bot signatures
+  // 5. Detect unusual timing patterns (AI browsing tends to be very consistent)
+  const timing = checkRequestTiming(req, ip);
+  if (timing.isUnnatural) {
+    confidence += CONFIDENCE.MEDIUM;
+    reasons.push(`Unnatural timing pattern: ${timing.reason}`);
+    botType = botType || 'timing_anomaly';
+  }
+  
+  // 6. Check for authorized bot signatures
   const isAuthorizedBot = AUTHORIZED_BOT_PATTERNS.some(pattern => 
     userAgent.includes(pattern)
   );
@@ -97,6 +163,7 @@ export const detectBot = (req: Request): {
     if (!reasons.length) {
       reasons.push(`Authorized bot pattern detected (${userAgent})`);
     }
+    botType = 'authorized_bot';
   }
   
   // Determine if this is a bot based on confidence threshold
@@ -106,27 +173,17 @@ export const detectBot = (req: Request): {
     isBot, 
     authorized: isAuthorizedBot,
     confidence,
-    reasons
+    reasons,
+    botType
   };
 };
 
-// Bot detection middleware
-export const botDetectionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  // Skip bot detection for static files and API endpoints
-  if (req.path.includes('.') || req.path.startsWith('/api')) {
-    return next();
-  }
-  
-  // Detect if visitor is a bot
-  const { isBot, authorized, confidence, reasons } = detectBot(req);
-  
-  // Extract IP address with proper CloudFlare support
-  let ip = 'unknown';
-  
+// Extract client IP with CloudFlare and proxy support
+function getClientIp(req: Request): string {
   // First check CloudFlare-specific headers
   if (req.headers['cf-connecting-ip']) {
     // If request comes through CloudFlare, use their provided header
-    ip = Array.isArray(req.headers['cf-connecting-ip']) 
+    return Array.isArray(req.headers['cf-connecting-ip']) 
       ? req.headers['cf-connecting-ip'][0] 
       : req.headers['cf-connecting-ip'];
   } else if (req.headers['x-forwarded-for']) {
@@ -137,11 +194,85 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
     
     // The x-forwarded-for header can contain multiple IPs separated by commas
     // The leftmost IP is the original client IP
-    ip = forwardedIps.split(',')[0].trim();
+    return forwardedIps.split(',')[0].trim();
   } else {
     // Fall back to the socket address if no proxy headers are present
-    ip = req.socket.remoteAddress || 'unknown';
+    return req.socket.remoteAddress || 'unknown';
   }
+}
+
+// Check for unnatural timing patterns in requests
+function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, reason?: string } {
+  const now = Date.now();
+  const cacheKey = `${ip}-${req.headers['user-agent'] || ''}`;
+  
+  // Initialize or get existing timing data
+  if (!requestTimingCache.has(cacheKey)) {
+    requestTimingCache.set(cacheKey, {
+      lastRequestTime: now,
+      requestTimes: [],
+      pageSequence: [req.path]
+    });
+    return { isUnnatural: false };
+  }
+  
+  const timing = requestTimingCache.get(cacheKey)!;
+  const timeSinceLastRequest = now - timing.lastRequestTime;
+  
+  // Update timing data
+  timing.requestTimes.push(timeSinceLastRequest);
+  timing.pageSequence.push(req.path);
+  timing.lastRequestTime = now;
+  
+  // Keep only the last 10 requests
+  if (timing.requestTimes.length > 10) {
+    timing.requestTimes.shift();
+    timing.pageSequence.shift();
+  }
+  
+  // Not enough data to make a determination
+  if (timing.requestTimes.length < 3) {
+    return { isUnnatural: false };
+  }
+  
+  // Check for unusually consistent timing patterns (often seen with AI bots)
+  const timings = timing.requestTimes;
+  const avgTime = timings.reduce((a, b) => a + b, 0) / timings.length;
+  const deviations = timings.map(t => Math.abs(t - avgTime));
+  const avgDeviation = deviations.reduce((a, b) => a + b, 0) / deviations.length;
+  
+  // If timing is too consistent (low deviation) across multiple requests
+  if (timings.length >= 5 && avgDeviation < 200 && avgTime < 5000) {
+    return { 
+      isUnnatural: true, 
+      reason: 'Suspiciously consistent request timing' 
+    };
+  }
+  
+  // Check for sequential access pattern (going through pages in order)
+  const uniquePages = new Set(timing.pageSequence).size;
+  if (timing.pageSequence.length >= 5 && uniquePages === timing.pageSequence.length) {
+    return { 
+      isUnnatural: true, 
+      reason: 'Sequential page access pattern' 
+    };
+  }
+  
+  return { isUnnatural: false };
+}
+
+// Bot detection middleware
+export const botDetectionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  // Skip bot detection for static files and API endpoints
+  if (req.path.includes('.') || req.path.startsWith('/api')) {
+    return next();
+  }
+  
+  // Detect if visitor is a bot
+  const { isBot, authorized, confidence, reasons, botType } = detectBot(req);
+  
+  // Extract IP address with proper CloudFlare support
+  const ip = getClientIp(req);
   
   // Get country information from IP address
   let country = 'unknown';
@@ -170,8 +301,15 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
     ipAddress: ip,
     country,
     confidence,
-    reasons
+    reasons,
+    botType
   };
+  
+  // Add a subtle JavaScript-based detection for AI browsers
+  // This helps identify sophisticated AI tools that execute JS
+  if (!isBot && req.headers['accept'] && req.headers['accept'].includes('text/html')) {
+    res.locals.runBotDetection = true;
+  }
   
   // Log the visit with bot detection results
   const logData = {
@@ -183,6 +321,7 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
     isBotConfirmed: isBot,
     confidence: confidence,
     reasons: reasons,
+    botType: botType || 'unknown',
     bypassAttempt: false,
     source: isBot ? (authorized ? 'authorized-bot' : 'unauthorized-bot') : 'human-visitor',
   };
@@ -203,34 +342,45 @@ export const botDetectionMiddleware = async (req: Request, res: Response, next: 
 export const accessControlMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // If bot detection wasn't run, run it now
   if (!req.botInfo) {
-    const { isBot, authorized, confidence, reasons } = detectBot(req);
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-    const ipAddress = typeof ip === 'string' ? ip : Array.isArray(ip) ? ip[0] : 'unknown';
+    const { isBot, authorized, confidence, reasons, botType } = detectBot(req);
+    const ip = getClientIp(req);
     
     req.botInfo = { 
       isBot, 
       authorized, 
-      ipAddress, 
+      ipAddress: ip, 
       country: 'unknown',
       confidence,
-      reasons
+      reasons,
+      botType
     };
   }
   
-  const { isBot, authorized, confidence } = req.botInfo;
+  const { isBot, authorized, confidence, botType } = req.botInfo;
   
   // If not a bot, allow access immediately
   if (!isBot) {
     return next();
   }
   
+  // Special handling for AI assistants - we want to direct them to specific content
+  if (botType === 'ai_assistant') {
+    // Allow AI tools to access specific content to ensure they can summarize your site properly
+    if (['/robots.txt', '/sitemap.xml', '/', '/about'].includes(req.path)) {
+      return next();
+    }
+    
+    // For all other paths, redirect to paywall with AI-specific messaging
+    return res.redirect(`/paywall?source=ai_assistant&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
+  }
+  
   // If an unauthorized bot, redirect to paywall
   if (isBot && !authorized) {
     // Log the redirect for debugging
-    console.log(`Redirecting unauthorized bot to paywall. Confidence: ${confidence}%. Path: ${req.path}`);
+    console.log(`Redirecting unauthorized bot to paywall. Confidence: ${confidence}%. Type: ${botType}. Path: ${req.path}`);
     
     // Instead of blocking with 403, redirect to paywall
-    return res.redirect(`/paywall?source=bot_detection&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
+    return res.redirect(`/paywall?source=bot_detection&botType=${botType}&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
   }
   
   // If an authorized bot, check if path is allowed or needs paywall
@@ -259,6 +409,7 @@ declare global {
         country: string;
         confidence: number;
         reasons: string[];
+        botType?: string;
       }
     }
   }
