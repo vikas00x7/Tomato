@@ -56,13 +56,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to handle client-side navigation events
   app.post('/api/log-navigation', async (req: Request, res: Response) => {
     try {
-      // Extract client IP
-      const ip = req.headers['x-forwarded-for'] || 
-                req.socket.remoteAddress || 
-                'unknown';
+      // Extract client IP with proper CloudFlare support
+      let ip = 'unknown';
       
-      // We need to make sure ipAddress is always a string
-      const ipAddress = typeof ip === 'string' ? ip : Array.isArray(ip) ? ip[0] : 'unknown';
+      // First check CloudFlare-specific headers
+      if (req.headers['cf-connecting-ip']) {
+        // If request comes through CloudFlare, use their provided header
+        ip = Array.isArray(req.headers['cf-connecting-ip']) 
+          ? req.headers['cf-connecting-ip'][0] 
+          : req.headers['cf-connecting-ip'];
+      } else if (req.headers['x-forwarded-for']) {
+        // If using another proxy or load balancer, get the first IP in the chain
+        const forwardedIps = Array.isArray(req.headers['x-forwarded-for'])
+          ? req.headers['x-forwarded-for'][0]
+          : req.headers['x-forwarded-for'];
+        
+        // The x-forwarded-for header can contain multiple IPs separated by commas
+        // The leftmost IP is the original client IP
+        ip = forwardedIps.split(',')[0].trim();
+      } else {
+        // Fall back to the socket address if no proxy headers are present
+        ip = req.socket.remoteAddress || 'unknown';
+      }
+      
+      // Log all headers for debugging (only in development)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Client navigation request headers:', {
+          cf: req.headers['cf-connecting-ip'],
+          xForwardedFor: req.headers['x-forwarded-for'],
+          remoteAddr: req.socket.remoteAddress
+        });
+      }
       
       // Get data from request body
       const { path, source } = req.body;
@@ -77,11 +101,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const geoip = await import('geoip-lite');
         
         // Don't lookup for localhost/private IP addresses
-        if (ipAddress !== 'unknown' && 
-            !ipAddress.startsWith('127.') && 
-            !ipAddress.startsWith('192.168.') &&
-            !ipAddress.startsWith('10.')) {
-          const geo = geoip.default.lookup(ipAddress);
+        if (ip !== 'unknown' && 
+            !ip.startsWith('127.') && 
+            !ip.startsWith('192.168.') &&
+            !ip.startsWith('10.')) {
+          const geo = geoip.default.lookup(ip);
           if (geo && geo.country) {
             country = geo.country;
           }
@@ -95,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create log entry for the navigation
       const logData = {
-        ipAddress,
+        ipAddress: ip,
         userAgent: req.headers['user-agent'] || 'unknown',
         path,
         timestamp: new Date(),
