@@ -18,6 +18,7 @@ interface BotLog {
   path: string | null;
   country: string | null;
   isBotConfirmed: boolean;
+  botType: string | null;
   bypassAttempt: boolean;
   source: string | null;
 }
@@ -729,17 +730,18 @@ const AdminPage = () => {
                       <TableHead>Path</TableHead>
                       <TableHead>Country</TableHead>
                       <TableHead>Bot</TableHead>
+                      <TableHead>BotType</TableHead>
                       <TableHead>Bypass</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">Loading...</TableCell>
+                        <TableCell colSpan={9} className="text-center py-8">Loading...</TableCell>
                       </TableRow>
                     ) : logs.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">No logs found</TableCell>
+                        <TableCell colSpan={9} className="text-center py-8">No logs found</TableCell>
                       </TableRow>
                     ) : (
                       logs.map((log) => (
@@ -753,6 +755,11 @@ const AdminPage = () => {
                           <TableCell>
                             <span className={log.isBotConfirmed ? 'text-red-500' : 'text-green-500'}>
                               {log.isBotConfirmed ? 'Yes' : 'No'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={log.botType ? 'text-blue-500' : 'text-gray-500'}>
+                              {log.botType || 'N/A'}
                             </span>
                           </TableCell>
                           <TableCell>
