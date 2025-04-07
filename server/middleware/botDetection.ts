@@ -138,11 +138,10 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
     return next();
   }
   
-  // If an unauthorized bot, block access
+  // If an unauthorized bot, redirect to paywall
   if (isBot && !authorized) {
-    return res.status(403).render('blocked', { 
-      reason: 'Unauthorized bot access is not permitted'
-    });
+    // Instead of blocking with 403, redirect to paywall
+    return res.redirect('/paywall?source=bot_detection&returnUrl=' + encodeURIComponent(req.originalUrl || req.url));
   }
   
   // If an authorized bot, check if path is allowed or needs paywall
