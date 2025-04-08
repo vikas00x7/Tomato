@@ -111,7 +111,7 @@ const AdminPage = () => {
     zoneId: '',
     isConfigured: false,
     skipValidation: process.env.NODE_ENV === 'development', // Default to skip validation in development
-    useMockMode: process.env.NODE_ENV === 'development'     // Default to mock mode in development
+    useMockMode: false     // Changed from 'process.env.NODE_ENV === 'development'' to false to disable mock mode
   });
   const [cloudflareLogs, setCloudflareLogs] = useState<CloudflareLog[]>([]);
   const [cloudflareLogsLoading, setCloudflareLogsLoading] = useState(false);
@@ -1177,10 +1177,8 @@ const AdminPage = () => {
           <div className="space-y-6">
             <Card className="p-6">
               <h2 className="text-2xl font-bold">Bot Protection Configuration</h2>
-              <p className="text-gray-500 mb-4">
-                Configure how the bot protection system works, including detection settings, 
-                challenge types, and custom messages.
-              </p>
+              <p className="text-gray-600">Configure how the bot protection system works, including detection settings, 
+                challenge types, and custom messages.</p>
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b pb-4">

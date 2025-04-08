@@ -1,0 +1,98 @@
+[
+  {
+    "timestamp": "2025-04-08T08:43:06.305Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:07.277Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:08.193Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:09.559Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:10.361Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/about",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:11.131Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/menu",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:18.719Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:24.725Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:27.939Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:30.895Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:31.591Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-08T08:43:32.168Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": false
+  }
+]
