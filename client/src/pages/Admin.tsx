@@ -69,7 +69,6 @@ interface CloudflareCredentials {
   zoneId: string;
   isConfigured?: boolean;
   skipValidation?: boolean;
-  useMockMode?: boolean;
 }
 
 interface CloudflareLog {
@@ -103,7 +102,6 @@ const AdminPage = () => {
   });
   const [cloudflareCredentials, setCloudflareCredentials] = useState<CloudflareCredentials & {
     skipValidation?: boolean;
-    useMockMode?: boolean;
   }>({
     apiKey: '',
     email: '',
@@ -111,7 +109,6 @@ const AdminPage = () => {
     zoneId: '',
     isConfigured: false,
     skipValidation: process.env.NODE_ENV === 'development', // Default to skip validation in development
-    useMockMode: false     // Changed from 'process.env.NODE_ENV === 'development'' to false to disable mock mode
   });
   const [cloudflareLogs, setCloudflareLogs] = useState<CloudflareLog[]>([]);
   const [cloudflareLogsLoading, setCloudflareLogsLoading] = useState(false);
@@ -1410,14 +1407,14 @@ const AdminPage = () => {
                         <input
                           type="checkbox"
                           className="sr-only peer"
-                          checked={cloudflareCredentials.useMockMode}
+                          checked={cloudflareCredentials.skipValidation}
                           onChange={(e) => setCloudflareCredentials({
                             ...cloudflareCredentials,
-                            useMockMode: e.target.checked
+                            skipValidation: e.target.checked
                           })}
                         />
                         <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900">Use Mock Data for Testing</span>
+                        <span className="ms-3 text-sm font-medium text-gray-900">Skip Validation</span>
                       </label>
                     </div>
                     
@@ -1623,20 +1620,6 @@ const AdminPage = () => {
                         />
                         <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         <span className="ms-3 text-sm font-medium text-gray-900">Skip Validation</span>
-                      </label>
-                      
-                      <label className="flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={cloudflareCredentials.useMockMode}
-                          onChange={(e) => setCloudflareCredentials({
-                            ...cloudflareCredentials,
-                            useMockMode: e.target.checked
-                          })}
-                        />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900">Use Mock Data</span>
                       </label>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">For testing without valid CloudFlare credentials</p>
@@ -2004,7 +1987,6 @@ const AdminPage = () => {
           isConfigured: true,
           // Preserve the development options
           skipValidation: cloudflareCredentials.skipValidation,
-          useMockMode: cloudflareCredentials.useMockMode
         });
       } else {
         // If no credentials returned, set as not configured but keep form values
@@ -2164,12 +2146,6 @@ const AdminPage = () => {
       
       if (cloudflareLogFilters.botScore) {
         params.append('botScore', cloudflareLogFilters.botScore);
-      }
-      
-      // Add mockMode=true for testing without real credentials
-      if (cloudflareCredentials.useMockMode) {
-        params.append('mockMode', 'true');
-        console.log('Using mock mode for CloudFlare logs');
       }
       
       params.append('page', cloudflareLogFilters.page.toString());
@@ -2373,35 +2349,35 @@ const AdminPage = () => {
           {/* Tabbed Navigation */}
           <div className="flex border-b mb-6">
             <button 
-              className={`px-4 py-2 font-medium flex items-center ${activeTab === 'analytics' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-4 py-2 font-medium ${activeTab === 'analytics' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('analytics')}
             >
               <PieChart className="w-4 h-4 mr-2" />
               Analytics
             </button>
             <button 
-              className={`px-4 py-2 font-medium flex items-center ${activeTab === 'logs' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-4 py-2 font-medium ${activeTab === 'logs' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('logs')}
             >
               <List className="w-4 h-4 mr-2" />
               Logs
             </button>
             <button 
-              className={`px-4 py-2 font-medium flex items-center ${activeTab === 'ip-management' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-4 py-2 font-medium ${activeTab === 'ip-management' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('ip-management')}
             >
               <Settings className="w-4 h-4 mr-2" />
               IP Management
             </button>
             <button 
-              className={`px-4 py-2 font-medium flex items-center ${activeTab === 'bot-policy' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-4 py-2 font-medium ${activeTab === 'bot-policy' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('bot-policy')}
             >
               <Shield className="w-4 h-4 mr-2" />
               Bot Policy
             </button>
             <button 
-              className={`px-4 py-2 font-medium flex items-center ${activeTab === 'cloudflare' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`px-4 py-2 font-medium ${activeTab === 'cloudflare' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('cloudflare')}
             >
               <FileText className="w-4 h-4 mr-2" />

@@ -1018,69 +1018,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get Cloudflare logs
   app.get('/api/cloudflare/logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Enable mock mode only when explicitly requested
-      const useMockMode = req.query.mockMode === 'true';
-      console.log('Using mock mode for CloudFlare logs:', useMockMode);
+      // Retrieve credentials
+      const credentials = await storage.getCloudflareCredentials();
       
-      // Only retrieve credentials if not using mock mode
-      let credentials = null;
-      if (!useMockMode) {
-        credentials = await storage.getCloudflareCredentials();
-        
-        if (!credentials) {
-          return res.status(400).json({ 
-            error: 'Cloudflare credentials not configured',
-            suggestion: 'Add ?mockMode=true to use mock data for testing'
-          });
-        }
+      if (!credentials) {
+        return res.status(400).json({ 
+          error: 'Cloudflare credentials not configured',
+          suggestion: 'Please configure your Cloudflare credentials in the settings'
+        });
       }
       
       // Extract query parameters
       const { startDate, endDate, limit = '100', page = '1', ipAddress, botScore } = req.query;
-      
-      // Use mock data
-      if (useMockMode) {
-        console.log('Generating mock CloudFlare logs');
-        
-        try {
-          // Generate mock logs
-          const mockLogs = generateMockCloudflareLogs(
-            parseInt(typeof limit === 'string' ? limit : '100'),
-            parseInt(typeof page === 'string' ? page : '1')
-          );
-          
-          // Apply IP filter on the server side if necessary
-          let filteredLogs = mockLogs;
-          if (ipAddress && typeof ipAddress === 'string') {
-            filteredLogs = mockLogs.filter(log => log.ipAddress === ipAddress);
-          }
-          
-          // Apply bot score filter if provided
-          if (botScore && typeof botScore === 'string') {
-            const score = parseInt(botScore);
-            if (!isNaN(score)) {
-              filteredLogs = filteredLogs.filter(log => log.botScore !== null && log.botScore <= score);
-            }
-          }
-          
-          // Return mock data
-          return res.status(200).json({
-            logs: filteredLogs,
-            pagination: {
-              page: parseInt(typeof page === 'string' ? page : '1'),
-              limit: parseInt(typeof limit === 'string' ? limit : '100'),
-              total: 250 // Mock total
-            }
-          });
-        } catch (mockError) {
-          // Even mock mode can fail if there's a code error
-          console.error('Error generating mock data:', mockError);
-          return res.status(500).json({ 
-            error: 'Failed to generate mock data', 
-            details: String(mockError)
-          });
-        }
-      }
       
       // Real mode - continue with actual CloudFlare API call
       try {
@@ -1095,16 +1044,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           params.append('since', yesterday.toISOString());
         }
         
-        if (endDate && typeof endDate === 'string') {
-          params.append('until', new Date(endDate).toISOString());
-        }
-        
-        // Pagination
-        params.append('limit', typeof limit === 'string' ? limit : '100');
-        params.append('page', typeof page === 'string' ? page : '1');
-        
         // Fetch logs from Cloudflare
-        const cfLogs = await fetchCloudflareSecurityEvents(credentials!, params);
+        const cfLogs = await fetchCloudflareSecurityEvents(credentials, params);
         
         // Transform logs to our format
         const transformedLogs = cfLogs.logs.map((log: CloudflareSecurityEvent) => {
@@ -1133,7 +1074,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           filteredLogs = transformedLogs.filter(log => log.ipAddress === ipAddress);
         }
         
-        // Apply bot score filter if necessary
+        // Apply bot score filter if provided
         if (botScore && typeof botScore === 'string') {
           const score = parseInt(botScore);
           if (!isNaN(score)) {
@@ -1220,7 +1161,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Build headers
       const headers: Record<string, string> = {
-        'Authorization': `Bearer ${credentials.apiKey}`,
+        'X-Auth-Key': credentials.apiKey,
         'Content-Type': 'application/json'
       };
       
@@ -1272,7 +1213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Build headers
       const headers: Record<string, string> = {
-        'Authorization': `Bearer ${credentials.apiKey}`,
+        'X-Auth-Key': credentials.apiKey,
         'Content-Type': 'application/json'
       };
       
@@ -1307,49 +1248,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error fetching Cloudflare security events:', error);
       throw error;
     }
-  }
-
-  // Helper function to generate mock CloudFlare logs for testing
-  function generateMockCloudflareLogs(limit: number = 100, page: number = 1): any[] {
-    const mockLogs = [];
-    const totalEntries = 250; // Total mock entries to simulate
-    const startIndex = (page - 1) * limit;
-    const endIndex = Math.min(startIndex + limit, totalEntries);
-    
-    const countries = ['US', 'GB', 'CA', 'IN', 'AU', 'DE', 'FR', 'JP', 'BR', 'RU'];
-    const actions = ['allow', 'challenge', 'block', 'jschallenge'];
-    const paths = ['/', '/about', '/blog', '/contact', '/pricing', '/api/data', '/login', '/dashboard', '/products', '/services'];
-    const botCategories = ['search_engine', 'crawler', 'scraper', 'automated', null];
-    
-    const now = new Date();
-    
-    // Generate mock log entries
-    for (let i = startIndex; i < endIndex; i++) {
-      const timestamp = new Date(now.getTime() - (i * 60000)); // Each entry 1 minute apart
-      const ipOctet3 = Math.floor(Math.random() * 255);
-      const ipOctet4 = Math.floor(Math.random() * 255);
-      
-      mockLogs.push({
-        id: `mock-${i}-${Date.now()}`,
-        timestamp: timestamp.toISOString(),
-        ipAddress: `192.168.${ipOctet3}.${ipOctet4}`,
-        userAgent: `Mozilla/5.0 (Mock Bot ${i})`,
-        path: paths[i % paths.length],
-        country: countries[i % countries.length],
-        action: actions[i % actions.length],
-        source: 'cloudflare',
-        botScore: Math.floor(Math.random() * 100),
-        botCategory: botCategories[i % botCategories.length],
-        method: i % 5 === 0 ? 'POST' : 'GET',
-        clientRequestId: `mockid-${i}`,
-        edgeResponseStatus: i % 10 === 0 ? 403 : 200,
-        edgeStartTimestamp: timestamp.toISOString(),
-        rayId: `mockray${i}`,
-        originResponseStatus: i % 20 === 0 ? 500 : 200
-      });
-    }
-    
-    return mockLogs;
   }
 
   // Start the server
