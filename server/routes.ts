@@ -1018,8 +1018,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get Cloudflare logs
   app.get('/api/cloudflare/logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Enable mock mode by default in development or when explicitly requested
-      const useMockMode = req.query.mockMode === 'true' || process.env.NODE_ENV === 'development';
+      // Enable mock mode only when explicitly requested
+      const useMockMode = req.query.mockMode === 'true';
       console.log('Using mock mode for CloudFlare logs:', useMockMode);
       
       // Only retrieve credentials if not using mock mode
@@ -1038,7 +1038,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract query parameters
       const { startDate, endDate, limit = '100', page = '1', ipAddress, botScore } = req.query;
       
-      // Use mock data in development or when explicitly requested
+      // Use mock data
       if (useMockMode) {
         console.log('Generating mock CloudFlare logs');
         
@@ -1049,7 +1049,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             parseInt(typeof page === 'string' ? page : '1')
           );
           
-          // Apply IP filter if provided
+          // Apply IP filter on the server side if necessary
           let filteredLogs = mockLogs;
           if (ipAddress && typeof ipAddress === 'string') {
             filteredLogs = mockLogs.filter(log => log.ipAddress === ipAddress);
@@ -1123,7 +1123,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             clientRequestId: log.clientRequestId || null,
             edgeResponseStatus: log.edgeResponseStatus ? parseInt(log.edgeResponseStatus) : null,
             edgeStartTimestamp: log.edgeStartTimestamp || null,
-            rayId: log.rayId || null,
             originResponseStatus: log.originResponseStatus ? parseInt(log.originResponseStatus) : null
           };
         });

@@ -2167,7 +2167,7 @@ const AdminPage = () => {
       }
       
       // Add mockMode=true for testing without real credentials
-      if (!cloudflareCredentials.isConfigured || cloudflareCredentials.useMockMode) {
+      if (cloudflareCredentials.useMockMode) {
         params.append('mockMode', 'true');
         console.log('Using mock mode for CloudFlare logs');
       }
