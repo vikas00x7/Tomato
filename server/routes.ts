@@ -1,8 +1,15 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBotLogSchema } from "@shared/schema";
+import { 
+  insertBotLogSchema, 
+  botPolicySchema, 
+  cloudflareCredentialsSchema, 
+  cloudflareLogSchema, 
+  type CloudflareCredentials 
+} from "@shared/schema";
 import { z } from "zod";
+import fetch from "node-fetch";
 
 // API Key validation middleware
 const validateApiKey = (req: Request, res: Response, next: Function) => {
@@ -48,8 +55,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const log = await storage.createBotLog(testLog);
       res.status(200).json({ success: true, log });
     } catch (error) {
-      console.error('Error creating test log:', error);
-      res.status(500).json({ error: 'Failed to create test log' });
+      console.error('Error adding test log:', error);
+      res.status(500).json({ error: 'Failed to add test log' });
     }
   });
 
@@ -245,6 +252,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endDate = req.query.endDate as string;
       const botStatus = req.query.botStatus as string;
       const bypassStatus = req.query.bypassStatus as string;
+      const botType = req.query.botType as string;
+      const ipAddress = req.query.ipAddress as string;
       
       // Apply filters if they exist
       let filteredLogs = [...logs];
@@ -255,6 +264,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (source) {
         filteredLogs = filteredLogs.filter(log => log.source === source);
+      }
+      
+      if (ipAddress) {
+        filteredLogs = filteredLogs.filter(log => log.ipAddress === ipAddress);
+      }
+      
+      if (botType) {
+        filteredLogs = filteredLogs.filter(log => log.botType === botType);
       }
       
       if (startDate) {
@@ -506,20 +523,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // API endpoint to get analytics data
-  app.get('/api/analytics', async (req: Request, res: Response) => {
+  app.get('/api/analytics', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Validate API key
-      const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
-      console.log('Validating API key:', req.query.key);
-      if (req.query.key !== apiKey) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-      
+      // Get all logs to generate analytics
       const logs = await storage.getLogs();
       
-      // Calculate analytics data
+      // Calculate analytics
       const analytics = {
-        // Total counts
         totalVisits: logs.length,
         uniqueIPs: new Set(logs.map(log => log.ipAddress)).size,
         botCount: logs.filter(log => log.isBotConfirmed).length,
@@ -528,53 +538,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Country distribution
         countryDistribution: logs.reduce((acc, log) => {
-          const country = log.country || 'unknown';
-          acc[country] = (acc[country] || 0) + 1;
+          if (log.country) {
+            acc[log.country] = (acc[log.country] || 0) + 1;
+          }
           return acc;
         }, {} as Record<string, number>),
         
-        // Page popularity
+        // Page visits
         pageVisits: logs.reduce((acc, log) => {
-          const path = log.path || 'unknown';
-          acc[path] = (acc[path] || 0) + 1;
+          if (log.path) {
+            acc[log.path] = (acc[log.path] || 0) + 1;
+          }
           return acc;
         }, {} as Record<string, number>),
         
-        // Traffic by source
+        // Source distribution
         sourceDistribution: logs.reduce((acc, log) => {
-          const source = log.source || 'unknown';
-          acc[source] = (acc[source] || 0) + 1;
+          if (log.source) {
+            acc[log.source] = (acc[log.source] || 0) + 1;
+          }
           return acc;
         }, {} as Record<string, number>),
         
-        // Traffic over time (daily)
+        // Daily traffic
         dailyTraffic: logs.reduce((acc, log) => {
           const date = new Date(log.timestamp).toISOString().split('T')[0];
           acc[date] = (acc[date] || 0) + 1;
           return acc;
         }, {} as Record<string, number>),
         
-        // Most active IP addresses
+        // Top IPs
         topIPs: Object.entries(
           logs.reduce((acc, log) => {
             acc[log.ipAddress] = (acc[log.ipAddress] || 0) + 1;
             return acc;
           }, {} as Record<string, number>)
         )
-          .sort(([, a], [, b]) => b - a)
+          .map(([ip, count]) => ({ ip, count }))
+          .sort((a, b) => b.count - a.count)
           .slice(0, 10)
-          .map(([ip, count]) => ({ ip, count })),
       };
       
-      res.json({ analytics });
+      res.status(200).json({ analytics });
     } catch (error) {
-      console.error('Error calculating analytics:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error generating analytics:', error);
+      res.status(500).json({ error: 'Failed to generate analytics' });
     }
   });
-  
+
   // API endpoint to export logs in various formats
-  app.get('/api/export-logs', async (req: Request, res: Response) => {
+  app.get('/api/export-logs', validateApiKey, async (req: Request, res: Response) => {
     try {
       // Validate API key
       const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
@@ -651,7 +664,713 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
+  // Get logs endpoint
+  app.get('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      let logs;
+      const { ipAddress, botType } = req.query;
+      
+      if (ipAddress && typeof ipAddress === 'string') {
+        // Filter logs by IP address
+        logs = await storage.getBotLogsByIp(ipAddress);
+      } else {
+        // Get all logs
+        logs = await storage.getLogs();
+      }
+      
+      // Apply botType filter if provided
+      if (botType && typeof botType === 'string') {
+        logs = logs.filter(log => log.botType === botType);
+      }
+      
+      res.status(200).json({ logs });
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+  });
 
-  return httpServer;
+  // Clear logs endpoint
+  app.delete('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      await storage.clearLogs();
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error clearing logs:', error);
+      res.status(500).json({ error: 'Failed to clear logs' });
+    }
+  });
+
+  // Add a log endpoint
+  app.post('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Extract IP from request (if available through a forwarded header)
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      
+      // We need to make sure ipAddress is always a string
+      const ipAddress = typeof ip === 'string' ? ip : Array.isArray(ip) ? ip[0] : 'unknown';
+      
+      // Merge request data with the IP address
+      const logData = {
+        ...req.body,
+        ipAddress,
+        timestamp: new Date(),
+      };
+      
+      // Validate the data against our schema
+      const validatedData = insertBotLogSchema.parse(logData);
+      
+      // Store the log in our database
+      const log = await storage.createBotLog(validatedData);
+      
+      // Return success
+      res.status(200).json({ success: true, id: log.id });
+    } catch (error) {
+      console.error('Error adding log:', error);
+      res.status(500).json({ error: 'Failed to add log', details: error });
+    }
+  });
+  
+  // ===== IP BLACKLIST ENDPOINTS =====
+  
+  // Get IP blacklist
+  app.get('/api/ip-blacklist', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const blacklist = await storage.getIPBlacklist();
+      res.status(200).json({ blacklist });
+    } catch (error) {
+      console.error('Error fetching IP blacklist:', error);
+      res.status(500).json({ error: 'Failed to fetch IP blacklist' });
+    }
+  });
+  
+  // Add IP to blacklist
+  app.post('/api/ip-blacklist', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { ipAddress, reason } = req.body;
+      
+      if (!ipAddress) {
+        return res.status(400).json({ error: 'IP address is required' });
+      }
+      
+      await storage.addToIPBlacklist(ipAddress, reason);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error adding IP to blacklist:', error);
+      res.status(500).json({ error: 'Failed to add IP to blacklist' });
+    }
+  });
+  
+  // Remove IP from blacklist
+  app.delete('/api/ip-blacklist/:ipAddress', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { ipAddress } = req.params;
+      
+      if (!ipAddress) {
+        return res.status(400).json({ error: 'IP address is required' });
+      }
+      
+      await storage.removeFromIPBlacklist(ipAddress);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error removing IP from blacklist:', error);
+      res.status(500).json({ error: 'Failed to remove IP from blacklist' });
+    }
+  });
+  
+  // ===== IP WHITELIST ENDPOINTS =====
+  
+  // Get IP whitelist
+  app.get('/api/ip-whitelist', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const whitelist = await storage.getIPWhitelist();
+      res.status(200).json({ whitelist });
+    } catch (error) {
+      console.error('Error fetching IP whitelist:', error);
+      res.status(500).json({ error: 'Failed to fetch IP whitelist' });
+    }
+  });
+  
+  // Add IP to whitelist
+  app.post('/api/ip-whitelist', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { ipAddress, reason } = req.body;
+      
+      if (!ipAddress) {
+        return res.status(400).json({ error: 'IP address is required' });
+      }
+      
+      await storage.addToIPWhitelist(ipAddress, reason);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error adding IP to whitelist:', error);
+      res.status(500).json({ error: 'Failed to add IP to whitelist' });
+    }
+  });
+  
+  // Remove IP from whitelist
+  app.delete('/api/ip-whitelist/:ipAddress', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { ipAddress } = req.params;
+      
+      if (!ipAddress) {
+        return res.status(400).json({ error: 'IP address is required' });
+      }
+      
+      await storage.removeFromIPWhitelist(ipAddress);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error removing IP from whitelist:', error);
+      res.status(500).json({ error: 'Failed to remove IP from whitelist' });
+    }
+  });
+  
+  // ===== BOT POLICY ENDPOINTS =====
+  
+  // Get bot policy
+  app.get('/api/bot-policy', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const policy = await storage.getBotPolicy();
+      res.status(200).json({ policy });
+    } catch (error) {
+      console.error('Error fetching bot policy:', error);
+      res.status(500).json({ error: 'Failed to fetch bot policy' });
+    }
+  });
+  
+  // Update bot policy
+  app.post('/api/bot-policy', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { policy } = req.body;
+      
+      if (!policy) {
+        return res.status(400).json({ error: 'Policy is required' });
+      }
+      
+      // Validate policy against schema
+      const validatedPolicy = botPolicySchema.parse(policy);
+      
+      await storage.updateBotPolicy(validatedPolicy);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error updating bot policy:', error);
+      res.status(500).json({ error: 'Failed to update bot policy', details: error });
+    }
+  });
+  
+  // ===== ANALYTICS ENDPOINT =====
+  
+  // Get analytics data
+  app.get('/api/analytics', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Get all logs to generate analytics
+      const logs = await storage.getLogs();
+      
+      // Calculate analytics
+      const analytics = {
+        totalVisits: logs.length,
+        uniqueIPs: new Set(logs.map(log => log.ipAddress)).size,
+        botCount: logs.filter(log => log.isBotConfirmed).length,
+        humanCount: logs.filter(log => !log.isBotConfirmed).length,
+        bypassAttempts: logs.filter(log => log.bypassAttempt).length,
+        
+        // Country distribution
+        countryDistribution: logs.reduce((acc, log) => {
+          if (log.country) {
+            acc[log.country] = (acc[log.country] || 0) + 1;
+          }
+          return acc;
+        }, {} as Record<string, number>),
+        
+        // Page visits
+        pageVisits: logs.reduce((acc, log) => {
+          if (log.path) {
+            acc[log.path] = (acc[log.path] || 0) + 1;
+          }
+          return acc;
+        }, {} as Record<string, number>),
+        
+        // Source distribution
+        sourceDistribution: logs.reduce((acc, log) => {
+          if (log.source) {
+            acc[log.source] = (acc[log.source] || 0) + 1;
+          }
+          return acc;
+        }, {} as Record<string, number>),
+        
+        // Daily traffic
+        dailyTraffic: logs.reduce((acc, log) => {
+          const date = new Date(log.timestamp).toISOString().split('T')[0];
+          acc[date] = (acc[date] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+        
+        // Top IPs
+        topIPs: Object.entries(
+          logs.reduce((acc, log) => {
+            acc[log.ipAddress] = (acc[log.ipAddress] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        )
+          .map(([ip, count]) => ({ ip, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 10)
+      };
+      
+      res.status(200).json({ analytics });
+    } catch (error) {
+      console.error('Error generating analytics:', error);
+      res.status(500).json({ error: 'Failed to generate analytics' });
+    }
+  });
+
+  // ===== CLOUDFLARE ENDPOINTS =====
+
+  // Get Cloudflare credentials
+  app.get('/api/cloudflare/credentials', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const credentials = await storage.getCloudflareCredentials();
+      
+      // Only return if credentials exist, mask the API key for security
+      if (credentials) {
+        const { apiKey, ...rest } = credentials;
+        const maskedKey = apiKey.substring(0, 4) + '********' + apiKey.substring(apiKey.length - 4);
+        res.status(200).json({ 
+          credentials: { 
+            ...rest, 
+            apiKey: maskedKey,
+            isConfigured: true
+          } 
+        });
+      } else {
+        res.status(200).json({ credentials: { isConfigured: false } });
+      }
+    } catch (error) {
+      console.error('Error fetching Cloudflare credentials:', error);
+      res.status(500).json({ error: 'Failed to fetch Cloudflare credentials' });
+    }
+  });
+
+  // Save Cloudflare credentials
+  app.post('/api/cloudflare/credentials', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { credentials } = req.body;
+      
+      if (!credentials) {
+        return res.status(400).json({ error: 'Credentials are required' });
+      }
+      
+      // Option to bypass validation for testing
+      const skipValidation = req.query.skipValidation === 'true' || process.env.NODE_ENV === 'development';
+      console.log('Skip validation mode:', skipValidation);
+      
+      try {
+        // Validate credentials against schema
+        const validatedCredentials = cloudflareCredentialsSchema.parse(credentials);
+        
+        if (!skipValidation) {
+          // Test the credentials before saving them
+          const testResult = await testCloudflareCredentials(validatedCredentials);
+          
+          if (!testResult.success) {
+            return res.status(400).json({ 
+              error: 'Invalid Cloudflare credentials', 
+              details: testResult.error,
+              suggestion: 'Verify your API key and zone ID or add ?skipValidation=true to bypass this check for testing.'
+            });
+          }
+        }
+        
+        // Save the credentials
+        await storage.saveCloudflareCredentials(validatedCredentials);
+        res.status(200).json({ success: true });
+      } catch (validationError) {
+        console.error('Validation error:', validationError);
+        if (validationError instanceof z.ZodError) {
+          return res.status(400).json({ 
+            error: 'Invalid credential format', 
+            details: validationError.errors,
+            suggestion: 'Check the format of your API key and zone ID. Use skipValidation=true parameter to bypass strict validation.'
+          });
+        }
+        throw validationError;
+      }
+    } catch (error) {
+      console.error('Error saving Cloudflare credentials:', error);
+      res.status(500).json({ 
+        error: 'Failed to save Cloudflare credentials',
+        suggestion: 'Try using skipValidation=true for testing'
+      });
+    }
+  });
+
+  // Delete Cloudflare credentials
+  app.delete('/api/cloudflare/credentials', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      await storage.clearCloudflareCredentials();
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error deleting Cloudflare credentials:', error);
+      res.status(500).json({ error: 'Failed to delete Cloudflare credentials' });
+    }
+  });
+
+  // Get Cloudflare logs
+  app.get('/api/cloudflare/logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Enable mock mode by default in development or when explicitly requested
+      const useMockMode = req.query.mockMode === 'true' || process.env.NODE_ENV === 'development';
+      console.log('Using mock mode for CloudFlare logs:', useMockMode);
+      
+      // Only retrieve credentials if not using mock mode
+      let credentials = null;
+      if (!useMockMode) {
+        credentials = await storage.getCloudflareCredentials();
+        
+        if (!credentials) {
+          return res.status(400).json({ 
+            error: 'Cloudflare credentials not configured',
+            suggestion: 'Add ?mockMode=true to use mock data for testing'
+          });
+        }
+      }
+      
+      // Extract query parameters
+      const { startDate, endDate, limit = '100', page = '1', ipAddress, botScore } = req.query;
+      
+      // Use mock data in development or when explicitly requested
+      if (useMockMode) {
+        console.log('Generating mock CloudFlare logs');
+        
+        try {
+          // Generate mock logs
+          const mockLogs = generateMockCloudflareLogs(
+            parseInt(typeof limit === 'string' ? limit : '100'),
+            parseInt(typeof page === 'string' ? page : '1')
+          );
+          
+          // Apply IP filter if provided
+          let filteredLogs = mockLogs;
+          if (ipAddress && typeof ipAddress === 'string') {
+            filteredLogs = mockLogs.filter(log => log.ipAddress === ipAddress);
+          }
+          
+          // Apply bot score filter if provided
+          if (botScore && typeof botScore === 'string') {
+            const score = parseInt(botScore);
+            if (!isNaN(score)) {
+              filteredLogs = filteredLogs.filter(log => log.botScore !== null && log.botScore <= score);
+            }
+          }
+          
+          // Return mock data
+          return res.status(200).json({
+            logs: filteredLogs,
+            pagination: {
+              page: parseInt(typeof page === 'string' ? page : '1'),
+              limit: parseInt(typeof limit === 'string' ? limit : '100'),
+              total: 250 // Mock total
+            }
+          });
+        } catch (mockError) {
+          // Even mock mode can fail if there's a code error
+          console.error('Error generating mock data:', mockError);
+          return res.status(500).json({ 
+            error: 'Failed to generate mock data', 
+            details: String(mockError)
+          });
+        }
+      }
+      
+      // Real mode - continue with actual CloudFlare API call
+      try {
+        // Build params for Cloudflare API
+        const params = new URLSearchParams();
+        if (startDate && typeof startDate === 'string') {
+          params.append('since', new Date(startDate).toISOString());
+        } else {
+          // Default to last 24 hours if not specified
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          params.append('since', yesterday.toISOString());
+        }
+        
+        if (endDate && typeof endDate === 'string') {
+          params.append('until', new Date(endDate).toISOString());
+        }
+        
+        // Pagination
+        params.append('limit', typeof limit === 'string' ? limit : '100');
+        params.append('page', typeof page === 'string' ? page : '1');
+        
+        // Fetch logs from Cloudflare
+        const cfLogs = await fetchCloudflareSecurityEvents(credentials!, params);
+        
+        // Transform logs to our format
+        const transformedLogs = cfLogs.logs.map((log: CloudflareSecurityEvent) => {
+          return {
+            id: log.rayId || String(Date.now() + Math.random()),
+            timestamp: log.timestamp || new Date().toISOString(),
+            ipAddress: log.clientIP || 'unknown',
+            userAgent: log.userAgent || null,
+            path: log.uri || null,
+            country: log.clientCountry || null,
+            action: log.action || null,
+            source: 'cloudflare',
+            botScore: log.clientAsn ? parseInt(log.clientAsn) : null, // Using ASN as a placeholder, real implementation would use score
+            botCategory: log.securityLevel || null,
+            method: log.method || null,
+            clientRequestId: log.clientRequestId || null,
+            edgeResponseStatus: log.edgeResponseStatus ? parseInt(log.edgeResponseStatus) : null,
+            edgeStartTimestamp: log.edgeStartTimestamp || null,
+            rayId: log.rayId || null,
+            originResponseStatus: log.originResponseStatus ? parseInt(log.originResponseStatus) : null
+          };
+        });
+        
+        // Apply IP filter on the server side if necessary
+        let filteredLogs = transformedLogs;
+        if (ipAddress && typeof ipAddress === 'string') {
+          filteredLogs = transformedLogs.filter(log => log.ipAddress === ipAddress);
+        }
+        
+        // Apply bot score filter if necessary
+        if (botScore && typeof botScore === 'string') {
+          const score = parseInt(botScore);
+          if (!isNaN(score)) {
+            filteredLogs = filteredLogs.filter(log => log.botScore !== null && log.botScore <= score);
+          }
+        }
+        
+        res.status(200).json({ 
+          logs: filteredLogs,
+          pagination: {
+            page: parseInt(typeof page === 'string' ? page : '1'),
+            limit: parseInt(typeof limit === 'string' ? limit : '100'),
+            total: cfLogs.total || filteredLogs.length
+          }
+        });
+      } catch (apiError) {
+        console.error('Error in CloudFlare API call:', apiError);
+        // Respond with suggestion to use mock mode
+        return res.status(502).json({ 
+          error: 'Failed to fetch CloudFlare logs',
+          details: String(apiError),
+          suggestion: 'Try using mockMode=true for testing without valid credentials'
+        });
+      }
+    } catch (error) {
+      console.error('Error in CloudFlare logs endpoint:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch Cloudflare logs', 
+        details: String(error),
+        suggestion: 'Try using mockMode=true for testing without valid credentials'
+      });
+    }
+  });
+
+  // Import Cloudflare logs to local storage
+  app.post('/api/cloudflare/import-logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { logs } = req.body;
+      
+      if (!logs || !Array.isArray(logs) || logs.length === 0) {
+        return res.status(400).json({ error: 'Logs are required and must be an array' });
+      }
+      
+      let importedCount = 0;
+      const errors: string[] = [];
+      
+      // Process each log and add to local storage
+      for (const cloudflareLog of logs) {
+        try {
+          const log = {
+            ipAddress: cloudflareLog.ipAddress,
+            userAgent: cloudflareLog.userAgent,
+            path: cloudflareLog.path,
+            country: cloudflareLog.country,
+            isBotConfirmed: true, // Assume all imported Cloudflare logs are from bots
+            botType: cloudflareLog.botCategory || 'unknown',
+            source: 'cloudflare-import',
+            timestamp: new Date(cloudflareLog.timestamp)
+          };
+          
+          await storage.createBotLog(log);
+          importedCount++;
+        } catch (err) {
+          errors.push(String(err));
+        }
+      }
+      
+      res.status(200).json({ 
+        success: true, 
+        importedCount,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error('Error importing Cloudflare logs:', error);
+      res.status(500).json({ error: 'Failed to import Cloudflare logs' });
+    }
+  });
+
+  // Test Cloudflare credentials before saving
+  async function testCloudflareCredentials(credentials: CloudflareCredentials): Promise<{ success: boolean, error?: string }> {
+    try {
+      // Build the URL for a simple API request to test credentials - zone details is a good test
+      const url = `https://api.cloudflare.com/client/v4/zones/${credentials.zoneId}`;
+      
+      // Build headers
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${credentials.apiKey}`,
+        'Content-Type': 'application/json'
+      };
+      
+      // Add email if provided (required for Global API keys)
+      if (credentials.email) {
+        headers['X-Auth-Email'] = credentials.email;
+      }
+      
+      // Make a test request to Cloudflare
+      const response = await fetch(url, { method: 'GET', headers });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Parse the error response
+        let errorMessage = data.errors && data.errors.length > 0
+          ? data.errors.map((e: any) => e.message).join(', ')
+          : 'Unknown error';
+        
+        // Return with detailed error
+        return { 
+          success: false, 
+          error: `Cloudflare API Error (${response.status}): ${errorMessage}` 
+        };
+      }
+      
+      // Check for successful result
+      if (!data.success) {
+        return { 
+          success: false, 
+          error: 'Cloudflare API reported an unsuccessful result' 
+        };
+      }
+      
+      return { success: true };
+    } catch (error) {
+      // Handle fetch/network/parsing errors
+      return { 
+        success: false, 
+        error: `Connection error: ${error instanceof Error ? error.message : String(error)}` 
+      };
+    }
+  }
+
+  // Fetch Cloudflare security events
+  async function fetchCloudflareSecurityEvents(credentials: CloudflareCredentials, params: URLSearchParams): Promise<{ logs: CloudflareSecurityEvent[], total: number }> {
+    try {
+      // Build the URL
+      const url = `https://api.cloudflare.com/client/v4/zones/${credentials.zoneId}/security/events?${params.toString()}`;
+      
+      // Build headers
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${credentials.apiKey}`,
+        'Content-Type': 'application/json'
+      };
+      
+      // Add email if provided (required for Global API keys)
+      if (credentials.email) {
+        headers['X-Auth-Email'] = credentials.email;
+      }
+      
+      // Make the request to Cloudflare
+      const response = await fetch(url, { method: 'GET', headers });
+      
+      if (!response.ok) {
+        throw new Error(`Cloudflare API Error (${response.status}): ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Validate response
+      if (!data.success) {
+        const errors = data.errors && data.errors.length > 0
+          ? data.errors.map((e: any) => e.message).join(', ')
+          : 'Unknown error';
+        throw new Error(`Cloudflare API Error: ${errors}`);
+      }
+      
+      // Return formatted logs
+      return {
+        logs: data.result || [],
+        total: data.result_info?.total_count || 0
+      };
+    } catch (error) {
+      console.error('Error fetching Cloudflare security events:', error);
+      throw error;
+    }
+  }
+
+  // Helper function to generate mock CloudFlare logs for testing
+  function generateMockCloudflareLogs(limit: number = 100, page: number = 1): any[] {
+    const mockLogs = [];
+    const totalEntries = 250; // Total mock entries to simulate
+    const startIndex = (page - 1) * limit;
+    const endIndex = Math.min(startIndex + limit, totalEntries);
+    
+    const countries = ['US', 'GB', 'CA', 'IN', 'AU', 'DE', 'FR', 'JP', 'BR', 'RU'];
+    const actions = ['allow', 'challenge', 'block', 'jschallenge'];
+    const paths = ['/', '/about', '/blog', '/contact', '/pricing', '/api/data', '/login', '/dashboard', '/products', '/services'];
+    const botCategories = ['search_engine', 'crawler', 'scraper', 'automated', null];
+    
+    const now = new Date();
+    
+    // Generate mock log entries
+    for (let i = startIndex; i < endIndex; i++) {
+      const timestamp = new Date(now.getTime() - (i * 60000)); // Each entry 1 minute apart
+      const ipOctet3 = Math.floor(Math.random() * 255);
+      const ipOctet4 = Math.floor(Math.random() * 255);
+      
+      mockLogs.push({
+        id: `mock-${i}-${Date.now()}`,
+        timestamp: timestamp.toISOString(),
+        ipAddress: `192.168.${ipOctet3}.${ipOctet4}`,
+        userAgent: `Mozilla/5.0 (Mock Bot ${i})`,
+        path: paths[i % paths.length],
+        country: countries[i % countries.length],
+        action: actions[i % actions.length],
+        source: 'cloudflare',
+        botScore: Math.floor(Math.random() * 100),
+        botCategory: botCategories[i % botCategories.length],
+        method: i % 5 === 0 ? 'POST' : 'GET',
+        clientRequestId: `mockid-${i}`,
+        edgeResponseStatus: i % 10 === 0 ? 403 : 200,
+        edgeStartTimestamp: timestamp.toISOString(),
+        rayId: `mockray${i}`,
+        originResponseStatus: i % 20 === 0 ? 500 : 200
+      });
+    }
+    
+    return mockLogs;
+  }
+
+  // Start the server
+  return createServer(app);
+}
+
+// Interface for Cloudflare security event log entry
+interface CloudflareSecurityEvent {
+  rayId?: string;
+  timestamp?: string;
+  clientIP?: string;
+  userAgent?: string;
+  uri?: string;
+  clientCountry?: string;
+  action?: string;
+  clientAsn?: string;
+  securityLevel?: string;
+  method?: string;
+  clientRequestId?: string;
+  edgeResponseStatus?: string;
+  edgeStartTimestamp?: string;
+  originResponseStatus?: string;
 }

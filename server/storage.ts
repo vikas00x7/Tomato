@@ -4,7 +4,8 @@ import {
   type InsertUser,
   botLogs,
   type BotLog,
-  type InsertBotLog
+  type InsertBotLog,
+  type CloudflareCredentials
 } from "@shared/schema";
 import * as fs from 'fs';
 import * as path from 'path';
@@ -58,6 +59,11 @@ export interface IStorage {
   // Bot policy methods
   getBotPolicy(): Promise<BotPolicy>;
   updateBotPolicy(policy: BotPolicy): Promise<void>;
+  
+  // CloudFlare methods
+  getCloudflareCredentials(): Promise<CloudflareCredentials | null>;
+  saveCloudflareCredentials(credentials: CloudflareCredentials): Promise<void>;
+  clearCloudflareCredentials(): Promise<void>;
 }
 
 // File Storage implementation for bot logs
@@ -67,6 +73,7 @@ export class FileStorage implements IStorage {
   private blacklistFilePath: string;
   private whitelistFilePath: string;
   private botPolicyFilePath: string;
+  private cloudflareCredentialsFilePath: string;
   private userCurrentId: number;
   private botLogCurrentId: number;
 
@@ -75,13 +82,15 @@ export class FileStorage implements IStorage {
     userFilePath = 'users.json',
     blacklistFilePath = 'logs/ip_blacklist.json',
     whitelistFilePath = 'logs/ip_whitelist.json',
-    botPolicyFilePath = 'logs/bot_policy.json'
+    botPolicyFilePath = 'logs/bot_policy.json',
+    cloudflareCredentialsFilePath = 'logs/cloudflare_credentials.json'
   ) {
     this.logFilePath = path.resolve(process.cwd(), logFilePath);
     this.userFilePath = path.resolve(process.cwd(), userFilePath);
     this.blacklistFilePath = path.resolve(process.cwd(), blacklistFilePath);
     this.whitelistFilePath = path.resolve(process.cwd(), whitelistFilePath);
     this.botPolicyFilePath = path.resolve(process.cwd(), botPolicyFilePath);
+    this.cloudflareCredentialsFilePath = path.resolve(process.cwd(), cloudflareCredentialsFilePath);
     
     this.ensureFilesExist();
     
@@ -137,6 +146,11 @@ export class FileStorage implements IStorage {
         }
       };
       fs.writeFileSync(this.botPolicyFilePath, JSON.stringify(defaultPolicy, null, 2));
+    }
+    
+    // Ensure cloudflare credentials file exists
+    if (!fs.existsSync(this.cloudflareCredentialsFilePath)) {
+      fs.writeFileSync(this.cloudflareCredentialsFilePath, JSON.stringify(null));
     }
   }
 
@@ -281,6 +295,7 @@ export class FileStorage implements IStorage {
       fingerprint: insertLog.fingerprint || null,
       headers: insertLog.headers || null,
       referrer: insertLog.referrer || null,
+      botType: insertLog.botType || null,
       bypassAttempt: insertLog.bypassAttempt !== undefined ? insertLog.bypassAttempt : false,
       source: insertLog.source || null
     };
@@ -486,6 +501,37 @@ export class FileStorage implements IStorage {
   
   async updateBotPolicy(policy: BotPolicy): Promise<void> {
     this.writeBotPolicy(policy);
+  }
+  
+  // CloudFlare methods
+  async getCloudflareCredentials(): Promise<CloudflareCredentials | null> {
+    try {
+      const fileContent = fs.readFileSync(this.cloudflareCredentialsFilePath, 'utf-8');
+      const credentials = JSON.parse(fileContent);
+      return credentials;
+    } catch (error) {
+      console.error('Error reading CloudFlare credentials file:', error);
+      return null;
+    }
+  }
+  
+  async saveCloudflareCredentials(credentials: CloudflareCredentials): Promise<void> {
+    try {
+      // Encrypt or further secure these credentials in a production environment
+      fs.writeFileSync(this.cloudflareCredentialsFilePath, JSON.stringify(credentials, null, 2));
+    } catch (error) {
+      console.error('Error writing CloudFlare credentials to file:', error);
+      throw new Error('Failed to save CloudFlare credentials');
+    }
+  }
+  
+  async clearCloudflareCredentials(): Promise<void> {
+    try {
+      fs.writeFileSync(this.cloudflareCredentialsFilePath, JSON.stringify(null));
+    } catch (error) {
+      console.error('Error clearing CloudFlare credentials:', error);
+      throw new Error('Failed to clear CloudFlare credentials');
+    }
   }
 }
 
