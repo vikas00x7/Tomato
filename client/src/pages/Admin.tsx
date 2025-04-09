@@ -549,15 +549,18 @@ const AdminPage = () => {
                   <p>Loading chart data...</p>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={300}>
-                  <RechartPieChart>
+                <ResponsiveContainer width="100%" height={350}>
+                  <RechartPieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                     <Pie
                       data={sourceDistributionData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={120}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      labelLine={false}
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={2}
+                      cornerRadius={3}
+                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                      labelLine={true}
                       fill="#8884d8"
                       dataKey="value"
                     >
@@ -565,8 +568,8 @@ const AdminPage = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip formatter={(value, name) => [`${value} visits`, name]} />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                   </RechartPieChart>
                 </ResponsiveContainer>
               )}
