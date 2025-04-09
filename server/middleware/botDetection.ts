@@ -169,6 +169,11 @@ export const detectBot = (req: Request): {
   // Determine if this is a bot based on confidence threshold
   const isBot = confidence >= CONFIDENCE.THRESHOLD;
   
+  // Set explicit botType for humans if none was set but we confirmed it's not a bot
+  if (!isBot && !botType) {
+    botType = 'human';
+  }
+  
   return { 
     isBot, 
     authorized: isAuthorizedBot,

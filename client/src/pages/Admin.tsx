@@ -305,10 +305,124 @@ const AdminPage = () => {
     }
   };
 
+  // Clear system logs (admin, dev paths)
+  const clearSystemLogs = async () => {
+    if (!isAuthenticated) return;
+    
+    if (!confirm('This will remove all logs for admin and development paths. Continue?')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      toast({
+        title: "Processing",
+        description: "Clearing system logs...",
+      });
+      
+      const response = await fetch(`/api/clear-system-logs?key=${encodeURIComponent(apiKey.trim())}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey.trim()
+        }
+      });
+      
+      if (response.status === 401) {
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid API key. Please check and try again.",
+          variant: "destructive"
+        });
+        setIsAuthenticated(false);
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error('Failed to clear system logs');
+      }
+      
+      toast({
+        title: "Success",
+        description: "System logs have been cleared.",
+      });
+      
+      // Refresh logs
+      fetchLogs(true);
+    } catch (error) {
+      console.error('Error clearing system logs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear system logs.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
+  };
+
+  // Format path for display
+  const formatPath = (path: string | null): string => {
+    if (!path) return 'N/A';
+    
+    // Format root path
+    if (path === '/') return 'home';
+    
+    // Format API paths
+    if (path.startsWith('/api/')) return `API: ${path.substring(5)}`;
+    
+    // Format Vite/dev paths
+    if (path.startsWith('/@')) return `Dev: ${path}`;
+    
+    return path;
+  };
+
+  // Format bot type for display
+  const formatBotType = (botType: string | null): string => {
+    if (!botType) return 'N/A';
+    
+    // Map technical bot types to user-friendly descriptions
+    const botTypeMap: Record<string, string> = {
+      'search_engine': 'Search Engine Bot',
+      'crawler': 'Web Crawler',
+      'automation': 'Automation Tool',
+      'generic_bot': 'Generic Bot',
+      'ai_assistant': 'AI Assistant',
+      'scraping_tool': 'Scraping Tool',
+      'possible_ai': 'Potential AI User',
+      'timing_anomaly': 'Behavioral Anomaly',
+      'authorized_bot': 'Authorized Bot',
+      'human': 'Human Visitor',
+      'unknown': 'Unknown'
+    };
+    
+    return botTypeMap[botType] || botType;
+  };
+
+  // Get color class for bot type
+  const getBotTypeColorClass = (botType: string | null): string => {
+    if (!botType) return 'text-gray-500';
+    
+    // Color mapping for different bot types
+    if (['search_engine', 'authorized_bot'].includes(botType)) {
+      return 'text-green-600 font-medium'; // Known good bots
+    } else if (['crawler', 'scraping_tool'].includes(botType)) {
+      return 'text-amber-600 font-medium'; // Neutral bots
+    } else if (['automation', 'timing_anomaly', 'possible_ai'].includes(botType)) {
+      return 'text-blue-600 font-medium'; // Potentially suspicious
+    } else if (['ai_assistant', 'generic_bot'].includes(botType)) {
+      return 'text-purple-600 font-medium'; // AI-related
+    } else if (botType === 'human') {
+      return 'text-green-700 font-medium'; // Human visitors
+    }
+    
+    return 'text-gray-600'; // Default for unknown types
   };
 
   // Handle authentication
@@ -360,7 +474,7 @@ const AdminPage = () => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([path, count]) => ({
-        name: path === 'unknown' ? '/' : path,
+        name: formatPath(path),
         visits: count
       }));
   }, [analytics?.pageVisits]);
@@ -640,48 +754,34 @@ const AdminPage = () => {
       case 'logs':
         return (
           <>
-            <div className="flex items-center mb-4 gap-4 flex-wrap">
-              <Card className="p-4 flex items-center gap-2">
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="Filter by IP address" 
-                    value={ipFilter}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIpFilter(e.target.value)}
-                    className="w-64"
-                  />
-                  <Button onClick={handleFilterByIp} disabled={loading}>
-                    {loading ? 'Loading...' : 'Filter'}
-                  </Button>
-                  <Button onClick={() => {setIpFilter(''); fetchLogs()}} variant="outline" disabled={loading}>
-                    Clear
-                  </Button>
-                  <Button onClick={clearAllLogs} variant="destructive" disabled={loading}>
-                    Clear All Logs
-                  </Button>
-                </div>
-              </Card>
-              
-              <div className="ml-auto flex gap-2 items-center">
-                <div className="flex items-center mr-2">
-                  <input
-                    type="checkbox"
-                    id="autoRefresh"
-                    checked={true}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {}}
-                    className="mr-2"
-                  />
-                  <label htmlFor="autoRefresh" className="text-sm">Auto-refresh</label>
-                </div>
-                <Button 
-                  onClick={() => fetchLogs(true)}
-                  variant="outline"
-                  disabled={loading}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  {loading ? 'Refreshing...' : 'Refresh Logs'}
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex space-x-2">
+                <Button onClick={() => fetchLogs(true)} disabled={loading} variant="outline" size="sm">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
                 </Button>
-                <Button onClick={exportLogs}>
+                <Button onClick={exportLogs} disabled={loading} variant="outline" size="sm">
                   Export Logs
+                </Button>
+                <Button onClick={clearSystemLogs} disabled={loading} variant="outline" size="sm" className="text-orange-600 border-orange-200 hover:bg-orange-50">
+                  Clear System Logs
+                </Button>
+                <Button onClick={clearAllLogs} disabled={loading} variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                  Clear All
+                </Button>
+              </div>
+              <div className="flex space-x-2">
+                <Input 
+                  placeholder="Filter by IP address" 
+                  value={ipFilter}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIpFilter(e.target.value)}
+                  className="w-64"
+                />
+                <Button onClick={handleFilterByIp} disabled={loading}>
+                  {loading ? 'Loading...' : 'Filter'}
+                </Button>
+                <Button onClick={() => {setIpFilter(''); fetchLogs()}} variant="outline" disabled={loading}>
+                  Clear
                 </Button>
               </div>
             </div>
@@ -718,7 +818,7 @@ const AdminPage = () => {
                           <TableCell>{formatDate(log.timestamp)}</TableCell>
                           <TableCell>{log.ipAddress}</TableCell>
                           <TableCell>{log.source || 'N/A'}</TableCell>
-                          <TableCell>{log.path || 'N/A'}</TableCell>
+                          <TableCell>{formatPath(log.path)}</TableCell>
                           <TableCell>{log.country || 'N/A'}</TableCell>
                           <TableCell>
                             <span className={log.isBotConfirmed ? 'text-red-500' : 'text-green-500'}>
@@ -726,8 +826,8 @@ const AdminPage = () => {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <span className={log.botType ? 'text-blue-500' : 'text-gray-500'}>
-                              {log.botType || 'N/A'}
+                            <span className={getBotTypeColorClass(log.botType)}>
+                              {formatBotType(log.botType)}
                             </span>
                           </TableCell>
                           <TableCell>

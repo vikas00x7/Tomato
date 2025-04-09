@@ -136,6 +136,17 @@ export const useFingerprint = () => {
   // Log fingerprint to server
   const logFingerprintToServer = async (data: FingerprintResult) => {
     try {
+      // Skip logging for admin and development paths
+      const currentPath = window.location.pathname;
+      if (currentPath === '/admin' || 
+          currentPath.startsWith('/@vite') || 
+          currentPath.startsWith('/@react-refresh') ||
+          currentPath.includes('vite') ||
+          currentPath.includes('.')) {
+        console.log('Skipping fingerprint logging for system path:', currentPath);
+        return true;
+      }
+      
       const response = await fetch('/api/log-fingerprint', {
         method: 'POST',
         headers: {
@@ -144,7 +155,7 @@ export const useFingerprint = () => {
         },
         body: JSON.stringify({
           timestamp: new Date().toISOString(),
-          path: window.location.pathname,
+          path: currentPath,
           fingerprint: data
         }),
       });

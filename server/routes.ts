@@ -10,6 +10,8 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
+import * as fs from 'fs';
+import { LOG_FILE_PATH } from './constants';
 
 // API Key validation middleware
 const validateApiKey = (req: Request, res: Response, next: Function) => {
@@ -1270,13 +1272,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let country = 'unknown';
       try {
         const geoip = await import('geoip-lite');
-        const geo = geoip.default.lookup(ipAddress);
-        if (geo && geo.country) {
-          country = geo.country;
+        // Skip lookup for localhost/private IPs
+        if (ipAddress === '127.0.0.1' || 
+            ipAddress.startsWith('192.168.') || 
+            ipAddress.startsWith('10.')) {
+          // In development, use a placeholder country
+          if (process.env.NODE_ENV === 'development') {
+            country = 'US';
+          }
+        } else {
+          const geo = geoip.default.lookup(ipAddress);
+          if (geo && geo.country) {
+            country = geo.country;
+          }
         }
       } catch (error) {
         console.error('Error detecting country:', error);
       }
+      
+      // Don't assume this is a human - perform bot detection
+      const { detectBot } = await import('./middleware/botDetection');
+      const { isBot, botType: detectedBotType } = detectBot(req);
       
       // Add to bot logs
       await storage.createBotLog({
@@ -1285,14 +1301,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         path: path || req.path,
         timestamp: new Date(timestamp) || new Date(),
         country: country,
-        isBotConfirmed: false, // We're not making a bot determination here
+        isBotConfirmed: isBot, // Set based on actual bot detection
         source: 'fingerprint_api',
         fingerprint: {
           visitorId: fingerprint.visitorId,
           requestId: fingerprint.requestId || 'unknown',
           browserDetails: fingerprint.browserDetails || {}
         },
-        botType: 'unknown',
+        botType: detectedBotType || (isBot ? 'unknown_bot' : 'human'), // Use detected bot type or default values
         bypassAttempt: false,
         headers: {
           ...req.headers
@@ -1303,6 +1319,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error logging fingerprint:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  });
+
+  // Clear system logs (admin, dev paths, etc.)
+  app.post('/api/clear-system-logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Define patterns for system paths
+      const systemPathPatterns = [
+        '/admin',
+        '/@vite',
+        '/@react-refresh',
+        'vite',
+        '.js',
+        '.css',
+        '.map'
+      ];
+      
+      // Read the current logs
+      let logs = [];
+      if (fs.existsSync(LOG_FILE_PATH)) {
+        const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
+        logs = fileContent ? JSON.parse(fileContent) : [];
+      }
+      
+      // Filter out system logs
+      const filteredLogs = logs.filter((log: any) => {
+        // Skip logs without a path property
+        if (!log.path) return true;
+        
+        // Check if the log path matches any system path pattern
+        return !systemPathPatterns.some(pattern => {
+          if (pattern.startsWith('/')) {
+            // Exact path match
+            return log.path === pattern;
+          } else {
+            // Substring match
+            return log.path.includes(pattern);
+          }
+        });
+      });
+      
+      // Count how many logs were removed
+      const removedCount = logs.length - filteredLogs.length;
+      
+      // Save the filtered logs back to the file
+      fs.writeFileSync(LOG_FILE_PATH, JSON.stringify(filteredLogs, null, 2));
+      
+      // Send success response
+      res.status(200).json({ 
+        success: true, 
+        message: `Successfully removed ${removedCount} system log entries`,
+        logsRemaining: filteredLogs.length
+      });
+    } catch (error) {
+      console.error('Error clearing system logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error clearing system logs',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 

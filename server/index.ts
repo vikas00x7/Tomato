@@ -52,7 +52,9 @@ app.use(async (req, res, next) => {
       reqPath.includes('vite') || 
       reqPath.includes('.') ||
       reqPath.includes('__') ||
-      reqPath.startsWith('/_')) {
+      reqPath.startsWith('/_') ||
+      reqPath.startsWith('/@react-refresh') ||
+      reqPath === '/admin') {
     return next();
   }
   
