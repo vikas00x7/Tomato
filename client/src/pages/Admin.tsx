@@ -38,7 +38,7 @@ interface AnalyticsData {
 }
 
 // Define tabs for the admin dashboard
-type TabType = 'analytics' | 'logs' | 'ip-management' | 'bot-policy' | 'cloudflare';
+type TabType = 'analytics' | 'logs' | 'ip-management' | 'bot-policy';
 
 // COLORS for charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
@@ -62,26 +62,6 @@ interface BotPolicy {
   }
 }
 
-interface CloudflareCredentials {
-  apiKey: string;
-  email: string;
-  accountId: string;
-  zoneId: string;
-  isConfigured?: boolean;
-  skipValidation?: boolean;
-}
-
-interface CloudflareLog {
-  id: string;
-  timestamp: string;
-  ipAddress: string;
-  country: string;
-  path: string;
-  action: string;
-  botScore: number | null;
-  botCategory: string | null;
-}
-
 const AdminPage = () => {
   const { toast } = useToast();
   const [logs, setLogs] = useState<BotLog[]>([]);
@@ -100,57 +80,25 @@ const AdminPage = () => {
       success: 'Challenge completed successfully',
     }
   });
-  const [cloudflareCredentials, setCloudflareCredentials] = useState<CloudflareCredentials & {
-    skipValidation?: boolean;
-  }>({
-    apiKey: '',
-    email: '',
-    accountId: '',
-    zoneId: '',
-    isConfigured: false,
-    skipValidation: process.env.NODE_ENV === 'development', // Default to skip validation in development
-  });
-  const [cloudflareLogs, setCloudflareLogs] = useState<CloudflareLog[]>([]);
-  const [cloudflareLogsLoading, setCloudflareLogsLoading] = useState(false);
-  const [cloudflareCredentialsLoading, setCloudflareCredentialsLoading] = useState(false);
-  const [cloudflareLogFilters, setCloudflareLogFilters] = useState<{
-    startDate: string;
-    endDate: string;
-    ipAddress: string;
-    botScore: string;
-    page: number;
-    limit: number;
-  }>({
-    startDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
-    ipAddress: '',
-    botScore: '',
-    page: 1,
-    limit: 100
-  });
-  const [cloudflarePagination, setCloudflarePagination] = useState<{
-    total: number;
-    page: number;
-    limit: number;
-  }>({
-    total: 0,
-    page: 1,
-    limit: 100
-  });
+  
+  // States for UI controls
+  const [activeTab, setActiveTab] = useState<TabType>('analytics');
+  const [loading, setLoading] = useState(false);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [ipListLoading, setIpListLoading] = useState(false);
   const [policyLoading, setPolicyLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [ipManagementTab, setIpManagementTab] = useState<'blacklist' | 'whitelist'>('blacklist');
+  
+  // User inputs
+  const [apiKey, setApiKey] = useState('');
+  const [ipFilter, setIpFilter] = useState('');
   const [newIPAddress, setNewIPAddress] = useState('');
   const [newIPReason, setNewIPReason] = useState('');
-  const [ipManagementTab, setIpManagementTab] = useState<'blacklist' | 'whitelist'>('blacklist');
-  const [ipListLoading, setIpListLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [ipFilter, setIpFilter] = useState('');
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  
+  // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
-  const [activeTab, setActiveTab] = useState<TabType>('logs'); // Default to logs tab
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   // Function to fetch analytics data
   const fetchAnalytics = async () => {
@@ -262,16 +210,16 @@ const AdminPage = () => {
   // Setup automatic polling for new logs
   useEffect(() => {
     // Clear any existing interval when component mounts or unmounts
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
     }
     
     // Only start polling if authenticated and auto-refresh is enabled
-    if (isAuthenticated && autoRefresh) {
+    if (isAuthenticated) {
       console.log('Starting real-time log polling...');
       
       // Poll every 5 seconds for new logs (silently)
-      pollingIntervalRef.current = setInterval(() => {
+      pollRef.current = setInterval(() => {
         console.log('Polling for new logs...');
         fetchLogs(false, true);
       }, 5000);
@@ -279,19 +227,19 @@ const AdminPage = () => {
     
     // Cleanup interval on unmount
     return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
       }
     };
-  }, [isAuthenticated, autoRefresh]);
-  
+  }, [isAuthenticated]);
+
   // When tab changes to analytics, fetch analytics data
   useEffect(() => {
     if (activeTab === 'analytics' && isAuthenticated && !analytics) {
       fetchAnalytics();
     }
   }, [activeTab, isAuthenticated, analytics]);
-  
+
   // Function to fetch logs by IP
   const fetchLogsByIp = async () => {
     if (!ipFilter.trim()) {
@@ -326,7 +274,7 @@ const AdminPage = () => {
       setLoading(false);
     }
   };
-  
+
   // Function to export logs
   const exportLogs = async () => {
     if (!isAuthenticated) return;
@@ -345,7 +293,7 @@ const AdminPage = () => {
       console.error('Error exporting logs:', error);
     }
   };
-  
+
   // Function to clear all logs
   const clearAllLogs = async () => {
     if (!isAuthenticated) return;
@@ -394,13 +342,13 @@ const AdminPage = () => {
       setLoading(false);
     }
   };
-  
+
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
   };
-  
+
   // Handle authentication
   const handleAuthenticate = () => {
     if (!apiKey.trim()) {
@@ -414,12 +362,12 @@ const AdminPage = () => {
     
     fetchLogs();
   };
-  
+
   // Filter logs by IP
   const handleFilterByIp = () => {
     fetchLogsByIp();
   };
-  
+
   // Prepare data for country distribution chart
   const countryChartData = useMemo(() => {
     if (!analytics?.countryDistribution) return [];
@@ -431,7 +379,7 @@ const AdminPage = () => {
         value: count
       }));
   }, [analytics?.countryDistribution]);
-  
+
   // Prepare data for bot vs human chart
   const botVsHumanData = useMemo(() => {
     if (!analytics) return [];
@@ -441,7 +389,7 @@ const AdminPage = () => {
       { name: 'Bot', value: analytics.botCount }
     ];
   }, [analytics]);
-  
+
   // Prepare data for page visits chart
   const pageVisitsData = useMemo(() => {
     if (!analytics?.pageVisits) return [];
@@ -454,7 +402,7 @@ const AdminPage = () => {
         visits: count
       }));
   }, [analytics?.pageVisits]);
-  
+
   // Prepare data for traffic over time chart
   const trafficOverTimeData = useMemo(() => {
     if (!analytics?.dailyTraffic) return [];
@@ -466,7 +414,7 @@ const AdminPage = () => {
         visits: count
       }));
   }, [analytics?.dailyTraffic]);
-  
+
   // Prepare data for source distribution chart
   const sourceDistributionData = useMemo(() => {
     if (!analytics?.sourceDistribution) return [];
@@ -477,7 +425,7 @@ const AdminPage = () => {
         value: count
       }));
   }, [analytics?.sourceDistribution]);
-  
+
   // Function to render the current tab content
   const renderTabContent = () => {
     switch (activeTab) {
@@ -753,8 +701,8 @@ const AdminPage = () => {
                   <input
                     type="checkbox"
                     id="autoRefresh"
-                    checked={autoRefresh}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAutoRefresh(e.target.checked)}
+                    checked={true}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {}}
                     className="mr-2"
                   />
                   <label htmlFor="autoRefresh" className="text-sm">Auto-refresh</label>
@@ -833,7 +781,7 @@ const AdminPage = () => {
             <div className="mt-8 text-sm text-gray-500">
               <p>Total logs: {logs.length}</p>
               <p>Last updated: {new Date().toLocaleString()}</p>
-              <p>Real-time updates: {autoRefresh ? 'Enabled' : 'Disabled'}</p>
+              <p>Real-time updates: Enabled</p>
             </div>
           </>
         );
@@ -847,7 +795,7 @@ const AdminPage = () => {
                   className={`px-4 py-2 font-medium ${ipManagementTab === 'blacklist' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                   onClick={() => {
                     setIpManagementTab('blacklist');
-                    fetchBlacklist();
+                    // fetchBlacklist();
                   }}
                 >
                   Blacklist
@@ -856,7 +804,7 @@ const AdminPage = () => {
                   className={`px-4 py-2 font-medium ${ipManagementTab === 'whitelist' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                   onClick={() => {
                     setIpManagementTab('whitelist');
-                    fetchWhitelist();
+                    // fetchWhitelist();
                   }}
                 >
                   Whitelist
@@ -886,7 +834,7 @@ const AdminPage = () => {
                     />
                   </div>
                   <Button 
-                    onClick={ipManagementTab === 'blacklist' ? addToBlacklist : addToWhitelist}
+                    onClick={ipManagementTab === 'blacklist' ? () => {} : () => {}} 
                     disabled={ipListLoading || !newIPAddress.trim()}
                     className="whitespace-nowrap"
                   >
@@ -914,79 +862,85 @@ const AdminPage = () => {
                   </TableHeader>
                   <TableBody>
                     {ipManagementTab === 'blacklist' ? (
-                      blacklist.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center py-4">No blocked IP addresses</TableCell>
-                        </TableRow>
-                      ) : (
-                        blacklist.map((entry, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{entry.ipAddress}</TableCell>
-                            <TableCell>{new Date(entry.addedAt).toLocaleString()}</TableCell>
-                            <TableCell>{entry.reason || 'No reason provided'}</TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="destructive" 
-                                  onClick={() => removeFromBlacklist(entry.ipAddress)}
-                                  disabled={ipListLoading}
-                                >
-                                  Remove
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  onClick={() => {
-                                    setIpFilter(entry.ipAddress);
-                                    setActiveTab('logs');
-                                    fetchLogsByIp();
-                                  }}
-                                >
-                                  View Logs
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )
+                      // blacklist.length === 0 ? (
+                      //   <TableRow>
+                      //     <TableCell colSpan={4} className="text-center py-4">No blocked IP addresses</TableCell>
+                      //   </TableRow>
+                      // ) : (
+                      //   blacklist.map((entry, index) => (
+                      //     <TableRow key={index}>
+                      //       <TableCell>{entry.ipAddress}</TableCell>
+                      //       <TableCell>{new Date(entry.addedAt).toLocaleString()}</TableCell>
+                      //       <TableCell>{entry.reason || 'No reason provided'}</TableCell>
+                      //       <TableCell>
+                      //         <div className="flex gap-2">
+                      //           <Button 
+                      //             size="sm" 
+                      //             variant="destructive" 
+                      //             onClick={() => removeFromBlacklist(entry.ipAddress)}
+                      //             disabled={ipListLoading}
+                      //           >
+                      //             Remove
+                      //           </Button>
+                      //           <Button 
+                      //             size="sm" 
+                      //             variant="outline" 
+                      //             onClick={() => {
+                      //               setIpFilter(entry.ipAddress);
+                      //               setActiveTab('logs');
+                      //               fetchLogsByIp();
+                      //             }}
+                      //           >
+                      //             View Logs
+                      //           </Button>
+                      //         </div>
+                      //       </TableCell>
+                      //     </TableRow>
+                      //   ))
+                      // )
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-4">No data available</TableCell>
+                      </TableRow>
                     ) : (
-                      whitelist.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center py-4">No whitelisted IP addresses</TableCell>
-                        </TableRow>
-                      ) : (
-                        whitelist.map((entry, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{entry.ipAddress}</TableCell>
-                            <TableCell>{new Date(entry.addedAt).toLocaleString()}</TableCell>
-                            <TableCell>{entry.reason || 'No reason provided'}</TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="destructive" 
-                                  onClick={() => removeFromWhitelist(entry.ipAddress)}
-                                  disabled={ipListLoading}
-                                >
-                                  Remove
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  onClick={() => {
-                                    setIpFilter(entry.ipAddress);
-                                    setActiveTab('logs');
-                                    fetchLogsByIp();
-                                  }}
-                                >
-                                  View Logs
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )
+                      // whitelist.length === 0 ? (
+                      //   <TableRow>
+                      //     <TableCell colSpan={4} className="text-center py-4">No whitelisted IP addresses</TableCell>
+                      //   </TableRow>
+                      // ) : (
+                      //   whitelist.map((entry, index) => (
+                      //     <TableRow key={index}>
+                      //       <TableCell>{entry.ipAddress}</TableCell>
+                      //       <TableCell>{new Date(entry.addedAt).toLocaleString()}</TableCell>
+                      //       <TableCell>{entry.reason || 'No reason provided'}</TableCell>
+                      //       <TableCell>
+                      //         <div className="flex gap-2">
+                      //           <Button 
+                      //             size="sm" 
+                      //             variant="destructive" 
+                      //             onClick={() => removeFromWhitelist(entry.ipAddress)}
+                      //             disabled={ipListLoading}
+                      //           >
+                      //             Remove
+                      //           </Button>
+                      //           <Button 
+                      //             size="sm" 
+                      //             variant="outline" 
+                      //             onClick={() => {
+                      //               setIpFilter(entry.ipAddress);
+                      //               setActiveTab('logs');
+                      //               fetchLogsByIp();
+                      //             }}
+                      //           >
+                      //             View Logs
+                      //           </Button>
+                      //         </div>
+                      //       </TableCell>
+                      //     </TableRow>
+                      //   ))
+                      // )
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-4">No data available</TableCell>
+                      </TableRow>
                     )}
                   </TableBody>
                 </Table>
@@ -994,7 +948,7 @@ const AdminPage = () => {
               
               <div className="flex justify-end mt-4">
                 <Button 
-                  onClick={ipManagementTab === 'blacklist' ? fetchBlacklist : fetchWhitelist} 
+                  onClick={ipManagementTab === 'blacklist' ? () => {} : () => {}} 
                   disabled={ipListLoading}
                   variant="outline"
                 >
@@ -1018,29 +972,29 @@ const AdminPage = () => {
                     className="mr-2 mb-2"
                     onClick={() => {
                       // Find IPs with multiple bot visits
-                      if (analytics?.topIPs) {
-                        const botIPs = analytics.topIPs
-                          .filter(ip => {
-                            const ipLogs = logs.filter(log => log.ipAddress === ip.ip);
-                            const botCount = ipLogs.filter(log => log.isBotConfirmed).length;
-                            return botCount > 0 && botCount / ipLogs.length > 0.8; // 80% of requests are bot requests
-                          })
-                          .map(ip => ip.ip);
+                      // if (analytics?.topIPs) {
+                      //   const botIPs = analytics.topIPs
+                      //     .filter(ip => {
+                      //       const ipLogs = logs.filter(log => log.ipAddress === ip.ip);
+                      //       const botCount = ipLogs.filter(log => log.isBotConfirmed).length;
+                      //       return botCount > 0 && botCount / ipLogs.length > 0.8; // 80% of requests are bot requests
+                      //     })
+                      //     .map(ip => ip.ip);
                         
-                        if (botIPs.length > 0) {
-                          setIpManagementTab('blacklist');
-                          toast({
-                            title: "Bot IPs Selected",
-                            description: `Found ${botIPs.length} IP addresses with high bot activity`,
-                          });
-                          setNewIPAddress(botIPs[0]);
-                        } else {
-                          toast({
-                            title: "No Bot IPs Found",
-                            description: "Couldn't find any IP addresses with significant bot activity",
-                          });
-                        }
-                      }
+                      //   if (botIPs.length > 0) {
+                      //     setIpManagementTab('blacklist');
+                      //     toast({
+                      //       title: "Bot IPs Selected",
+                      //       description: `Found ${botIPs.length} IP addresses with high bot activity`,
+                      //     });
+                      //     setNewIPAddress(botIPs[0]);
+                      //   } else {
+                      //     toast({
+                      //       title: "No Bot IPs Found",
+                      //       description: "Couldn't find any IP addresses with significant bot activity",
+                      //     });
+                      //   }
+                      // }
                     }}
                   >
                     Add Recent Bot IP
@@ -1051,27 +1005,27 @@ const AdminPage = () => {
                     className="mr-2 mb-2"
                     onClick={() => {
                       // Find IPs with bypass attempts
-                      const bypassIPs = logs
-                        .filter(log => log.bypassAttempt)
-                        .map(log => log.ipAddress);
+                      // const bypassIPs = logs
+                      //   .filter(log => log.bypassAttempt)
+                      //   .map(log => log.ipAddress);
                       
-                      if (bypassIPs.length > 0) {
-                        const uniqueIPs = bypassIPs.filter((ip, index, self) => 
-                          self.indexOf(ip) === index
-                        );
+                      // if (bypassIPs.length > 0) {
+                      //   const uniqueIPs = bypassIPs.filter((ip, index, self) => 
+                      //     self.indexOf(ip) === index
+                      //   );
                         
-                        setIpManagementTab('blacklist');
-                        toast({
-                          title: "Bypass IPs Selected",
-                          description: `Found ${uniqueIPs.length} IP addresses with bypass attempts`,
-                        });
-                        setNewIPAddress(uniqueIPs[0]);
-                      } else {
-                        toast({
-                          title: "No Bypass IPs Found",
-                          description: "Couldn't find any IP addresses with bypass attempts",
-                        });
-                      }
+                      //   setIpManagementTab('blacklist');
+                      //   toast({
+                      //     title: "Bypass IPs Selected",
+                      //     description: `Found ${uniqueIPs.length} IP addresses with bypass attempts`,
+                      //   });
+                      //   setNewIPAddress(uniqueIPs[0]);
+                      // } else {
+                      //   toast({
+                      //     title: "No Bypass IPs Found",
+                      //     description: "Couldn't find any IP addresses with bypass attempts",
+                      //   });
+                      // }
                     }}
                   >
                     Add Bypass Attempt IP
@@ -1081,19 +1035,19 @@ const AdminPage = () => {
                     variant="outline"
                     className="mb-2"
                     onClick={() => {
-                      if (ipFilter) {
-                        setNewIPAddress(ipFilter);
-                        toast({
-                          title: "IP Added from Filter",
-                          description: `Added ${ipFilter} from your current filter`,
-                        });
-                      } else {
-                        toast({
-                          title: "No Filter Active",
-                          description: "You don't have an IP filter active in the logs tab",
-                          variant: "destructive"
-                        });
-                      }
+                      // if (ipFilter) {
+                      //   setNewIPAddress(ipFilter);
+                      //   toast({
+                      //     title: "IP Added from Filter",
+                      //     description: `Added ${ipFilter} from your current filter`,
+                      //   });
+                      // } else {
+                      //   toast({
+                      //     title: "No Filter Active",
+                      //     description: "You don't have an IP filter active in the logs tab",
+                      //     variant: "destructive"
+                      //   });
+                      // }
                     }}
                   >
                     Add from Current Filter
@@ -1107,27 +1061,27 @@ const AdminPage = () => {
                     className="mr-2 mb-2"
                     onClick={() => {
                       // Export blacklist as CSV
-                      if (blacklist.length > 0) {
-                        const csvContent = "data:text/csv;charset=utf-8," 
-                          + "IP Address,Added On,Reason\n"
-                          + blacklist.map(row => {
-                              return `${row.ipAddress},${new Date(row.addedAt).toISOString()},"${row.reason || ""}"`;
-                            }).join("\n");
+                      // if (blacklist.length > 0) {
+                      //   const csvContent = "data:text/csv;charset=utf-8," 
+                      //     + "IP Address,Added On,Reason\n"
+                      //     + blacklist.map(row => {
+                      //         return `${row.ipAddress},${new Date(row.addedAt).toISOString()},"${row.reason || ""}"`;
+                      //       }).join("\n");
                         
-                        const encodedUri = encodeURI(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "ip_blacklist.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      } else {
-                        toast({
-                          title: "Empty Blacklist",
-                          description: "There are no IP addresses in the blacklist to export",
-                          variant: "destructive"
-                        });
-                      }
+                      //   const encodedUri = encodeURI(csvContent);
+                      //   const link = document.createElement("a");
+                      //   link.setAttribute("href", encodedUri);
+                      //   link.setAttribute("download", "ip_blacklist.csv");
+                      //   document.body.appendChild(link);
+                      //   link.click();
+                      //   document.body.removeChild(link);
+                      // } else {
+                      //   toast({
+                      //     title: "Empty Blacklist",
+                      //     description: "There are no IP addresses in the blacklist to export",
+                      //     variant: "destructive"
+                      //   });
+                      // }
                     }}
                   >
                     Export Blacklist
@@ -1138,27 +1092,27 @@ const AdminPage = () => {
                     className="mb-2"
                     onClick={() => {
                       // Export whitelist as CSV
-                      if (whitelist.length > 0) {
-                        const csvContent = "data:text/csv;charset=utf-8," 
-                          + "IP Address,Added On,Reason\n"
-                          + whitelist.map(row => {
-                              return `${row.ipAddress},${new Date(row.addedAt).toISOString()},"${row.reason || ""}"`;
-                            }).join("\n");
+                      // if (whitelist.length > 0) {
+                      //   const csvContent = "data:text/csv;charset=utf-8," 
+                      //     + "IP Address,Added On,Reason\n"
+                      //     + whitelist.map(row => {
+                      //         return `${row.ipAddress},${new Date(row.addedAt).toISOString()},"${row.reason || ""}"`;
+                      //       }).join("\n");
                         
-                        const encodedUri = encodeURI(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "ip_whitelist.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      } else {
-                        toast({
-                          title: "Empty Whitelist",
-                          description: "There are no IP addresses in the whitelist to export",
-                          variant: "destructive"
-                        });
-                      }
+                      //   const encodedUri = encodeURI(csvContent);
+                      //   const link = document.createElement("a");
+                      //   link.setAttribute("href", encodedUri);
+                      //   link.setAttribute("download", "ip_whitelist.csv");
+                      //   document.body.appendChild(link);
+                      //   link.click();
+                      //   document.body.removeChild(link);
+                      // } else {
+                      //   toast({
+                      //     title: "Empty Whitelist",
+                      //     description: "There are no IP addresses in the whitelist to export",
+                      //     variant: "destructive"
+                      //   });
+                      // }
                     }}
                   >
                     Export Whitelist
@@ -1346,306 +1300,19 @@ const AdminPage = () => {
                 <div className="flex justify-end gap-3 pt-2">
                   <Button
                     variant="outline"
-                    onClick={fetchBotPolicy}
+                    onClick={() => {}}
                     disabled={policyLoading}
                   >
                     Reset
                   </Button>
                   <Button
-                    onClick={updateBotPolicy}
+                    onClick={() => {}}
                     disabled={policyLoading}
                   >
                     {policyLoading ? 'Saving...' : 'Save Configuration'}
                   </Button>
                 </div>
               </div>
-            </Card>
-          </div>
-        );
-      
-      case 'cloudflare':
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">CloudFlare Integration</h2>
-            <p className="text-gray-600">Connect to your CloudFlare account to view security logs and integrate with your bot protection.</p>
-            
-            {/* CloudFlare Credentials Form */}
-            <Card className="p-4">
-              <h3 className="text-lg font-medium mb-4">CloudFlare Credentials</h3>
-              {cloudflareCredentials.isConfigured ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">API Key</p>
-                      <p className="font-medium">••••••••••••{cloudflareCredentials.apiKey.slice(-4)}</p>
-                    </div>
-                    {cloudflareCredentials.email && (
-                      <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium">{cloudflareCredentials.email}</p>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm text-gray-600">Zone ID</p>
-                      <p className="font-medium">{cloudflareCredentials.zoneId}</p>
-                    </div>
-                    <Button 
-                      variant="destructive" 
-                      onClick={clearCloudflareCredentials}
-                      disabled={cloudflareCredentialsLoading}
-                    >
-                      {cloudflareCredentialsLoading ? 'Processing...' : 'Remove Credentials'}
-                    </Button>
-                  </div>
-                  
-                  <div className="pt-4 border-t">
-                    <h4 className="text-md font-medium mb-2">CloudFlare Logs</h4>
-                    
-                    {/* Toggle Mock Mode */}
-                    <div className="flex items-center mb-4">
-                      <label className="flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={cloudflareCredentials.skipValidation}
-                          onChange={(e) => setCloudflareCredentials({
-                            ...cloudflareCredentials,
-                            skipValidation: e.target.checked
-                          })}
-                        />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900">Skip Validation</span>
-                      </label>
-                    </div>
-                    
-                    {/* Filtering controls */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm mb-1">Start Date</label>
-                        <Input 
-                          type="date" 
-                          value={cloudflareLogFilters.startDate}
-                          onChange={(e) => setCloudflareLogFilters({...cloudflareLogFilters, startDate: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-1">End Date</label>
-                        <Input 
-                          type="date" 
-                          value={cloudflareLogFilters.endDate}
-                          onChange={(e) => setCloudflareLogFilters({...cloudflareLogFilters, endDate: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-1">IP Address</label>
-                        <Input 
-                          type="text" 
-                          placeholder="Filter by IP" 
-                          value={cloudflareLogFilters.ipAddress}
-                          onChange={(e) => setCloudflareLogFilters({...cloudflareLogFilters, ipAddress: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-1">Bot Score</label>
-                        <Input 
-                          type="number" 
-                          placeholder="Max bot score" 
-                          min="1"
-                          max="100"
-                          value={cloudflareLogFilters.botScore}
-                          onChange={(e) => setCloudflareLogFilters({...cloudflareLogFilters, botScore: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-4 mb-4">
-                      <Button 
-                        onClick={() => {
-                          setCloudflareLogFilters({...cloudflareLogFilters, page: 1});
-                          fetchCloudflareLogs();
-                        }}
-                        disabled={cloudflareLogsLoading}
-                      >
-                        {cloudflareLogsLoading ? 'Loading...' : 'Filter Logs'}
-                      </Button>
-                      
-                      <Button 
-                        variant="outline"
-                        onClick={importCloudflareLogs}
-                        disabled={cloudflareLogsLoading || cloudflareLogs.length === 0}
-                      >
-                        Import to Local Storage
-                      </Button>
-                    </div>
-                    
-                    {/* CloudFlare Logs Table */}
-                    <div className="border rounded-md">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Time</TableHead>
-                            <TableHead>IP Address</TableHead>
-                            <TableHead>Country</TableHead>
-                            <TableHead>Path</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Bot Score</TableHead>
-                            <TableHead>Bot Category</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {cloudflareLogsLoading ? (
-                            <TableRow>
-                              <TableCell colSpan={7} className="text-center py-4">Loading logs...</TableCell>
-                            </TableRow>
-                          ) : cloudflareLogs.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={7} className="text-center py-4">No Cloudflare logs found.</TableCell>
-                            </TableRow>
-                          ) : (
-                            cloudflareLogs.map((log) => (
-                              <TableRow key={log.id}>
-                                <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                                <TableCell>{log.ipAddress}</TableCell>
-                                <TableCell>{log.country || 'Unknown'}</TableCell>
-                                <TableCell className="max-w-[200px] truncate">{log.path || 'N/A'}</TableCell>
-                                <TableCell>
-                                  <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                                    log.action === 'block' 
-                                      ? 'bg-red-100 text-red-800' 
-                                      : log.action === 'challenge' || log.action === 'jschallenge'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-green-100 text-green-800'
-                                  }`}>
-                                    {log.action || 'allow'}
-                                  </span>
-                                </TableCell>
-                                <TableCell>{log.botScore !== null ? log.botScore : 'N/A'}</TableCell>
-                                <TableCell>{log.botCategory || 'N/A'}</TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                    
-                    {/* Pagination controls */}
-                    {cloudflareLogs.length > 0 && (
-                      <div className="flex justify-between items-center mt-4">
-                        <div className="text-sm text-gray-500">
-                          Showing {(cloudflarePagination.page - 1) * cloudflarePagination.limit + 1} to {Math.min(cloudflarePagination.page * cloudflarePagination.limit, cloudflarePagination.total)} of {cloudflarePagination.total} logs
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            disabled={cloudflarePagination.page <= 1 || cloudflareLogsLoading}
-                            onClick={() => handleCloudflarePageChange(cloudflarePagination.page - 1)}
-                          >
-                            Previous
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            disabled={cloudflarePagination.page * cloudflarePagination.limit >= cloudflarePagination.total || cloudflareLogsLoading}
-                            onClick={() => handleCloudflarePageChange(cloudflarePagination.page + 1)}
-                          >
-                            Next
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm mb-1">API Key <span className="text-red-500">*</span></label>
-                      <Input 
-                        type="password" 
-                        placeholder="Your CloudFlare API Key" 
-                        value={cloudflareCredentials.apiKey}
-                        onChange={(e) => setCloudflareCredentials({...cloudflareCredentials, apiKey: e.target.value})}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Create an API token in your CloudFlare dashboard with Security Events permissions</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1">Email</label>
-                      <Input 
-                        type="email" 
-                        placeholder="Your CloudFlare account email (optional)" 
-                        value={cloudflareCredentials.email}
-                        onChange={(e) => setCloudflareCredentials({...cloudflareCredentials, email: e.target.value})}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Required for some accounts, can be left blank if using API tokens</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm mb-1">Account ID</label>
-                      <Input 
-                        type="text" 
-                        placeholder="Your CloudFlare Account ID (optional)" 
-                        value={cloudflareCredentials.accountId}
-                        onChange={(e) => setCloudflareCredentials({...cloudflareCredentials, accountId: e.target.value})}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Found in your CloudFlare dashboard URL</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1">Zone ID <span className="text-red-500">*</span></label>
-                      <Input 
-                        type="text" 
-                        placeholder="Your CloudFlare Zone ID" 
-                        value={cloudflareCredentials.zoneId}
-                        onChange={(e) => setCloudflareCredentials({...cloudflareCredentials, zoneId: e.target.value})}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Found in the Overview tab in CloudFlare dashboard</p>
-                    </div>
-                  </div>
-                  
-                  {/* Development Options */}
-                  <div className="border p-3 rounded-md bg-gray-50">
-                    <h5 className="text-sm font-medium mb-2">Development Options</h5>
-                    <div className="flex items-center space-x-6">
-                      <label className="flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={cloudflareCredentials.skipValidation}
-                          onChange={(e) => setCloudflareCredentials({
-                            ...cloudflareCredentials,
-                            skipValidation: e.target.checked
-                          })}
-                        />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900">Skip Validation</span>
-                      </label>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">For testing without valid CloudFlare credentials</p>
-                  </div>
-                  
-                  <Button 
-                    onClick={saveCloudflareCredentials} 
-                    disabled={cloudflareCredentialsLoading || (!cloudflareCredentials.skipValidation && (!cloudflareCredentials.apiKey || !cloudflareCredentials.zoneId))}
-                  >
-                    {cloudflareCredentialsLoading ? 'Validating...' : 'Connect to CloudFlare'}
-                  </Button>
-                </div>
-              )}
-            </Card>
-            
-            {/* Documentation Card */}
-            <Card className="p-4 bg-blue-50">
-              <h3 className="text-lg font-medium mb-2">How to Connect</h3>
-              <ol className="list-decimal ml-5 space-y-2">
-                <li>Go to your <a href="https://dash.cloudflare.com" target="_blank" className="text-blue-600 hover:underline">CloudFlare Dashboard</a></li>
-                <li>Navigate to My Profile → API Tokens</li>
-                <li>Create a new API token with "Security Events: Read" permissions</li>
-                <li>Copy your Zone ID from the domain Overview page</li>
-                <li>Enter the credentials above and click "Connect to CloudFlare"</li>
-              </ol>
-              <p className="mt-4 text-sm text-gray-600">This integration allows you to view CloudFlare security logs, analyze bot traffic patterns, and import CloudFlare logs into your local database for unified reporting.</p>
             </Card>
           </div>
         );
@@ -1689,7 +1356,7 @@ const AdminPage = () => {
       setPolicyLoading(false);
     }
   };
-  
+
   // Update bot policy
   const updateBotPolicy = async () => {
     if (!isAuthenticated) return;
@@ -1761,7 +1428,7 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-  
+
   // Fetch whitelist
   const fetchWhitelist = async () => {
     if (!isAuthenticated) return;
@@ -1797,7 +1464,7 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-  
+
   // Add IP to blacklist
   const addToBlacklist = async () => {
     if (!isAuthenticated || !newIPAddress.trim()) return;
@@ -1839,7 +1506,7 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-  
+
   // Remove IP from blacklist
   const removeFromBlacklist = async (ipAddress: string) => {
     if (!isAuthenticated) return;
@@ -1872,7 +1539,7 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-  
+
   // Add IP to whitelist
   const addToWhitelist = async () => {
     if (!isAuthenticated || !newIPAddress.trim()) return;
@@ -1914,7 +1581,7 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-  
+
   // Remove IP from whitelist
   const removeFromWhitelist = async (ipAddress: string) => {
     if (!isAuthenticated) return;
@@ -1947,358 +1614,6 @@ const AdminPage = () => {
       setIpListLoading(false);
     }
   };
-
-  // Fetch Cloudflare credentials
-  const fetchCloudflareCredentials = async () => {
-    if (!isAuthenticated) return;
-    
-    try {
-      const params = new URLSearchParams();
-      params.append('key', apiKey.trim());
-      
-      const response = await fetch(`/api/cloudflare/credentials?${params.toString()}`);
-      
-      if (response.status === 401) {
-        toast({
-          title: "Authentication Failed",
-          description: "Invalid API key. Please check and try again.",
-          variant: "destructive"
-        });
-        setIsAuthenticated(false);
-        return;
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Fetch CloudFlare credentials error:', errorData);
-        
-        // Keep the current state if there's an error fetching credentials
-        // This prevents controlled component warnings
-        return;
-      }
-      
-      const data = await response.json();
-      console.log('CloudFlare credentials response:', data);
-      
-      if (data.credentials) {
-        setCloudflareCredentials({
-          ...cloudflareCredentials,
-          ...data.credentials,
-          isConfigured: true,
-          // Preserve the development options
-          skipValidation: cloudflareCredentials.skipValidation,
-        });
-      } else {
-        // If no credentials returned, set as not configured but keep form values
-        // This prevents controlled component warnings when switching back to the form
-        setCloudflareCredentials({
-          ...cloudflareCredentials,
-          isConfigured: false
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching CloudFlare credentials:', error);
-      // Don't reset the form on error to prevent controlled component warnings
-    }
-  };
-  
-  // Save Cloudflare credentials
-  const saveCloudflareCredentials = async () => {
-    if (!isAuthenticated) return;
-    
-    try {
-      setCloudflareCredentialsLoading(true);
-      
-      // Build query parameters for skipValidation option
-      const params = new URLSearchParams();
-      params.append('key', apiKey.trim());
-      
-      // Skip validation in development mode or if explicitly requested
-      if (cloudflareCredentials.skipValidation) {
-        params.append('skipValidation', 'true');
-        console.log('Skipping CloudFlare credentials validation');
-      }
-      
-      console.log('Saving CloudFlare credentials with params:', params.toString());
-      const response = await fetch(`/api/cloudflare/credentials?${params.toString()}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          credentials: {
-            apiKey: cloudflareCredentials.apiKey || '',
-            email: cloudflareCredentials.email || '',
-            accountId: cloudflareCredentials.accountId || '',
-            zoneId: cloudflareCredentials.zoneId || '',
-          }
-        }),
-      });
-      
-      const data = await response.json();
-      console.log('Save CloudFlare credentials response:', data);
-      
-      if (!response.ok) {
-        console.error('Save CloudFlare credentials error:', data);
-        
-        // Display toast with suggestion if available
-        if (data.suggestion) {
-          toast({
-            title: "Error",
-            description: `${data.error}. ${data.suggestion}`,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: data.error || 'Failed to save CloudFlare credentials',
-            variant: "destructive"
-          });
-        }
-        return;
-      }
-      
-      toast({
-        title: "Success",
-        description: "CloudFlare credentials saved successfully.",
-      });
-      
-      // Refresh credentials to get the updated state
-      await fetchCloudflareCredentials();
-    } catch (error) {
-      console.error('Error saving CloudFlare credentials:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save CloudFlare credentials.",
-        variant: "destructive"
-      });
-    } finally {
-      setCloudflareCredentialsLoading(false);
-    }
-  };
-  
-  // Clear Cloudflare credentials
-  const clearCloudflareCredentials = async () => {
-    if (!isAuthenticated) return;
-    
-    // Confirm with the user before deleting
-    if (!window.confirm('Are you sure you want to remove your Cloudflare credentials? This action cannot be undone.')) {
-      return;
-    }
-    
-    try {
-      setCloudflareCredentialsLoading(true);
-      const response = await fetch(`/api/cloudflare/credentials?key=${encodeURIComponent(apiKey.trim())}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to clear Cloudflare credentials');
-      }
-      
-      toast({
-        title: "Success",
-        description: "Cloudflare credentials removed successfully.",
-      });
-      
-      setCloudflareCredentials({
-        apiKey: '',
-        email: '',
-        accountId: '',
-        zoneId: '',
-        isConfigured: false
-      });
-      setCloudflareLogs([]);
-    } catch (error) {
-      console.error('Error clearing Cloudflare credentials:', error);
-      toast({
-        title: "Error",
-        description: "Failed to clear Cloudflare credentials.",
-        variant: "destructive"
-      });
-    } finally {
-      setCloudflareCredentialsLoading(false);
-    }
-  };
-  
-  // Fetch Cloudflare logs
-  const fetchCloudflareLogs = async () => {
-    if (!isAuthenticated) return;
-    
-    try {
-      setCloudflareLogsLoading(true);
-      
-      // Build query parameters
-      const params = new URLSearchParams();
-      params.append('key', apiKey.trim());
-      
-      if (cloudflareLogFilters.startDate) {
-        params.append('startDate', cloudflareLogFilters.startDate);
-      }
-      
-      if (cloudflareLogFilters.endDate) {
-        params.append('endDate', cloudflareLogFilters.endDate);
-      }
-      
-      if (cloudflareLogFilters.ipAddress) {
-        params.append('ipAddress', cloudflareLogFilters.ipAddress);
-      }
-      
-      if (cloudflareLogFilters.botScore) {
-        params.append('botScore', cloudflareLogFilters.botScore);
-      }
-      
-      params.append('page', cloudflareLogFilters.page.toString());
-      params.append('limit', cloudflareLogFilters.limit.toString());
-      
-      console.log('Fetching CloudFlare logs with params:', params.toString());
-      const response = await fetch(`/api/cloudflare/logs?${params.toString()}`);
-      
-      if (response.status === 401) {
-        toast({
-          title: "Authentication Failed",
-          description: "Invalid API key. Please check and try again.",
-          variant: "destructive"
-        });
-        setIsAuthenticated(false);
-        return;
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('CloudFlare logs error response:', errorData);
-        
-        if (errorData.suggestion) {
-          toast({
-            title: "Error",
-            description: `${errorData.error}. ${errorData.suggestion}`,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: errorData.error || 'Failed to fetch CloudFlare logs',
-            variant: "destructive"
-          });
-        }
-        return;
-      }
-      
-      const data = await response.json();
-      console.log('CloudFlare logs response:', data);
-      
-      if (!data || (!data.logs && !Array.isArray(data))) {
-        console.error('Invalid CloudFlare logs format:', data);
-        toast({
-          title: "Error",
-          description: "Invalid response format from server",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Handle both response formats - direct array or data.logs
-      const logsArray = Array.isArray(data) ? data : (Array.isArray(data.logs) ? data.logs : []);
-      setCloudflareLogs(logsArray);
-      
-      if (data.pagination) {
-        setCloudflarePagination(data.pagination);
-      }
-      
-      toast({
-        title: "Success",
-        description: `Retrieved ${logsArray.length} CloudFlare logs.`,
-      });
-    } catch (error) {
-      console.error('Error fetching CloudFlare logs:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch CloudFlare logs.",
-        variant: "destructive"
-      });
-    } finally {
-      setCloudflareLogsLoading(false);
-    }
-  };
-  
-  // Import Cloudflare logs to local storage
-  const importCloudflareLogs = async () => {
-    if (!isAuthenticated || !cloudflareCredentials.isConfigured || cloudflareLogs.length === 0) return;
-    
-    // Confirm with the user before importing logs
-    if (!window.confirm(`Are you sure you want to import ${cloudflareLogs.length} Cloudflare logs to your local storage?`)) {
-      return;
-    }
-    
-    try {
-      setCloudflareLogsLoading(true);
-      const response = await fetch(`/api/cloudflare/import-logs?key=${encodeURIComponent(apiKey.trim())}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          logs: cloudflareLogs
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to import Cloudflare logs');
-      }
-      
-      const data = await response.json();
-      
-      toast({
-        title: "Success",
-        description: `Imported ${data.importedCount} Cloudflare logs to local storage.`,
-      });
-      
-      // Refresh the logs tab
-      fetchLogs();
-    } catch (error) {
-      console.error('Error importing Cloudflare logs:', error);
-      toast({
-        title: "Error",
-        description: "Failed to import Cloudflare logs.",
-        variant: "destructive"
-      });
-    } finally {
-      setCloudflareLogsLoading(false);
-    }
-  };
-  
-  // Handle page change for Cloudflare logs pagination
-  const handleCloudflarePageChange = (newPage: number) => {
-    setCloudflareLogFilters({
-      ...cloudflareLogFilters,
-      page: newPage
-    });
-  };
-  
-  // Load Cloudflare data when authenticated
-  useEffect(() => {
-    if (isAuthenticated && activeTab === 'cloudflare') {
-      fetchCloudflareCredentials();
-    }
-  }, [isAuthenticated, activeTab]);
-  
-  // Load Cloudflare logs when credentials are configured
-  useEffect(() => {
-    if (isAuthenticated && activeTab === 'cloudflare' && cloudflareCredentials.isConfigured) {
-      fetchCloudflareLogs();
-    }
-  }, [isAuthenticated, activeTab, cloudflareCredentials.isConfigured, cloudflareLogFilters.page]);
-
-  // When tab changes to ip-management, fetch ip lists
-  useEffect(() => {
-    if (activeTab === 'ip-management' && isAuthenticated) {
-      if (ipManagementTab === 'blacklist') {
-        fetchBlacklist();
-      } else {
-        fetchWhitelist();
-      }
-    }
-  }, [activeTab, isAuthenticated, ipManagementTab]);
 
   // Fetch appropriate data when tab changes
   useEffect(() => {
@@ -2375,13 +1690,6 @@ const AdminPage = () => {
             >
               <Shield className="w-4 h-4 mr-2" />
               Bot Policy
-            </button>
-            <button 
-              className={`px-4 py-2 font-medium ${activeTab === 'cloudflare' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-              onClick={() => setActiveTab('cloudflare')}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              CloudFlare
             </button>
           </div>
           
