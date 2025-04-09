@@ -4144,5 +4144,53 @@
     "botType": "timing_anomaly",
     "bypassAttempt": false,
     "source": "human-visitor"
+  },
+  {
+    "id": 276,
+    "timestamp": "2025-04-09T05:25:47.982Z",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "path": "/admin",
+    "country": "US",
+    "city": null,
+    "isBotConfirmed": false,
+    "fingerprint": null,
+    "headers": null,
+    "referrer": null,
+    "botType": "unknown",
+    "bypassAttempt": false,
+    "source": "human-visitor"
+  },
+  {
+    "id": 277,
+    "timestamp": "2025-04-09T05:25:50.167Z",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "path": "/@vite/client",
+    "country": "US",
+    "city": null,
+    "isBotConfirmed": false,
+    "fingerprint": null,
+    "headers": null,
+    "referrer": null,
+    "botType": "unknown",
+    "bypassAttempt": false,
+    "source": "human-visitor"
+  },
+  {
+    "id": 278,
+    "timestamp": "2025-04-09T05:25:50.195Z",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "path": "/@react-refresh",
+    "country": "US",
+    "city": null,
+    "isBotConfirmed": false,
+    "fingerprint": null,
+    "headers": null,
+    "referrer": null,
+    "botType": "unknown",
+    "bypassAttempt": false,
+    "source": "human-visitor"
   }
 ]
