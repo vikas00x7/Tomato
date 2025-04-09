@@ -15,6 +15,7 @@ import Paywall from "./pages/Paywall";
 import Admin from "./pages/Admin";
 import Blocked from "./pages/Blocked";
 import { useNavigationLogger } from "./hooks/useNavigationLogger";
+import { FingerprintProvider } from "./components/providers/FingerprintProvider";
 
 function Router() {
   // Track client-side navigation for logging
@@ -61,8 +62,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <FingerprintProvider>
+        <Router />
+        <Toaster />
+      </FingerprintProvider>
     </QueryClientProvider>
   );
 }

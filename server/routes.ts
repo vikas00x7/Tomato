@@ -1250,6 +1250,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }
 
+  // API endpoint to log fingerprint data
+  app.post('/api/log-fingerprint', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { fingerprint, path, timestamp } = req.body;
+      
+      if (!fingerprint || !fingerprint.visitorId) {
+        return res.status(400).json({ error: 'Valid fingerprint data is required' });
+      }
+      
+      // Extract IP address
+      const ip = req.headers['x-forwarded-for'] || 
+                 req.socket.remoteAddress || 
+                 'unknown';
+      
+      const ipAddress = typeof ip === 'string' ? ip : Array.isArray(ip) ? ip[0] : 'unknown';
+      
+      // Get country information
+      let country = 'unknown';
+      try {
+        const geoip = await import('geoip-lite');
+        const geo = geoip.default.lookup(ipAddress);
+        if (geo && geo.country) {
+          country = geo.country;
+        }
+      } catch (error) {
+        console.error('Error detecting country:', error);
+      }
+      
+      // Add to bot logs
+      await storage.createBotLog({
+        ipAddress: ipAddress,
+        userAgent: req.headers['user-agent'] || 'unknown',
+        path: path || req.path,
+        timestamp: new Date(timestamp) || new Date(),
+        country: country,
+        isBotConfirmed: false, // We're not making a bot determination here
+        source: 'fingerprint_api',
+        fingerprint: {
+          visitorId: fingerprint.visitorId,
+          requestId: fingerprint.requestId || 'unknown',
+          browserDetails: fingerprint.browserDetails || {}
+        },
+        botType: 'unknown',
+        bypassAttempt: false,
+        headers: {
+          ...req.headers
+        }
+      });
+      
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error logging fingerprint:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  });
+
   // Start the server
   return createServer(app);
 }
