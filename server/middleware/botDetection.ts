@@ -195,7 +195,7 @@ function getClientIp(req: Request): string {
     // If using another proxy or load balancer, get the first IP in the chain
     const forwardedIps = Array.isArray(req.headers['x-forwarded-for'])
       ? req.headers['x-forwarded-for'][0]
-      : req.headers['x-forwarded-for'];
+      : String(req.headers['x-forwarded-for']);
     
     // The x-forwarded-for header can contain multiple IPs separated by commas
     // The leftmost IP is the original client IP
@@ -247,7 +247,7 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
   const avgDeviation = deviations.reduce((a, b) => a + b, 0) / deviations.length;
   
   // If timing is too consistent (low deviation) across multiple requests
-  if (timings.length >= 5 && avgDeviation < 200 && avgTime < 5000) {
+  if (timings.length >= 5 && avgDeviation < 100 && avgTime < 2000) {
     return { 
       isUnnatural: true, 
       reason: 'Suspiciously consistent request timing' 
@@ -256,7 +256,7 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
   
   // Check for sequential access pattern (going through pages in order)
   const uniquePages = new Set(timing.pageSequence).size;
-  if (timing.pageSequence.length >= 5 && uniquePages === timing.pageSequence.length) {
+  if (timing.pageSequence.length >= 7 && uniquePages === timing.pageSequence.length) {
     return { 
       isUnnatural: true, 
       reason: 'Sequential page access pattern' 
