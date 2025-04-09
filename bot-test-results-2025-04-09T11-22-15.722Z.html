@@ -1,0 +1,1050 @@
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Bot Testing Results - 4/9/2025, 4:52:15 PM</title>
+    <style>
+      body { font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; padding: 2rem; }
+      table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+      th { background-color: #f2f2f2; }
+      tr:nth-child(even) { background-color: #f9f9f9; }
+      .redirected { background-color: #e3f2fd; }
+      .blocked { background-color: #ffdddd; }
+      .detected { background-color: #ffffcc; }
+      .allowed { background-color: #ddffdd; }
+      .error { background-color: #ffeeee; }
+      .status-badge { 
+        padding: 2px 8px; 
+        border-radius: 4px; 
+        font-size: 12px; 
+        font-weight: bold; 
+        color: white; 
+      }
+      .status-success { background-color: #4CAF50; }
+      .status-warning { background-color: #FF9800; }
+      .status-info { background-color: #2196F3; }
+      .status-error { background-color: #F44336; }
+      h1, h2 { color: #333; }
+      .summary { display: flex; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; }
+      .summary-box { 
+        padding: 1rem; 
+        border-radius: 8px; 
+        flex: 1; 
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+        min-width: 180px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      .summary-box h3 { margin-top: 0; }
+      .summary-box.redirected { background-color: #e3f2fd; }
+      .summary-box.blocked { background-color: #ffeeee; }
+      .summary-box.detected { background-color: #fff8e1; }
+      .summary-box.allowed { background-color: #e8f5e9; }
+      .summary-box.error { background-color: #fce4ec; }
+      .summary-number { font-size: 2rem; font-weight: bold; margin: 0.5rem 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Bot Testing Results</h1>
+    <p>Website: https://www.bunnylovesoaps.com</p>
+    <p>Test run: 4/9/2025, 4:52:15 PM</p>
+    
+    <h2>Summary</h2>
+    <div class="summary">
+      <div class="summary-box redirected">
+        <h3>Redirected to Paywall</h3>
+        <div class="summary-number">8</div>
+        <div>15%</div>
+      </div>
+      <div class="summary-box blocked">
+        <h3>Blocked</h3>
+        <div class="summary-number">47</div>
+        <div>85%</div>
+      </div>
+      <div class="summary-box detected">
+        <h3>Detected but Allowed</h3>
+        <div class="summary-number">0</div>
+        <div>0%</div>
+      </div>
+      <div class="summary-box allowed">
+        <h3>Not Detected</h3>
+        <div class="summary-number">0</div>
+        <div>0%</div>
+      </div>
+      <div class="summary-box error">
+        <h3>Errors</h3>
+        <div class="summary-number">0</div>
+        <div>0%</div>
+      </div>
+    </div>
+    
+    <h2>Detailed Results</h2>
+    <table>
+      <tr>
+        <th>User Agent</th>
+        <th>URL</th>
+        <th>Status</th>
+        <th>Result</th>
+        <th>Response Time</th>
+        <th>Details</th>
+      </tr>
+      
+        <tr class="blocked">
+          <td>Googlebot/2.1 (+http://www.google.com/bot.html)...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>720ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Googlebot/2.1 (+http://www.google.com/bot.html)...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>650ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>Googlebot/2.1 (+http://www.google.com/bot.html)...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>646ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fmenu
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Googlebot/2.1 (+http://www.google.com/bot.html)...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>740ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>Googlebot/2.1 (+http://www.google.com/bot.html)...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>726ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fblog
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Bingbot/2.0 (+http://www.bing.com/bingbot.htm)...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>729ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Bingbot/2.0 (+http://www.bing.com/bingbot.htm)...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>739ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>Bingbot/2.0 (+http://www.bing.com/bingbot.htm)...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>824ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fmenu
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Bingbot/2.0 (+http://www.bing.com/bingbot.htm)...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>853ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>Bingbot/2.0 (+http://www.bing.com/bingbot.htm)...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>775ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fblog
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Baiduspider/2.0; +http://www.baidu.com/search/spid...</td>
+          <td>/</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>536ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Baiduspider/2.0; +http://www.baidu.com/search/spid...</td>
+          <td>/about</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>545ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Baiduspider/2.0; +http://www.baidu.com/search/spid...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>548ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Baiduspider/2.0; +http://www.baidu.com/search/spid...</td>
+          <td>/contact</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>542ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Baiduspider/2.0; +http://www.baidu.com/search/spid...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>561ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>YandexBot/3.0; +http://yandex.com/bots...</td>
+          <td>/</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>604ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>YandexBot/3.0; +http://yandex.com/bots...</td>
+          <td>/about</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>555ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>YandexBot/3.0; +http://yandex.com/bots...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>587ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>YandexBot/3.0; +http://yandex.com/bots...</td>
+          <td>/contact</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>564ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>YandexBot/3.0; +http://yandex.com/bots...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>571ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckb...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>688ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckb...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>862ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckb...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>774ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fmenu
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckb...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>776ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckb...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>672ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fblog
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>facebookexternalhit/1.1 (+http://www.facebook.com/...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>771ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>facebookexternalhit/1.1 (+http://www.facebook.com/...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>2565ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>facebookexternalhit/1.1 (+http://www.facebook.com/...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>694ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fmenu
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>facebookexternalhit/1.1 (+http://www.facebook.com/...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>751ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="redirected">
+          <td>facebookexternalhit/1.1 (+http://www.facebook.com/...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-info">PAYWALL</span>
+          </td>
+          <td>786ms</td>
+          <td>
+            Redirected to: https://www.bunnylovesoaps.com/paywall?source=authorized_bot&returnPath=%2Fblog
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; SemrushBot/3.0; +http://w...</td>
+          <td>/</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>572ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; SemrushBot/3.0; +http://w...</td>
+          <td>/about</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>547ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; SemrushBot/3.0; +http://w...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>584ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; SemrushBot/3.0; +http://w...</td>
+          <td>/contact</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>1585ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; SemrushBot/3.0; +http://w...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>544ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>zgrab/0.x...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>703ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>zgrab/0.x...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>1859ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>zgrab/0.x...</td>
+          <td>/menu</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>698ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>zgrab/0.x...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>735ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>zgrab/0.x...</td>
+          <td>/blog</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>751ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ah...</td>
+          <td>/</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>547ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ah...</td>
+          <td>/about</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>554ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ah...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>609ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ah...</td>
+          <td>/contact</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>563ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ah...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>529ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; YandexBot/3.0; +http://ya...</td>
+          <td>/</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>1579ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; YandexBot/3.0; +http://ya...</td>
+          <td>/about</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>576ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; YandexBot/3.0; +http://ya...</td>
+          <td>/menu</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>584ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; YandexBot/3.0; +http://ya...</td>
+          <td>/contact</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>602ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (compatible; YandexBot/3.0; +http://ya...</td>
+          <td>/blog</td>
+          <td>302</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>583ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta http-eq...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...</td>
+          <td>/</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>691ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...</td>
+          <td>/about</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>837ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...</td>
+          <td>/menu</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>750ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...</td>
+          <td>/contact</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>729ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+        <tr class="blocked">
+          <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...</td>
+          <td>/blog</td>
+          <td>200</td>
+          <td>
+            <span class="status-badge status-error">BLOCKED</span>
+          </td>
+          <td>809ms</td>
+          <td>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <style data-vite-theme="" data-inject-first="">:root {
+   ...
+          </td>
+        </tr>
+      
+    </table>
+  </body>
+  </html>
+  
