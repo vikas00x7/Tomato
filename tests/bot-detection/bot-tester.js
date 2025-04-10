@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 // Configuration - CHANGE THIS TO YOUR WEBSITE
-const TARGET_WEBSITE = 'https://www.bunnylovesoaps.com';
+const TARGET_WEBSITE = 'https://bunnylovesoaps.com';
 
 // Bot user agents to test
 const botUserAgents = [
@@ -27,7 +27,13 @@ const urls = [
   '/about',
   '/menu',
   '/contact',
-  '/blog'
+  '/blog',
+  '/blog/1',
+  '/blog/2',
+  '/blog/3',
+  '/blog/4',
+  '/blog/5',
+  '/blog/6'
 ];
 
 // Run tests

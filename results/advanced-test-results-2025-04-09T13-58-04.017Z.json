@@ -1,0 +1,402 @@
+[
+  {
+    "timestamp": "2025-04-09T13:54:17.673Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:21.025Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:25.297Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:28.272Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:31.602Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/1",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:34.714Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/2",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:37.758Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/3",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:40.775Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/4",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:43.790Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/5",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:54:46.799Z",
+    "category": "Puppeteer",
+    "technique": "Headless automation",
+    "detectionPath": "/blog/6",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:55:08.771Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:14.371Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:19.481Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:24.706Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:29.826Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/1",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:34.927Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/2",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:40.080Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/3",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:45.111Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/4",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:50.407Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/5",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:55.687Z",
+    "category": "Playwright",
+    "technique": "Cross-browser scripted bot",
+    "detectionPath": "/blog/6",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:55:56.640Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:55:57.482Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/about",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:55:58.262Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/menu",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:55:59.124Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:55:59.919Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/1",
+    "detected": false,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:00.672Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/2",
+    "detected": false,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:56:01.403Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/3",
+    "detected": false,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:56:02.193Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/4",
+    "detected": false,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:56:02.987Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/5",
+    "detected": false,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:56:03.743Z",
+    "category": "curl/httpx",
+    "technique": "Raw scraper",
+    "detectionPath": "/blog/6",
+    "detected": false,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:56:11.977Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:26.150Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:31.919Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:37.554Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:43.350Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/1",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:48.636Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/2",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:56:54.337Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/3",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:00.109Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/4",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:16.414Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/5",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:33.524Z",
+    "category": "Chrome (human)",
+    "technique": "Real user",
+    "detectionPath": "/blog/6",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:40.239Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:43.481Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/about",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:57:46.453Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/menu",
+    "detected": true,
+    "redirected": true
+  },
+  {
+    "timestamp": "2025-04-09T13:57:48.946Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:51.808Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/1",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:54.136Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/2",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:56.541Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/3",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:57:58.859Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/4",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:58:01.339Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/5",
+    "detected": true,
+    "redirected": false
+  },
+  {
+    "timestamp": "2025-04-09T13:58:03.618Z",
+    "category": "Spoofed agent bot",
+    "technique": "\"Mozilla\" + automation",
+    "detectionPath": "/blog/6",
+    "detected": true,
+    "redirected": false
+  }
+]
