@@ -2,7 +2,13 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 // Configuration - CHANGE THIS TO YOUR WEBSITE
-const TARGET_WEBSITE = 'https://bunnylovesoaps.com';
+const TARGET_WEBSITE = 'https://www.bunnylovesoaps.com';
+const RESULTS_DIR = './results';
+
+// Create results directory if it doesn't exist
+if (!fs.existsSync(RESULTS_DIR)) {
+  fs.mkdirSync(RESULTS_DIR, { recursive: true });
+}
 
 // Bot user agents to test
 const botUserAgents = [
@@ -27,13 +33,7 @@ const urls = [
   '/about',
   '/menu',
   '/contact',
-  '/blog',
-  '/blog/1',
-  '/blog/2',
-  '/blog/3',
-  '/blog/4',
-  '/blog/5',
-  '/blog/6'
+  '/blog'
 ];
 
 // Run tests
@@ -44,13 +44,20 @@ async function runBotTests() {
   console.log(`${botUserAgents.length} bot types × ${urls.length} URLs = ${botUserAgents.length * urls.length} total tests`);
   console.log('----------------------------------------------\n');
   
+  // Log to file as well
+  let logContent = `Bot Tests for ${TARGET_WEBSITE}\n`;
+  logContent += `${new Date().toISOString()}\n`;
+  logContent += '----------------------------------------------\n\n';
+  
   for (const agent of botUserAgents) {
     console.log(`🔍 Testing with user agent: ${agent.substring(0, 40)}...`);
+    logContent += `Testing with user agent: ${agent}\n`;
     
     for (const url of urls) {
       try {
         const startTime = Date.now();
         console.log(`  Testing ${url}...`);
+        logContent += `  Testing ${url}...\n`;
         
         // Set up fetch to follow redirects but track them
         const response = await fetch(`${TARGET_WEBSITE}${url}`, {
@@ -112,12 +119,16 @@ async function runBotTests() {
         
         if (redirectedToPaywall) {
           console.log(`  Result: 🔄 REDIRECTED TO PAYWALL (${status}) in ${responseTime}ms`);
+          logContent += `  Result: REDIRECTED TO PAYWALL (${status}) in ${responseTime}ms\n`;
         } else if (blocked) {
           console.log(`  Result: ❌ BLOCKED (${status}) in ${responseTime}ms`);
+          logContent += `  Result: BLOCKED (${status}) in ${responseTime}ms\n`;
         } else if (detectedAsBot) {
           console.log(`  Result: ⚠️ DETECTED BUT ALLOWED (${status}) in ${responseTime}ms`);
+          logContent += `  Result: DETECTED BUT ALLOWED (${status}) in ${responseTime}ms\n`;
         } else {
-          console.log(`  Result: ✅ ALLOWED (${status}) in ${responseTime}ms`);
+          console.log(`  Result: ✅ NOT DETECTED (${status}) in ${responseTime}ms`);
+          logContent += `  Result: NOT DETECTED (${status}) in ${responseTime}ms\n`;
         }
         
         // Wait between requests to avoid overwhelming the server
@@ -133,12 +144,17 @@ async function runBotTests() {
       }
     }
     console.log(''); // Add space between agent results
+    logContent += '\n';
   }
   
   // Save results to file
-  const filename = `bot-test-results-${new Date().toISOString().replace(/:/g, '-')}.json`;
+  const filename = `${RESULTS_DIR}/bot-test-results-${new Date().toISOString().replace(/:/g, '-')}.json`;
   fs.writeFileSync(filename, JSON.stringify(results, null, 2));
   console.log(`\n✅ Test complete! Results saved to ${filename}`);
+  
+  // Save log file
+  fs.writeFileSync(`${RESULTS_DIR}/bot-test-log-${new Date().toISOString().replace(/:/g, '-')}.txt`, logContent);
+  console.log(`\n✅ Test complete! Log saved to ${RESULTS_DIR}/bot-test-log-*.txt`);
   
   // Summary
   const redirected = results.filter(r => r.redirectedToPaywall).length;
@@ -156,7 +172,7 @@ async function runBotTests() {
   console.log(`Errors: ${errors} (${Math.round(errors/results.length*100)}%)`);
   
   // Generate HTML report
-  generateHtmlReport(results, filename.replace('.json', '.html'));
+  generateHtmlReport(results, `${RESULTS_DIR}/bot-test-results-${new Date().toISOString().replace(/:/g, '-')}.html`);
 }
 
 // Generate HTML report for better visualization

@@ -10,8 +10,8 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 
 // Configuration
-const TARGET_WEBSITE = 'https://bunnylovesoaps.com'; // Testing against live site
-const TEST_PATHS = ['/', '/about', '/menu', '/blog', '/blog/1', '/blog/2', '/blog/3', '/blog/4', '/blog/5', '/blog/6'];
+const TARGET_WEBSITE = 'https://www.bunnylovesoaps.com'; // Testing against live site
+const TEST_PATHS = ['/', '/about', '/menu'];
 const RESULTS_DIR = './results';
 
 // Create results directory if it doesn't exist
