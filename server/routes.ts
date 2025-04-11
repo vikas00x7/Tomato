@@ -1395,9 +1395,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Read the logs from the file
       const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
-      const logs = fileContent ? JSON.parse(fileContent) : [];
+      const allLogs = fileContent ? JSON.parse(fileContent) : [];
       
-      res.status(200).json({ success: true, logs });
+      // Support filtering logs by source
+      const { source, ip } = req.query;
+      
+      let filteredLogs = allLogs;
+      
+      // Filter by source if provided
+      if (source) {
+        filteredLogs = filteredLogs.filter((log: any) => log.source === source);
+      }
+      
+      // Filter by IP if provided
+      if (ip) {
+        filteredLogs = filteredLogs.filter((log: any) => log.ipAddress === ip);
+      }
+      
+      res.status(200).json({ 
+        success: true, 
+        logs: filteredLogs,
+        total: filteredLogs.length,
+        filtered: source || ip ? true : false,
+        source: source || 'all',
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       console.error('Error fetching logs:', error);
       res.status(500).json({ 

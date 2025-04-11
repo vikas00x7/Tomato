@@ -179,28 +179,8 @@ const AdminPage = () => {
     try {
       setFastlyLoading(true);
       
-      // Use stored credentials if available
-      const storedApiKey = fastlyApiKey || localStorage.getItem('fastlyApiKey') || '';
-      const storedServiceId = fastlyServiceId || localStorage.getItem('fastlyServiceId') || '';
-      
-      if (!storedApiKey || !storedServiceId) {
-        toast({
-          title: "Missing Credentials",
-          description: "Please configure Fastly credentials first",
-          variant: "destructive"
-        });
-        setFastlyConfigured(false);
-        setFastlyLoading(false);
-        return;
-      }
-      
-      console.log('Fetching Fastly logs with:', {
-        serviceId: storedServiceId,
-        hasApiKey: !!storedApiKey,
-        appApiKey: apiKey.trim()
-      });
-      
-      const response = await fetch(`/api/fastly-logs?apiKey=${encodeURIComponent(storedApiKey)}&serviceId=${encodeURIComponent(storedServiceId)}&key=${encodeURIComponent(apiKey.trim())}`);
+      // Fetch logs from our own server storage instead of directly from Fastly
+      const response = await fetch(`/api/logs?source=fastly&key=${encodeURIComponent(apiKey.trim())}`);
       
       if (response.status === 401) {
         toast({
@@ -215,19 +195,22 @@ const AdminPage = () => {
       
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Fastly API error:', errorData);
+        console.error('Fastly logs error:', errorData);
         throw new Error(errorData.error || `Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
       
-      if (data && data.logs) {
-        setFastlyLogs(data.logs);
+      // Filter for Fastly logs only
+      const fastlyLogs = data.logs ? data.logs.filter((log: any) => log.source === 'fastly') : [];
+      
+      if (fastlyLogs.length > 0) {
+        setFastlyLogs(fastlyLogs);
         
         if (!isRefresh) {
           toast({
             title: "Success",
-            description: `Loaded ${data.logs.length} Fastly CDN logs`,
+            description: `Loaded ${fastlyLogs.length} Fastly CDN logs`,
             variant: "default"
           });
         }
@@ -237,7 +220,7 @@ const AdminPage = () => {
         if (!isRefresh) {
           toast({
             title: "No Logs Found",
-            description: data.message || "No Fastly CDN logs available",
+            description: "No Fastly CDN logs available yet. Check your Fastly configuration to ensure logs are being sent to your endpoint.",
             variant: "default"
           });
         }
@@ -249,11 +232,6 @@ const AdminPage = () => {
         description: error instanceof Error ? error.message : "Failed to fetch Fastly logs",
         variant: "destructive"
       });
-      
-      // If fetching fails, we likely have bad credentials
-      if (!isRefresh) {
-        setFastlyConfigured(false);
-      }
     } finally {
       setFastlyLoading(false);
     }
