@@ -1418,61 +1418,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: 'Missing required parameters: serviceId and apiKey are required' 
         });
       }
+
+      console.log(`Attempting to fetch Fastly logs for service: ${serviceId}`);
       
-      // Fastly Real-time Logging API endpoint
-      const fastlyUrl = `https://rt.fastly.com/v1/channel/${serviceId}/logs`;
-      
-      const response = await fetch(fastlyUrl, {
-        method: 'GET',
-        headers: {
-          'Fastly-Key': apiKey as string,
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        return res.status(response.status).json({
+      // Validate the Service ID format (generally alphanumeric)
+      if (typeof serviceId !== 'string' || !/^[a-zA-Z0-9]+$/.test(serviceId)) {
+        return res.status(400).json({
           success: false,
-          error: `Fastly API error: ${response.status} ${response.statusText}`,
-          details: errorText
+          error: 'Invalid Service ID format',
+          message: 'Service ID should be alphanumeric'
         });
       }
       
-      const data = await response.json();
+      // First check if the service exists
+      const serviceCheckUrl = `https://api.fastly.com/service/${serviceId}`;
       
-      // Transform the data to match our schema
-      const logs = Array.isArray(data) ? data.map((log: any, index: number) => ({
-        id: log.id || `fastly-${index}-${Date.now()}`,
-        timestamp: log.timestamp || new Date().toISOString(),
-        clientIP: log.client_ip || log.clientip || 'unknown',
-        method: log.method || null,
-        url: log.url || log.request_url || null,
-        status: log.status || null,
-        userAgent: log.user_agent || log.useragent || null,
-        referer: log.referer || null,
-        responseTime: log.response_time || log.time_elapsed || null,
-        bytesSent: log.bytes_sent || log.bytes || null,
-        cacheStatus: log.cache_status || log.cachestatus || null,
-        country: log.country || log.geo_country || null,
-        region: log.region || log.geo_region || null,
-        datacenter: log.datacenter || log.pop || null,
-        edgeResponseTime: log.edge_response_time || null,
-        source: 'fastly'
-      })) : [];
+      try {
+        const serviceCheckResponse = await fetch(serviceCheckUrl, {
+          method: 'GET',
+          headers: {
+            'Fastly-Key': apiKey as string,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!serviceCheckResponse.ok) {
+          const errorText = await serviceCheckResponse.text();
+          console.error(`Fastly service check failed: ${serviceCheckResponse.status}`, errorText);
+          
+          // Format error message based on response code
+          let errorMessage = 'Failed to validate Fastly service';
+          if (serviceCheckResponse.status === 401) {
+            errorMessage = 'Invalid Fastly API key';
+          } else if (serviceCheckResponse.status === 404) {
+            errorMessage = `Service ID '${serviceId}' not found`;
+          }
+          
+          return res.status(serviceCheckResponse.status).json({
+            success: false,
+            error: errorMessage,
+            details: errorText,
+            statusCode: serviceCheckResponse.status
+          });
+        }
+      } catch (serviceCheckError) {
+        console.error('Error checking Fastly service:', serviceCheckError);
+      }
       
-      res.status(200).json({ 
-        success: true, 
-        logs,
-        endpoint: fastlyUrl,
-        total: logs.length
-      });
-    } catch (error) {
-      console.error('Error fetching Fastly logs:', error);
+      // Use the Real-Time Logging API if the service exists
+      // Fastly Real-time Logging API endpoint
+      const fastlyUrl = `https://rt.fastly.com/v1/channel/${serviceId}/logs`;
+      
+      console.log(`Fetching logs from Fastly API: ${fastlyUrl}`);
+      
+      try {
+        const fetchResponse = await fetch(fastlyUrl, {
+          method: 'GET',
+          headers: {
+            'Fastly-Key': apiKey as string,
+            'Accept': 'application/json'
+          }
+        });
+        
+        // Handle response status
+        if (!fetchResponse.ok) {
+          const errorText = await fetchResponse.text();
+          console.error(`Fastly API error: ${fetchResponse.status}`, errorText);
+          
+          // More detailed error messages based on status codes
+          let errorMessage = `Fastly API error: ${fetchResponse.status} ${fetchResponse.statusText}`;
+          if (fetchResponse.status === 401) {
+            errorMessage = 'Authentication failed: Invalid Fastly API key';
+          } else if (fetchResponse.status === 403) {
+            errorMessage = 'Authorization failed: Your API token does not have the required permissions';
+          } else if (fetchResponse.status === 404) {
+            errorMessage = `Real-time logging not available for service ${serviceId}`;
+          }
+          
+          return res.status(fetchResponse.status).json({
+            success: false,
+            error: errorMessage,
+            details: errorText,
+            documentation: 'https://developer.fastly.com/reference/api/metrics-stats/realtime/'
+          });
+        }
+        
+        let rawData;
+        try {
+          rawData = await fetchResponse.json();
+        } catch (parseError) {
+          console.error('Error parsing Fastly response:', parseError);
+          return res.status(500).json({
+            success: false,
+            error: 'Failed to parse Fastly API response',
+            details: 'The response was not valid JSON'
+          });
+        }
+        
+        // Check if we have real data
+        if (!rawData || (Array.isArray(rawData) && rawData.length === 0)) {
+          return res.status(200).json({ 
+            success: true, 
+            logs: [],
+            message: 'No logs available from Fastly at this time',
+            endpoint: fastlyUrl
+          });
+        }
+        
+        // Transform the data to match our schema
+        const logs = Array.isArray(rawData) ? rawData.map((log: any, index: number) => ({
+          id: log.id || `fastly-${index}-${Date.now()}`,
+          timestamp: log.timestamp || new Date().toISOString(),
+          clientIP: log.client_ip || log.clientip || 'unknown',
+          method: log.method || null,
+          url: log.url || log.request_url || null,
+          status: parseInt(log.status) || null,
+          userAgent: log.user_agent || log.useragent || null,
+          referer: log.referer || null,
+          responseTime: parseFloat(log.response_time) || parseFloat(log.time_elapsed) || null,
+          bytesSent: parseInt(log.bytes_sent) || parseInt(log.bytes) || null,
+          cacheStatus: log.cache_status || log.cachestatus || null,
+          country: log.country || log.geo_country || null,
+          region: log.region || log.geo_region || null,
+          datacenter: log.datacenter || log.pop || null,
+          edgeResponseTime: parseFloat(log.edge_response_time) || null,
+          source: 'fastly'
+        })) : [];
+        
+        console.log(`Successfully fetched ${logs.length} Fastly logs`);
+        
+        res.status(200).json({ 
+          success: true, 
+          logs,
+          endpoint: fastlyUrl,
+          total: logs.length,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error fetching Fastly logs:', error);
+        
+        // Format error message
+        const errorMessage = 'Failed to fetch Fastly logs';
+        
+        res.status(500).json({ 
+          success: false, 
+          error: errorMessage,
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    } catch (outerError) {
+      console.error('Outer error handling Fastly logs request:', outerError);
       res.status(500).json({ 
         success: false, 
-        error: 'Failed to fetch Fastly logs',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Server error processing Fastly logs request',
+        details: outerError instanceof Error ? outerError.message : 'Unknown error'
       });
     }
   });

@@ -189,9 +189,16 @@ const AdminPage = () => {
           description: "Please configure Fastly credentials first",
           variant: "destructive"
         });
+        setFastlyConfigured(false);
         setFastlyLoading(false);
         return;
       }
+      
+      console.log('Fetching Fastly logs with:', {
+        serviceId: storedServiceId,
+        hasApiKey: !!storedApiKey,
+        appApiKey: apiKey.trim()
+      });
       
       const response = await fetch(`/api/fastly-logs?apiKey=${encodeURIComponent(storedApiKey)}&serviceId=${encodeURIComponent(storedServiceId)}&key=${encodeURIComponent(apiKey.trim())}`);
       
@@ -208,7 +215,8 @@ const AdminPage = () => {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch Fastly logs');
+        console.error('Fastly API error:', errorData);
+        throw new Error(errorData.error || `Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -229,7 +237,7 @@ const AdminPage = () => {
         if (!isRefresh) {
           toast({
             title: "No Logs Found",
-            description: "No Fastly CDN logs available",
+            description: data.message || "No Fastly CDN logs available",
             variant: "default"
           });
         }
@@ -241,6 +249,11 @@ const AdminPage = () => {
         description: error instanceof Error ? error.message : "Failed to fetch Fastly logs",
         variant: "destructive"
       });
+      
+      // If fetching fails, we likely have bad credentials
+      if (!isRefresh) {
+        setFastlyConfigured(false);
+      }
     } finally {
       setFastlyLoading(false);
     }
@@ -322,26 +335,48 @@ const AdminPage = () => {
   // Function to check if Fastly is configured
   const checkFastlyConfiguration = async () => {
     try {
+      if (!isAuthenticated || !apiKey) {
+        return;
+      }
+      
+      setFastlyLoading(true);
       const response = await fetch(`/api/fastly-credentials?key=${encodeURIComponent(apiKey.trim())}`);
       
       if (!response.ok) {
+        console.error('Failed to check Fastly configuration:', response.status, response.statusText);
+        setFastlyConfigured(false);
+        setFastlyLoading(false);
         return;
       }
       
       const data = await response.json();
       
-      if (data.success && data.isConfigured) {
-        setFastlyConfigured(true);
-        setFastlyServiceId(data.serviceId || '');
-        
-        // Try to get from localStorage
+      // Only set configured if we have both serviceId and a valid API key
+      if (data.success && data.isConfigured && data.serviceId) {
+        // Get API key from localStorage
         const storedApiKey = localStorage.getItem('fastlyApiKey');
+        
         if (storedApiKey) {
           setFastlyApiKey(storedApiKey);
+          setFastlyServiceId(data.serviceId || '');
+          setFastlyConfigured(true);
+        } else {
+          // We have a stored configuration but missing API key in localStorage
+          setFastlyConfigured(false);
+          toast({
+            title: "Incomplete Configuration",
+            description: "Fastly Service ID found, but API Key is missing. Please re-enter your credentials.",
+            variant: "destructive"
+          });
         }
+      } else {
+        setFastlyConfigured(false);
       }
+      setFastlyLoading(false);
     } catch (error) {
       console.error('Error checking Fastly configuration:', error);
+      setFastlyConfigured(false);
+      setFastlyLoading(false);
     }
   };
 
@@ -1045,6 +1080,9 @@ const AdminPage = () => {
                         value={fastlyApiKey}
                         onChange={(e) => setFastlyApiKey(e.target.value)}
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Find this in your Fastly account under Personal API tokens
+                      </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">Fastly Service ID</label>
@@ -1054,16 +1092,38 @@ const AdminPage = () => {
                         value={fastlyServiceId}
                         onChange={(e) => setFastlyServiceId(e.target.value)}
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Find this in your service configuration or URL
+                      </p>
                     </div>
                   </div>
-                  <Button 
-                    onClick={saveFastlyCredentials}
-                    disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
-                  >
-                    {fastlyLoading ? 'Saving...' : 'Save Credentials'}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={saveFastlyCredentials}
+                      disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
+                    >
+                      {fastlyLoading ? 'Saving...' : 'Save Credentials'}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        if (fastlyApiKey && fastlyServiceId) {
+                          fetchFastlyLogs();
+                        } else {
+                          toast({
+                            title: "Missing Fields",
+                            description: "Please enter both API Key and Service ID",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                      disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
+                    >
+                      Test Connection
+                    </Button>
+                  </div>
                   <p className="text-sm text-gray-500 mt-2">
-                    You can find your Fastly API key in your Fastly account settings and your Service ID in the service configuration.
+                    You can find your Fastly API key in your Fastly account settings under "Personal API tokens" and your Service ID in the service configuration.
                   </p>
                 </div>
               ) : (
