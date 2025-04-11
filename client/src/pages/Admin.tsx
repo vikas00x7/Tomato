@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield } from 'lucide-react';
+import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart as RechartPieChart, Pie, Cell, LineChart, Line
@@ -38,7 +38,7 @@ interface AnalyticsData {
 }
 
 // Define tabs for the admin dashboard
-type TabType = 'analytics' | 'logs';
+type TabType = 'analytics' | 'logs' | 'fastly';
 
 // COLORS for charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
@@ -46,17 +46,22 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'
 const AdminPage = () => {
   const { toast } = useToast();
   const [logs, setLogs] = useState<BotLog[]>([]);
+  const [fastlyLogs, setFastlyLogs] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   
   // States for UI controls
   const [activeTab, setActiveTab] = useState<TabType>('analytics');
   const [loading, setLoading] = useState(false);
+  const [fastlyLoading, setFastlyLoading] = useState(false);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // User inputs
   const [apiKey, setApiKey] = useState('');
   const [ipFilter, setIpFilter] = useState('');
+  const [fastlyApiKey, setFastlyApiKey] = useState('');
+  const [fastlyServiceId, setFastlyServiceId] = useState('');
+  const [fastlyConfigured, setFastlyConfigured] = useState(false);
   
   // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
@@ -166,6 +171,177 @@ const AdminPage = () => {
       if (!silent) {
         setLoading(false);
       }
+    }
+  };
+
+  // Function to fetch Fastly CDN logs
+  const fetchFastlyLogs = async (isRefresh = false) => {
+    try {
+      setFastlyLoading(true);
+      
+      // Use stored credentials if available
+      const storedApiKey = fastlyApiKey || localStorage.getItem('fastlyApiKey') || '';
+      const storedServiceId = fastlyServiceId || localStorage.getItem('fastlyServiceId') || '';
+      
+      if (!storedApiKey || !storedServiceId) {
+        toast({
+          title: "Missing Credentials",
+          description: "Please configure Fastly credentials first",
+          variant: "destructive"
+        });
+        setFastlyLoading(false);
+        return;
+      }
+      
+      const response = await fetch(`/api/fastly-logs?apiKey=${encodeURIComponent(storedApiKey)}&serviceId=${encodeURIComponent(storedServiceId)}&key=${encodeURIComponent(apiKey.trim())}`);
+      
+      if (response.status === 401) {
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid API key. Please check and try again.",
+          variant: "destructive"
+        });
+        setIsAuthenticated(false);
+        setFastlyLoading(false);
+        return;
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch Fastly logs');
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.logs) {
+        setFastlyLogs(data.logs);
+        
+        if (!isRefresh) {
+          toast({
+            title: "Success",
+            description: `Loaded ${data.logs.length} Fastly CDN logs`,
+            variant: "default"
+          });
+        }
+      } else {
+        setFastlyLogs([]);
+        
+        if (!isRefresh) {
+          toast({
+            title: "No Logs Found",
+            description: "No Fastly CDN logs available",
+            variant: "default"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Fastly logs:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to fetch Fastly logs",
+        variant: "destructive"
+      });
+    } finally {
+      setFastlyLoading(false);
+    }
+  };
+
+  // Function to save Fastly credentials
+  const saveFastlyCredentials = async () => {
+    try {
+      setFastlyLoading(true);
+      
+      if (!fastlyApiKey || !fastlyServiceId) {
+        toast({
+          title: "Missing Fields",
+          description: "Please enter both API Key and Service ID",
+          variant: "destructive"
+        });
+        setFastlyLoading(false);
+        return;
+      }
+      
+      const response = await fetch('/api/fastly-credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey.trim()
+        },
+        body: JSON.stringify({
+          apiKey: fastlyApiKey,
+          serviceId: fastlyServiceId
+        })
+      });
+      
+      if (response.status === 401) {
+        toast({
+          title: "Authentication Failed",
+          description: "Invalid API key. Please check and try again.",
+          variant: "destructive"
+        });
+        setIsAuthenticated(false);
+        setFastlyLoading(false);
+        return;
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save Fastly credentials');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setFastlyConfigured(true);
+        
+        // Save to localStorage for convenience
+        localStorage.setItem('fastlyApiKey', fastlyApiKey);
+        localStorage.setItem('fastlyServiceId', fastlyServiceId);
+        
+        toast({
+          title: "Success",
+          description: "Fastly credentials saved successfully",
+          variant: "default"
+        });
+        
+        // Fetch logs with the new credentials
+        fetchFastlyLogs();
+      }
+    } catch (error) {
+      console.error('Error saving Fastly credentials:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save Fastly credentials",
+        variant: "destructive"
+      });
+    } finally {
+      setFastlyLoading(false);
+    }
+  };
+
+  // Function to check if Fastly is configured
+  const checkFastlyConfiguration = async () => {
+    try {
+      const response = await fetch(`/api/fastly-credentials?key=${encodeURIComponent(apiKey.trim())}`);
+      
+      if (!response.ok) {
+        return;
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.isConfigured) {
+        setFastlyConfigured(true);
+        setFastlyServiceId(data.serviceId || '');
+        
+        // Try to get from localStorage
+        const storedApiKey = localStorage.getItem('fastlyApiKey');
+        if (storedApiKey) {
+          setFastlyApiKey(storedApiKey);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking Fastly configuration:', error);
     }
   };
 
@@ -850,6 +1026,141 @@ const AdminPage = () => {
             </div>
           </>
         );
+      
+      case 'fastly':
+        return (
+          <>
+            <Card className="p-6 mb-6">
+              <h2 className="text-xl font-semibold mb-4">Fastly CDN Logs</h2>
+              
+              {!fastlyConfigured ? (
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium mb-2">Configure Fastly Credentials</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Fastly API Key</label>
+                      <Input 
+                        type="password" 
+                        placeholder="Enter Fastly API Key" 
+                        value={fastlyApiKey}
+                        onChange={(e) => setFastlyApiKey(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Fastly Service ID</label>
+                      <Input 
+                        type="text" 
+                        placeholder="Enter Fastly Service ID" 
+                        value={fastlyServiceId}
+                        onChange={(e) => setFastlyServiceId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={saveFastlyCredentials}
+                    disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
+                  >
+                    {fastlyLoading ? 'Saving...' : 'Save Credentials'}
+                  </Button>
+                  <p className="text-sm text-gray-500 mt-2">
+                    You can find your Fastly API key in your Fastly account settings and your Service ID in the service configuration.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Service ID:</span> {fastlyServiceId}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Endpoint:</span> https://rt.fastly.com/v1/channel/{fastlyServiceId}/logs
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setFastlyConfigured(false)}
+                    >
+                      Change Credentials
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => fetchFastlyLogs(true)}
+                      disabled={fastlyLoading}
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              <div className="border rounded-md overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Client IP</TableHead>
+                      <TableHead>Method</TableHead>
+                      <TableHead>URL</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Cache</TableHead>
+                      <TableHead>Country</TableHead>
+                      <TableHead>Response Time</TableHead>
+                      <TableHead>Bytes</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fastlyLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className="text-center py-4">
+                          Loading Fastly logs...
+                        </TableCell>
+                      </TableRow>
+                    ) : fastlyLogs.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={9} className="text-center py-4">
+                          No Fastly logs available. {!fastlyConfigured && 'Configure your Fastly credentials to view logs.'}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      fastlyLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell>{formatDate(log.timestamp)}</TableCell>
+                          <TableCell>{log.clientIP}</TableCell>
+                          <TableCell>{log.method || 'N/A'}</TableCell>
+                          <TableCell className="max-w-[200px] truncate" title={log.url}>
+                            {log.url || 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            <span className={
+                              log.status >= 200 && log.status < 300 ? 'text-green-500' :
+                              log.status >= 400 && log.status < 500 ? 'text-orange-500' :
+                              log.status >= 500 ? 'text-red-500' : 'text-gray-500'
+                            }>
+                              {log.status || 'N/A'}
+                            </span>
+                          </TableCell>
+                          <TableCell>{log.cacheStatus || 'N/A'}</TableCell>
+                          <TableCell>{log.country || 'N/A'}</TableCell>
+                          <TableCell>{log.responseTime ? `${log.responseTime}ms` : 'N/A'}</TableCell>
+                          <TableCell>{log.bytesSent ? `${(log.bytesSent / 1024).toFixed(2)}KB` : 'N/A'}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              <div className="mt-4 text-sm text-gray-500">
+                <p>Total logs: {fastlyLogs.length}</p>
+                <p>Last updated: {new Date().toLocaleString()}</p>
+              </div>
+            </Card>
+          </>
+        );
       default:
         return <div>Select a tab to view content</div>;
     }
@@ -864,6 +1175,12 @@ const AdminPage = () => {
           break;
         case 'logs':
           fetchLogs();
+          break;
+        case 'fastly':
+          checkFastlyConfiguration();
+          if (fastlyConfigured) {
+            fetchFastlyLogs();
+          }
           break;
       }
     }
@@ -906,6 +1223,13 @@ const AdminPage = () => {
             >
               <List className="w-4 h-4 mr-2" />
               Logs
+            </button>
+            <button 
+              className={`px-4 py-2 font-medium ${activeTab === 'fastly' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+              onClick={() => setActiveTab('fastly')}
+            >
+              <Cloud className="w-4 h-4 mr-2" />
+              Fastly CDN
             </button>
           </div>
           

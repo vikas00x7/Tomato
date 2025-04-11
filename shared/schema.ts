@@ -126,3 +126,36 @@ export const cloudflareLogSchema = z.object({
 });
 
 export type CloudflareLog = z.infer<typeof cloudflareLogSchema>;
+
+// Fastly CDN credentials schema
+export const fastlyCredentialsSchema = z.object({
+  apiKey: z.string().trim().min(1, 'API Key is required'),
+  serviceId: z.string().trim().min(1, 'Service ID is required'),
+  isConfigured: z.boolean().optional(),
+  skipValidation: z.boolean().optional(),
+  useMockMode: z.boolean().optional()
+});
+
+export type FastlyCredentials = z.infer<typeof fastlyCredentialsSchema>;
+
+// Fastly CDN log entry schema for displaying in the admin
+export const fastlyLogSchema = z.object({
+  id: z.string(),
+  timestamp: z.string().transform(val => new Date(val)),
+  clientIP: z.string(),
+  method: z.string().nullable(),
+  url: z.string().nullable(),
+  status: z.number().nullable(),
+  userAgent: z.string().nullable(),
+  referer: z.string().nullable(),
+  responseTime: z.number().nullable(),
+  bytesSent: z.number().nullable(),
+  cacheStatus: z.string().nullable(),
+  country: z.string().nullable(),
+  region: z.string().nullable(),
+  datacenter: z.string().nullable(),
+  edgeResponseTime: z.number().nullable(),
+  source: z.string().default('fastly')
+});
+
+export type FastlyLog = z.infer<typeof fastlyLogSchema>;

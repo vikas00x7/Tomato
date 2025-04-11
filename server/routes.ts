@@ -6,7 +6,8 @@ import {
   botPolicySchema, 
   cloudflareCredentialsSchema, 
   cloudflareLogSchema, 
-  type CloudflareCredentials 
+  type CloudflareCredentials,
+  fastlyCredentialsSchema
 } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
@@ -1382,6 +1383,207 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API endpoint to get logs
+  app.get('/api/logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Check if the logs file exists
+      if (!fs.existsSync(LOG_FILE_PATH)) {
+        // Create an empty logs file if it doesn't exist
+        fs.writeFileSync(LOG_FILE_PATH, JSON.stringify([], null, 2));
+      }
+      
+      // Read the logs from the file
+      const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
+      const logs = fileContent ? JSON.parse(fileContent) : [];
+      
+      res.status(200).json({ success: true, logs });
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to fetch logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // API endpoint to get Fastly CDN logs
+  app.get('/api/fastly-logs', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const { serviceId, apiKey } = req.query;
+      
+      if (!serviceId || !apiKey) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Missing required parameters: serviceId and apiKey are required' 
+        });
+      }
+      
+      // Fastly Real-time Logging API endpoint
+      const fastlyUrl = `https://rt.fastly.com/v1/channel/${serviceId}/logs`;
+      
+      const response = await fetch(fastlyUrl, {
+        method: 'GET',
+        headers: {
+          'Fastly-Key': apiKey as string,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        return res.status(response.status).json({
+          success: false,
+          error: `Fastly API error: ${response.status} ${response.statusText}`,
+          details: errorText
+        });
+      }
+      
+      const data = await response.json();
+      
+      // Transform the data to match our schema
+      const logs = Array.isArray(data) ? data.map((log: any, index: number) => ({
+        id: log.id || `fastly-${index}-${Date.now()}`,
+        timestamp: log.timestamp || new Date().toISOString(),
+        clientIP: log.client_ip || log.clientip || 'unknown',
+        method: log.method || null,
+        url: log.url || log.request_url || null,
+        status: log.status || null,
+        userAgent: log.user_agent || log.useragent || null,
+        referer: log.referer || null,
+        responseTime: log.response_time || log.time_elapsed || null,
+        bytesSent: log.bytes_sent || log.bytes || null,
+        cacheStatus: log.cache_status || log.cachestatus || null,
+        country: log.country || log.geo_country || null,
+        region: log.region || log.geo_region || null,
+        datacenter: log.datacenter || log.pop || null,
+        edgeResponseTime: log.edge_response_time || null,
+        source: 'fastly'
+      })) : [];
+      
+      res.status(200).json({ 
+        success: true, 
+        logs,
+        endpoint: fastlyUrl,
+        total: logs.length
+      });
+    } catch (error) {
+      console.error('Error fetching Fastly logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to fetch Fastly logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // API endpoint to save Fastly credentials
+  app.post('/api/fastly-credentials', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      // Validate the request body against the schema
+      const result = fastlyCredentialsSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Invalid Fastly credentials',
+          details: result.error.errors 
+        });
+      }
+      
+      const credentials = result.data;
+      
+      // Test the credentials if not skipping validation
+      if (!credentials.skipValidation) {
+        // Test connection to Fastly API
+        const testUrl = `https://api.fastly.com/service/${credentials.serviceId}`;
+        const testResponse = await fetch(testUrl, {
+          method: 'GET',
+          headers: {
+            'Fastly-Key': credentials.apiKey,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!testResponse.ok) {
+          const errorText = await testResponse.text();
+          return res.status(400).json({
+            success: false,
+            error: 'Failed to validate Fastly credentials',
+            details: `API returned ${testResponse.status}: ${errorText}`
+          });
+        }
+      }
+      
+      // Store the credentials (in a production environment, use a secure storage method)
+      // For this example, we'll store in environment variables or a config file
+      process.env.FASTLY_API_KEY = credentials.apiKey;
+      process.env.FASTLY_SERVICE_ID = credentials.serviceId;
+      
+      // Save to a config file for persistence
+      const configPath = './config/fastly.json';
+      
+      // Ensure directory exists
+      const dir = './config';
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      fs.writeFileSync(configPath, JSON.stringify({
+        apiKey: credentials.apiKey,
+        serviceId: credentials.serviceId,
+        isConfigured: true,
+        lastUpdated: new Date().toISOString()
+      }, null, 2));
+      
+      res.status(200).json({ 
+        success: true, 
+        message: 'Fastly credentials saved successfully',
+        isConfigured: true
+      });
+    } catch (error) {
+      console.error('Error saving Fastly credentials:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to save Fastly credentials',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
+  // API endpoint to get Fastly credentials status
+  app.get('/api/fastly-credentials', validateApiKey, async (req: Request, res: Response) => {
+    try {
+      const configPath = './config/fastly.json';
+      
+      if (!fs.existsSync(configPath)) {
+        return res.status(200).json({ 
+          success: true, 
+          isConfigured: false,
+          message: 'Fastly credentials not configured'
+        });
+      }
+      
+      const fileContent = fs.readFileSync(configPath, 'utf8');
+      const config = JSON.parse(fileContent);
+      
+      // Don't return the actual API key for security
+      return res.status(200).json({ 
+        success: true, 
+        isConfigured: config.isConfigured || false,
+        serviceId: config.serviceId,
+        lastUpdated: config.lastUpdated
+      });
+    } catch (error) {
+      console.error('Error checking Fastly credentials:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to check Fastly credentials',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Start the server
   return createServer(app);
 }
@@ -1402,4 +1604,22 @@ interface CloudflareSecurityEvent {
   edgeResponseStatus?: string;
   edgeStartTimestamp?: string;
   originResponseStatus?: string;
+}
+
+// Interface for Fastly CDN log entry
+interface FastlyCDNLog {
+  timestamp?: string;
+  clientIP?: string;
+  method?: string;
+  url?: string;
+  status?: number;
+  userAgent?: string;
+  referer?: string;
+  responseTime?: number;
+  bytesSent?: number;
+  cacheStatus?: string;
+  country?: string;
+  region?: string;
+  datacenter?: string;
+  edgeResponseTime?: number;
 }
