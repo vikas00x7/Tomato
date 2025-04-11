@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
@@ -1678,6 +1679,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         error: 'Failed to check Fastly credentials',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Endpoint to receive Fastly logs
+  app.post('/api/fastly-logs-receiver', express.json({type: 'application/json', limit: '50mb'}), async (req: Request, res: Response) => {
+    try {
+      // Store the incoming logs
+      const incomingLogs = req.body;
+      console.log('Received Fastly logs:', JSON.stringify(incomingLogs).substring(0, 200) + '...');
+      
+      // Save to file
+      let existingLogs = [];
+      if (fs.existsSync(LOG_FILE_PATH)) {
+        const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
+        existingLogs = fileContent ? JSON.parse(fileContent) : [];
+      }
+      
+      // Format the logs if they're in an array
+      let newLogs = [];
+      if (Array.isArray(incomingLogs)) {
+        newLogs = incomingLogs.map((log, index) => ({
+          id: log.id || `fastly-${Date.now()}-${index}`,
+          timestamp: log.timestamp || new Date().toISOString(),
+          ipAddress: log.client_ip || log.clientip || 'unknown',
+          userAgent: log.user_agent || log.useragent || null,
+          path: log.url || log.request_url || null,
+          country: log.country || log.geo_country || null,
+          isBotConfirmed: false, // Fastly doesn't provide bot detection
+          botType: null,
+          bypassAttempt: false,
+          source: 'fastly',
+          method: log.method || null,
+          status: log.status || null,
+          responseTime: log.response_time || null,
+          cacheStatus: log.cache_status || null,
+          bytesSent: log.bytes_sent || null
+        }));
+      } else {
+        // If it's a single log entry
+        newLogs = [{
+          id: `fastly-${Date.now()}`,
+          timestamp: incomingLogs.timestamp || new Date().toISOString(),
+          ipAddress: incomingLogs.client_ip || incomingLogs.clientip || 'unknown',
+          userAgent: incomingLogs.user_agent || incomingLogs.useragent || null,
+          path: incomingLogs.url || incomingLogs.request_url || null,
+          country: incomingLogs.country || incomingLogs.geo_country || null,
+          isBotConfirmed: false,
+          botType: null,
+          bypassAttempt: false,
+          source: 'fastly',
+          method: incomingLogs.method || null,
+          status: incomingLogs.status || null,
+          responseTime: incomingLogs.response_time || null,
+          cacheStatus: incomingLogs.cache_status || null,
+          bytesSent: incomingLogs.bytes_sent || null
+        }];
+      }
+      
+      // Add new logs to existing logs
+      existingLogs = [...existingLogs, ...newLogs];
+      
+      // Save back to file
+      fs.writeFileSync(LOG_FILE_PATH, JSON.stringify(existingLogs, null, 2));
+      
+      console.log(`Saved ${newLogs.length} new Fastly logs. Total logs: ${existingLogs.length}`);
+      
+      // Return success
+      res.status(200).json({ 
+        success: true, 
+        message: `Received ${newLogs.length} Fastly logs`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error processing Fastly logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to process Fastly logs',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
