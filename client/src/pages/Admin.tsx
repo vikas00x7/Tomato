@@ -269,6 +269,7 @@ const AdminPage = () => {
   const fetchRegularLogs = async () => {
     console.log('Falling back to source=fastly filter from regular logs');
     try {
+      // This is a fallback mechanism when the Fastly real-time API is not available
       const response = await fetch(`/api/logs?source=fastly&key=${encodeURIComponent(apiKey.trim())}`);
       console.log('Fallback logs response:', response.status, response.statusText);
       
