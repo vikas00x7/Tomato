@@ -188,10 +188,10 @@ const AdminPage = () => {
       
       if (fastlyServiceId && fastlyApiKey) {
         // If we have Fastly credentials, use them
-        console.log('Using Fastly credentials to fetch logs');
+        console.log('Using Fastly credentials to fetch logs---------');
         try {
           const response = await fetch(`${apiUrl}&serviceId=${encodeURIComponent(fastlyServiceId)}&apiKey=${encodeURIComponent(fastlyApiKey)}`);
-          console.log('Fastly logs response:', response.status, response.statusText);
+          console.log('Fastly logs response:=========', response.status, response.statusText);
           
           if (response.status === 401) {
             console.error('Authentication failed with status 401');

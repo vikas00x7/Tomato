@@ -1432,7 +1432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to get Fastly CDN logs
   app.get('/api/fastly-logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      console.log('===== FASTLY LOGS API REQUEST =====');
+      console.log('===== FASTLY LOGS API REQUEST =====>>>>>>>>>>>>>>>>>>>>>>>');
       console.log('Request query parameters:', req.query);
       console.log('Request headers:', req.headers);
       
@@ -1442,14 +1442,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Missing required parameters: serviceId and/or apiKey');
         return res.status(400).json({ 
           success: false, 
-          error: 'Missing required parameters: serviceId and apiKey are required' 
+          error: 'Missing required parameters: apiKey and serviceId are required' 
         });
       }
 
-      console.log(`Attempting to fetch Fastly logs for service: ${serviceId}`);
+      // console.log(`Attempting to fetch Fastly logs for service: ${serviceId}`);
       
       // Validate the Service ID format (generally alphanumeric)
-      if (typeof serviceId !== 'string' || !/^[a-zA-Z0-9]+$/.test(serviceId)) {
+      console.log('Service ID type:---------', serviceId);
+      if (typeof serviceId !== 'string') {
         return res.status(400).json({
           success: false,
           error: 'Invalid Service ID format',
@@ -1498,7 +1499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Use the Real-Time Logging API if the service exists
       // Fastly Real-time Logging API endpoint
-      const fastlyUrl = `https://rt.fastly.com/v1/channel/${serviceId}/logs`;
+      const fastlyUrl = `https://rt.fastly.com/v1/channel/${serviceId.trim()}/logs`;
       
       console.log(`Fetching logs from Fastly API: ${fastlyUrl}`);
       
@@ -1516,7 +1517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
         
-        console.log('Fastly logs response status:', fetchResponse.status);
+        console.log('Fastly logs response status:-------------', fetchResponse);
         
         if (!fetchResponse.ok) {
           const errorText = await fetchResponse.text();
@@ -1727,7 +1728,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is a Fastly challenge request
       if (req.headers['fastly-challenge']) {
         console.log('Received Fastly challenge request:', req.headers['fastly-challenge']);
-        return res.status(200).send(req.headers['fastly-challenge']);
+        // The challenge response must be the hex(sha256) of the service ID
+        const serviceId = '93PPrKHinJIdt6i9nIWLY2'; // Your service ID from memory
+        const crypto = require('crypto');
+        const sha256Hex = crypto.createHash('sha256').update(serviceId).digest('hex');
+        console.log('Responding with SHA256 of service ID:', sha256Hex);
+        return res.status(200).send(sha256Hex);
       }
       
       // Store the incoming logs
@@ -1816,7 +1822,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is a Fastly challenge request
       if (req.headers['fastly-challenge']) {
         console.log('Received Fastly challenge request:', req.headers['fastly-challenge']);
-        return res.status(200).send(req.headers['fastly-challenge']);
+        // The challenge response must be the hex(sha256) of the service ID
+        const serviceId = '93PPrKHinJIdt6i9nIWLY2'; // Your service ID from memory
+        const crypto = require('crypto');
+        const sha256Hex = crypto.createHash('sha256').update(serviceId).digest('hex');
+        console.log('Responding with SHA256 of service ID:', sha256Hex);
+        return res.status(200).send(sha256Hex);
       }
       
       // Process the logs
@@ -1886,7 +1897,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Check if this is a Fastly challenge request
       if (req.headers['fastly-challenge']) {
-        return res.status(200).send(req.headers['fastly-challenge']);
+        console.log('Received Fastly challenge request:', req.headers['fastly-challenge']);
+        // The challenge response must be the hex(sha256) of the service ID
+        const serviceId = '93PPrKHinJIdt6i9nIWLY2'; // Your service ID from memory
+        const crypto = require('crypto');
+        const sha256Hex = crypto.createHash('sha256').update(serviceId).digest('hex');
+        console.log('Responding with SHA256 of service ID:', sha256Hex);
+        return res.status(200).send(sha256Hex);
       }
       
       // Process the logs
