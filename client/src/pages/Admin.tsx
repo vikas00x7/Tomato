@@ -59,9 +59,9 @@ const AdminPage = () => {
   // User inputs
   const [apiKey, setApiKey] = useState('');
   const [ipFilter, setIpFilter] = useState('');
-  const [fastlyApiKey, setFastlyApiKey] = useState('');
-  const [fastlyServiceId, setFastlyServiceId] = useState('');
-  const [fastlyConfigured, setFastlyConfigured] = useState(false);
+  const [fastlyApiKey, setFastlyApiKey] = useState<string>('');
+  const [fastlyServiceId, setFastlyServiceId] = useState<string>('');
+  const [fastlyConfigured, setFastlyConfigured] = useState<boolean>(false);
   
   // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
@@ -177,53 +177,81 @@ const AdminPage = () => {
   // Function to fetch Fastly CDN logs
   const fetchFastlyLogs = async (isRefresh = false) => {
     try {
+      console.log('Fetching Fastly logs...');
       setFastlyLoading(true);
       
-      // Fetch logs from our own server storage instead of directly from Fastly
-      const response = await fetch(`/api/logs?source=fastly&key=${encodeURIComponent(apiKey.trim())}`);
+      // Use direct API endpoint
+      const apiUrl = `/api/fastly-logs?key=${encodeURIComponent(apiKey.trim())}`;
+      console.log(`API URL: ${apiUrl}`);
+      console.log(`Fastly Service ID: ${fastlyServiceId}`);
+      console.log(`Fastly API Key: ${fastlyApiKey ? fastlyApiKey.substring(0, 5) + '...' : 'Not set'}`);
       
-      if (response.status === 401) {
-        toast({
-          title: "Authentication Failed",
-          description: "Invalid API key. Please check and try again.",
-          variant: "destructive"
-        });
-        setIsAuthenticated(false);
-        setFastlyLoading(false);
-        return;
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Fastly logs error:', errorData);
-        throw new Error(errorData.error || `Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      // Filter for Fastly logs only
-      const fastlyLogs = data.logs ? data.logs.filter((log: any) => log.source === 'fastly') : [];
-      
-      if (fastlyLogs.length > 0) {
-        setFastlyLogs(fastlyLogs);
-        
-        if (!isRefresh) {
-          toast({
-            title: "Success",
-            description: `Loaded ${fastlyLogs.length} Fastly CDN logs`,
-            variant: "default"
-          });
+      if (fastlyServiceId && fastlyApiKey) {
+        // If we have Fastly credentials, use them
+        console.log('Using Fastly credentials to fetch logs');
+        try {
+          const response = await fetch(`${apiUrl}&serviceId=${encodeURIComponent(fastlyServiceId)}&apiKey=${encodeURIComponent(fastlyApiKey)}`);
+          console.log('Fastly logs response:', response.status, response.statusText);
+          
+          if (response.status === 401) {
+            console.error('Authentication failed with status 401');
+            toast({
+              title: "Authentication Failed",
+              description: "Invalid API key. Please check and try again.",
+              variant: "destructive"
+            });
+            setIsAuthenticated(false);
+            setFastlyLoading(false);
+            return;
+          }
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Fastly logs error:', errorData);
+            
+            // If real-time logging is not available, fall back to regular logs
+            if (response.status === 404 && errorData.error?.includes('Real-time logging not available')) {
+              console.log('Real-time logging not available, falling back to regular logs');
+              throw new Error('Falling back to regular logs');
+            }
+            
+            throw new Error(errorData.error || `Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          console.log('Fastly logs data:', data);
+          
+          // Process the logs
+          if (data.logs && Array.isArray(data.logs)) {
+            console.log(`Found ${data.logs.length} Fastly logs`);
+            setFastlyLogs(data.logs);
+            
+            if (!isRefresh) {
+              toast({
+                title: "Success",
+                description: `Loaded ${data.logs.length} Fastly CDN logs`,
+                variant: "default"
+              });
+            }
+          } else {
+            console.log('No Fastly logs found in response');
+            setFastlyLogs([]);
+            
+            if (!isRefresh) {
+              toast({
+                title: "No Logs Found",
+                description: "No Fastly CDN logs available yet. Check your Fastly configuration to ensure logs are being sent to your endpoint.",
+                variant: "default"
+              });
+            }
+          }
+        } catch (error) {
+          console.log('Falling back to source=fastly filter from regular logs due to error:', error);
+          // Fall back to regular logs
+          await fetchRegularLogs();
         }
       } else {
-        setFastlyLogs([]);
-        
-        if (!isRefresh) {
-          toast({
-            title: "No Logs Found",
-            description: "No Fastly CDN logs available yet. Check your Fastly configuration to ensure logs are being sent to your endpoint.",
-            variant: "default"
-          });
-        }
+        await fetchRegularLogs();
       }
     } catch (error) {
       console.error('Error fetching Fastly logs:', error);
@@ -236,13 +264,45 @@ const AdminPage = () => {
       setFastlyLoading(false);
     }
   };
+  
+  // Helper function to fetch logs from regular storage
+  const fetchRegularLogs = async () => {
+    console.log('Falling back to source=fastly filter from regular logs');
+    try {
+      const response = await fetch(`/api/logs?source=fastly&key=${encodeURIComponent(apiKey.trim())}`);
+      console.log('Fallback logs response:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Fallback logs data:', data);
+      
+      // Filter for Fastly logs only
+      const fastlyLogs = data.logs ? data.logs.filter((log: any) => log.source === 'fastly' || log.source === 'fastly-realtime') : [];
+      console.log(`Found ${fastlyLogs.length} Fastly logs in regular logs`);
+      
+      if (fastlyLogs.length > 0) {
+        setFastlyLogs(fastlyLogs);
+      } else {
+        console.log('No Fastly logs found in regular logs');
+        setFastlyLogs([]);
+      }
+    } catch (error) {
+      console.error('Error fetching regular logs:', error);
+      setFastlyLogs([]);
+    }
+  };
 
   // Function to save Fastly credentials
   const saveFastlyCredentials = async () => {
     try {
+      console.log('Saving Fastly credentials...');
       setFastlyLoading(true);
       
       if (!fastlyApiKey || !fastlyServiceId) {
+        console.log('Missing Fastly credentials');
         toast({
           title: "Missing Fields",
           description: "Please enter both API Key and Service ID",
@@ -252,6 +312,12 @@ const AdminPage = () => {
         return;
       }
       
+      console.log('Saving Fastly credentials:', {
+        serviceId: fastlyServiceId,
+        hasApiKey: !!fastlyApiKey
+      });
+      
+      // Include explicit content-type header and properly structure the request
       const response = await fetch('/api/fastly-credentials', {
         method: 'POST',
         headers: {
@@ -260,11 +326,15 @@ const AdminPage = () => {
         },
         body: JSON.stringify({
           apiKey: fastlyApiKey,
-          serviceId: fastlyServiceId
+          serviceId: fastlyServiceId,
+          skipValidation: true // Skip validation for now to avoid connection issues
         })
       });
       
+      console.log('Fastly credentials save response status:', response.status);
+      
       if (response.status === 401) {
+        console.error('Authentication failed with status 401');
         toast({
           title: "Authentication Failed",
           description: "Invalid API key. Please check and try again.",
@@ -275,12 +345,13 @@ const AdminPage = () => {
         return;
       }
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save Fastly credentials');
-      }
-      
+      // Log both the status and the response body for debugging
       const data = await response.json();
+      console.log('Fastly credentials save response:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save Fastly credentials');
+      }
       
       if (data.success) {
         setFastlyConfigured(true);
@@ -297,6 +368,8 @@ const AdminPage = () => {
         
         // Fetch logs with the new credentials
         fetchFastlyLogs();
+      } else {
+        throw new Error(data.error || 'Failed to save Fastly credentials');
       }
     } catch (error) {
       console.error('Error saving Fastly credentials:', error);

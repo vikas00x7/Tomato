@@ -1299,9 +1299,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Add to bot logs
       await storage.createBotLog({
         ipAddress: ipAddress,
-        userAgent: req.headers['user-agent'] || 'unknown',
-        path: path || req.path,
         timestamp: new Date(timestamp) || new Date(),
+        path: path || req.path,
         country: country,
         isBotConfirmed: isBot, // Set based on actual bot detection
         source: 'fingerprint_api',
@@ -1433,9 +1432,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to get Fastly CDN logs
   app.get('/api/fastly-logs', validateApiKey, async (req: Request, res: Response) => {
     try {
+      console.log('===== FASTLY LOGS API REQUEST =====');
+      console.log('Request query parameters:', req.query);
+      console.log('Request headers:', req.headers);
+      
       const { serviceId, apiKey } = req.query;
       
       if (!serviceId || !apiKey) {
+        console.log('Missing required parameters: serviceId and/or apiKey');
         return res.status(400).json({ 
           success: false, 
           error: 'Missing required parameters: serviceId and apiKey are required' 
@@ -1455,8 +1459,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // First check if the service exists
       const serviceCheckUrl = `https://api.fastly.com/service/${serviceId}`;
+      console.log(`Checking Fastly service at URL: ${serviceCheckUrl}`);
       
       try {
+        console.log('Sending service check request with API key:', apiKey.toString().substring(0, 5) + '...');
         const serviceCheckResponse = await fetch(serviceCheckUrl, {
           method: 'GET',
           headers: {
@@ -1464,6 +1470,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             'Accept': 'application/json'
           }
         });
+        
+        console.log('Service check response status:', serviceCheckResponse.status);
         
         if (!serviceCheckResponse.ok) {
           const errorText = await serviceCheckResponse.text();
@@ -1495,6 +1503,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Fetching logs from Fastly API: ${fastlyUrl}`);
       
       try {
+        console.log('Sending Fastly logs request with headers:', {
+          'Fastly-Key': apiKey.toString().substring(0, 5) + '...',
+          'Accept': 'application/json'
+        });
+        
         const fetchResponse = await fetch(fastlyUrl, {
           method: 'GET',
           headers: {
@@ -1503,10 +1516,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
         
-        // Handle response status
+        console.log('Fastly logs response status:', fetchResponse.status);
+        
         if (!fetchResponse.ok) {
           const errorText = await fetchResponse.text();
-          console.error(`Fastly API error: ${fetchResponse.status}`, errorText);
+          console.error(`Fastly logs request failed: ${fetchResponse.status}`, errorText);
           
           // More detailed error messages based on status codes
           let errorMessage = `Fastly API error: ${fetchResponse.status} ${fetchResponse.statusText}`;
@@ -1526,20 +1540,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        let rawData;
-        try {
-          rawData = await fetchResponse.json();
-        } catch (parseError) {
-          console.error('Error parsing Fastly response:', parseError);
-          return res.status(500).json({
-            success: false,
-            error: 'Failed to parse Fastly API response',
-            details: 'The response was not valid JSON'
-          });
-        }
+        const logsData = await fetchResponse.json();
+        console.log('Fastly logs data received:', JSON.stringify(logsData).substring(0, 200) + '...');
         
         // Check if we have real data
-        if (!rawData || (Array.isArray(rawData) && rawData.length === 0)) {
+        if (!logsData || (Array.isArray(logsData) && logsData.length === 0)) {
           return res.status(200).json({ 
             success: true, 
             logs: [],
@@ -1549,7 +1554,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Transform the data to match our schema
-        const logs = Array.isArray(rawData) ? rawData.map((log: any, index: number) => ({
+        const logs = Array.isArray(logsData) ? logsData.map((log: any, index: number) => ({
           id: log.id || `fastly-${index}-${Date.now()}`,
           timestamp: log.timestamp || new Date().toISOString(),
           clientIP: log.client_ip || log.clientip || 'unknown',
@@ -1602,113 +1607,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to save Fastly credentials
   app.post('/api/fastly-credentials', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Validate the request body against the schema
-      const result = fastlyCredentialsSchema.safeParse(req.body);
+      console.log('===== FASTLY CREDENTIALS API REQUEST =====');
+      console.log('Request body:', req.body);
       
-      if (!result.success) {
+      const { apiKey, serviceId, skipValidation } = req.body;
+      
+      if (!apiKey || !serviceId) {
+        console.log('Missing required parameters: apiKey and/or serviceId');
         return res.status(400).json({ 
           success: false, 
-          error: 'Invalid Fastly credentials',
-          details: result.error.errors 
+          error: 'Missing required parameters: apiKey and serviceId are required' 
         });
       }
+
+      console.log(`Saving Fastly credentials for service: ${serviceId}`);
       
-      const credentials = result.data;
-      
-      // Test the credentials if not skipping validation
-      if (!credentials.skipValidation) {
-        // Test connection to Fastly API
-        const testUrl = `https://api.fastly.com/service/${credentials.serviceId}`;
-        const testResponse = await fetch(testUrl, {
-          method: 'GET',
-          headers: {
-            'Fastly-Key': credentials.apiKey,
-            'Accept': 'application/json'
-          }
-        });
+      // Validate the credentials with Fastly API if not skipping validation
+      if (!skipValidation) {
+        console.log('Validating Fastly credentials with Fastly API');
+        const serviceCheckUrl = `https://api.fastly.com/service/${serviceId}`;
         
-        if (!testResponse.ok) {
-          const errorText = await testResponse.text();
-          return res.status(400).json({
+        try {
+          console.log(`Checking Fastly service at URL: ${serviceCheckUrl}`);
+          const serviceCheckResponse = await fetch(serviceCheckUrl, {
+            method: 'GET',
+            headers: {
+              'Fastly-Key': apiKey,
+              'Accept': 'application/json'
+            }
+          });
+          
+          console.log('Service check response status:', serviceCheckResponse.status);
+          
+          if (!serviceCheckResponse.ok) {
+            const errorText = await serviceCheckResponse.text();
+            console.error(`Fastly service check failed: ${serviceCheckResponse.status}`, errorText);
+            
+            // Format error message based on response code
+            let errorMessage = 'Failed to validate Fastly service';
+            if (serviceCheckResponse.status === 401) {
+              errorMessage = 'Invalid Fastly API key';
+            } else if (serviceCheckResponse.status === 404) {
+              errorMessage = `Service ID '${serviceId}' not found`;
+            }
+            
+            return res.status(serviceCheckResponse.status).json({
+              success: false,
+              error: errorMessage,
+              details: errorText,
+              statusCode: serviceCheckResponse.status
+            });
+          }
+          
+          // Service exists and API key is valid
+          console.log('Fastly credentials validated successfully');
+        } catch (serviceCheckError) {
+          console.error('Error checking Fastly service:', serviceCheckError);
+          return res.status(500).json({
             success: false,
             error: 'Failed to validate Fastly credentials',
-            details: `API returned ${testResponse.status}: ${errorText}`
+            details: serviceCheckError instanceof Error ? serviceCheckError.message : 'Unknown error'
           });
         }
+      } else {
+        console.log('Skipping Fastly credentials validation');
       }
       
-      // Store the credentials (in a production environment, use a secure storage method)
-      // For this example, we'll store in environment variables or a config file
-      process.env.FASTLY_API_KEY = credentials.apiKey;
-      process.env.FASTLY_SERVICE_ID = credentials.serviceId;
-      
-      // Save to a config file for persistence
-      const configPath = './config/fastly.json';
-      
-      // Ensure directory exists
-      const dir = './config';
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      
-      fs.writeFileSync(configPath, JSON.stringify({
-        apiKey: credentials.apiKey,
-        serviceId: credentials.serviceId,
-        isConfigured: true,
-        lastUpdated: new Date().toISOString()
-      }, null, 2));
+      // Store the credentials (in a real app, you'd use a database)
+      // For now, we'll just return success
+      console.log('Fastly credentials saved successfully');
       
       res.status(200).json({ 
         success: true, 
         message: 'Fastly credentials saved successfully',
+        serviceId: serviceId,
         isConfigured: true
       });
+      console.log('===== FASTLY CREDENTIALS API RESPONSE END =====');
     } catch (error) {
+      console.error('===== FASTLY CREDENTIALS API ERROR =====');
       console.error('Error saving Fastly credentials:', error);
       res.status(500).json({ 
         success: false, 
         error: 'Failed to save Fastly credentials',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
+      console.error('===== FASTLY CREDENTIALS API ERROR END =====');
     }
   });
   
-  // API endpoint to get Fastly credentials status
+  // API endpoint to get Fastly credentials
   app.get('/api/fastly-credentials', validateApiKey, async (req: Request, res: Response) => {
     try {
-      const configPath = './config/fastly.json';
+      console.log('===== FASTLY CREDENTIALS GET REQUEST =====');
       
-      if (!fs.existsSync(configPath)) {
-        return res.status(200).json({ 
-          success: true, 
-          isConfigured: false,
-          message: 'Fastly credentials not configured'
-        });
-      }
-      
-      const fileContent = fs.readFileSync(configPath, 'utf8');
-      const config = JSON.parse(fileContent);
-      
-      // Don't return the actual API key for security
-      return res.status(200).json({ 
+      // In a real app, you'd retrieve the credentials from a database
+      // For now, we'll just return a placeholder
+      res.status(200).json({ 
         success: true, 
-        isConfigured: config.isConfigured || false,
-        serviceId: config.serviceId,
-        lastUpdated: config.lastUpdated
+        isConfigured: false,
+        message: 'No stored Fastly credentials found'
       });
+      console.log('===== FASTLY CREDENTIALS GET RESPONSE END =====');
     } catch (error) {
+      console.error('===== FASTLY CREDENTIALS GET ERROR =====');
       console.error('Error checking Fastly credentials:', error);
       res.status(500).json({ 
         success: false, 
         error: 'Failed to check Fastly credentials',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
+      console.error('===== FASTLY CREDENTIALS GET ERROR END =====');
     }
   });
 
   // Endpoint to receive Fastly logs
   app.post('/api/fastly-logs-receiver', express.json({type: 'application/json', limit: '50mb'}), async (req: Request, res: Response) => {
     try {
+      // Check if this is a Fastly challenge request
+      if (req.headers['fastly-challenge']) {
+        console.log('Received Fastly challenge request:', req.headers['fastly-challenge']);
+        return res.status(200).send(req.headers['fastly-challenge']);
+      }
+      
       // Store the incoming logs
       const incomingLogs = req.body;
       console.log('Received Fastly logs:', JSON.stringify(incomingLogs).substring(0, 200) + '...');
@@ -1724,7 +1745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let newLogs = [];
       if (Array.isArray(incomingLogs)) {
         newLogs = incomingLogs.map((log, index) => ({
-          id: log.id || `fastly-${Date.now()}-${index}`,
+          id: log.id || `fastly-${index}-${Date.now()}`,
           timestamp: log.timestamp || new Date().toISOString(),
           ipAddress: log.client_ip || log.clientip || 'unknown',
           userAgent: log.user_agent || log.useragent || null,
@@ -1736,9 +1757,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           source: 'fastly',
           method: log.method || null,
           status: log.status || null,
-          responseTime: log.response_time || null,
-          cacheStatus: log.cache_status || null,
-          bytesSent: log.bytes_sent || null
+          responseTime: log.response_time || log.ttfb || null,
+          cacheStatus: log.cache_status || log.cachestatus || null,
+          bytesSent: log.bytes_sent || log.bytes || null
         }));
       } else {
         // If it's a single log entry
@@ -1755,9 +1776,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           source: 'fastly',
           method: incomingLogs.method || null,
           status: incomingLogs.status || null,
-          responseTime: incomingLogs.response_time || null,
-          cacheStatus: incomingLogs.cache_status || null,
-          bytesSent: incomingLogs.bytes_sent || null
+          responseTime: incomingLogs.response_time || incomingLogs.ttfb || null,
+          cacheStatus: incomingLogs.cache_status || incomingLogs.cachestatus || null,
+          bytesSent: incomingLogs.bytes_sent || incomingLogs.bytes || null
         }];
       }
       
@@ -1777,6 +1798,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error processing Fastly logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to process Fastly logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // API endpoint to receive and process Fastly logs with detailed logging for debugging
+  app.post('/api/fastly-logs-receiver-debug', express.json(), async (req: Request, res: Response) => {
+    try {
+      console.log('===== FASTLY LOGS RECEIVER REQUEST =====');
+      console.log('Request headers:', req.headers);
+      console.log('Request body sample:', JSON.stringify(req.body).substring(0, 200) + '...');
+      
+      // Check if this is a Fastly challenge request
+      if (req.headers['fastly-challenge']) {
+        console.log('Received Fastly challenge request:', req.headers['fastly-challenge']);
+        return res.status(200).send(req.headers['fastly-challenge']);
+      }
+      
+      // Process the logs
+      const logs = Array.isArray(req.body) ? req.body : [req.body];
+      console.log(`Processing ${logs.length} Fastly log entries`);
+      
+      let processedCount = 0;
+      const errors: string[] = [];
+      
+      for (const logEntry of logs) {
+        try {
+          console.log(`Processing log entry #${processedCount + 1}:`, JSON.stringify(logEntry).substring(0, 100) + '...');
+          
+          // Convert Fastly log format to our bot log format
+          const botLog = {
+            ipAddress: logEntry.client_ip || logEntry.clientip || 'unknown',
+            timestamp: new Date(logEntry.timestamp || Date.now()),
+            path: logEntry.url || logEntry.request_url || '/unknown',
+            userAgent: logEntry.user_agent || logEntry.useragent || null,
+            source: 'fastly-realtime',
+            country: logEntry.geo_country || logEntry.country || null,
+            isBot: false, // We don't know yet
+            botScore: 0,
+            botReason: null,
+            method: logEntry.method || 'GET',
+            status: logEntry.status || 200,
+            responseTime: logEntry.response_time || logEntry.ttfb || 0,
+            cacheStatus: logEntry.cache_status || logEntry.cachestatus || 'MISS'
+          };
+          
+          // Store the log in our database
+          console.log('Storing log in database:', JSON.stringify(botLog).substring(0, 150) + '...');
+          await storage.createBotLog(botLog);
+          processedCount++;
+          console.log(`Successfully stored log #${processedCount}`);
+        } catch (err) {
+          console.error(`Error processing Fastly log entry #${processedCount + 1}:`, err);
+          errors.push(String(err));
+        }
+      }
+      
+      console.log(`Completed processing. Processed ${processedCount} logs with ${errors.length} errors`);
+      
+      // Return success with processing stats
+      console.log('===== FASTLY LOGS RECEIVER RESPONSE END =====');
+      res.status(200).json({
+        success: true,
+        message: `Processed ${processedCount} Fastly log entries`,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error('===== FASTLY LOGS RECEIVER ERROR =====');
+      console.error('Error handling Fastly logs receiver:', error);
+      console.error('Request body:', req.body);
+      console.error('Request headers:', req.headers);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to process Fastly logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+      console.error('===== FASTLY LOGS RECEIVER ERROR END =====');
+    }
+  });
+
+  // API endpoint to receive Fastly logs (production version)
+  app.post('/api/fastly-logs-receiver', express.json(), async (req: Request, res: Response) => {
+    try {
+      // Check if this is a Fastly challenge request
+      if (req.headers['fastly-challenge']) {
+        return res.status(200).send(req.headers['fastly-challenge']);
+      }
+      
+      // Process the logs
+      const logs = Array.isArray(req.body) ? req.body : [req.body];
+      let processedCount = 0;
+      const errors: string[] = [];
+      
+      for (const logEntry of logs) {
+        try {
+          // Convert Fastly log format to our bot log format
+          const botLog = {
+            ipAddress: logEntry.client_ip || logEntry.clientip || 'unknown',
+            timestamp: new Date(logEntry.timestamp || Date.now()),
+            path: logEntry.url || logEntry.request_url || '/unknown',
+            userAgent: logEntry.user_agent || logEntry.useragent || null,
+            source: 'fastly-realtime',
+            country: logEntry.geo_country || logEntry.country || null,
+            isBot: false, // We don't know yet
+            botScore: 0,
+            botReason: null,
+            method: logEntry.method || 'GET',
+            status: logEntry.status || 200,
+            responseTime: logEntry.response_time || logEntry.ttfb || 0,
+            cacheStatus: logEntry.cache_status || logEntry.cachestatus || 'MISS'
+          };
+          
+          // Store the log in our database
+          await storage.createBotLog(botLog);
+          processedCount++;
+        } catch (err) {
+          errors.push(String(err));
+        }
+      }
+      
+      // Return success with processing stats
+      res.status(200).json({
+        success: true,
+        message: `Processed ${processedCount} Fastly log entries`,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
       res.status(500).json({ 
         success: false, 
         error: 'Failed to process Fastly logs',

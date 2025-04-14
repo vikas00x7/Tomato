@@ -32,7 +32,14 @@ export const useFingerprint = () => {
         
         // Load FingerprintJS Pro with your public key
         const fpPromise = FingerprintJSPro.load({ 
-          apiKey: 'YyZd7BoisT3YOSTejsVV'
+          apiKey: 'YyZd7BoisT3YOSTejsVV',
+          // Use a simple browser fingerprint as fallback
+          scriptUrlPattern: [
+            // Try CDN first
+            'https://fpcdn.io/v3/YyZd7BoisT3YOSTejsVV/loader_v3.11.8.js',
+            // Fallback to jsdelivr if CDN fails
+            'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs-pro@3/dist/fp.min.js'
+          ]
         });
         
         const fp = await fpPromise;
