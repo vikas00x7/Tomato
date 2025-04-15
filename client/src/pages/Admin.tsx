@@ -47,7 +47,7 @@ interface AnalyticsData {
 }
 
 // Define tabs for the admin dashboard
-type TabType = 'analytics' | 'logs' | 'fastly';
+type TabType = 'analytics' | 'logs';
 
 // COLORS for charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
@@ -55,22 +55,17 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'
 const AdminPage = () => {
   const { toast } = useToast();
   const [logs, setLogs] = useState<BotLog[]>([]);
-  const [fastlyLogs, setFastlyLogs] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   
   // States for UI controls
   const [activeTab, setActiveTab] = useState<TabType>('analytics');
   const [loading, setLoading] = useState(false);
-  const [fastlyLoading, setFastlyLoading] = useState(false);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // User inputs
   const [apiKey, setApiKey] = useState('');
   const [ipFilter, setIpFilter] = useState('');
-  const [fastlyApiKey, setFastlyApiKey] = useState<string>('');
-  const [fastlyServiceId, setFastlyServiceId] = useState<string>('');
-  const [fastlyConfigured, setFastlyConfigured] = useState<boolean>(false);
   
   // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
@@ -182,297 +177,6 @@ const AdminPage = () => {
       }
     }
   };
-
-  // Function to fetch Fastly CDN logs
-  const fetchFastlyLogs = async (isRefresh = false) => {
-    try {
-      console.log('Fetching Fastly logs...');
-      setFastlyLoading(true);
-      
-      // Use direct API endpoint
-      const apiUrl = `/api/fastly-logs?key=${encodeURIComponent(apiKey.trim())}`;
-      console.log(`API URL: ${apiUrl}`);
-      console.log(`Fastly Service ID: ${fastlyServiceId}`);
-      console.log(`Fastly API Key: ${fastlyApiKey ? fastlyApiKey.substring(0, 5) + '...' : 'Not set'}`);
-      
-      if (fastlyServiceId && fastlyApiKey) {
-        // If we have Fastly credentials, use them
-        console.log('Using Fastly credentials to fetch logs---------');
-        try {
-          const response = await fetch(`${apiUrl}&serviceId=${encodeURIComponent(fastlyServiceId)}&apiKey=${encodeURIComponent(fastlyApiKey)}`);
-          console.log('Fastly logs response:=========', response.status, response.statusText);
-          
-          if (response.status === 401) {
-            console.error('Authentication failed with status 401');
-            toast({
-              title: "Authentication Failed",
-              description: "Invalid API key. Please check and try again.",
-              variant: "destructive"
-            });
-            setIsAuthenticated(false);
-            setFastlyLoading(false);
-            return;
-          }
-          
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Fastly logs error:', errorData);
-            
-            // If real-time logging is not available, fall back to regular logs
-            if (response.status === 404 && errorData.error?.includes('Real-time logging not available')) {
-              console.log('Real-time logging not available, falling back to regular logs');
-              throw new Error('Falling back to regular logs');
-            }
-            
-            throw new Error(errorData.error || `Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
-          }
-          
-          const data = await response.json();
-          console.log('Fastly logs data:', data);
-          
-          // Process the logs
-          if (data.logs && Array.isArray(data.logs)) {
-            console.log(`Found ${data.logs.length} Fastly logs`);
-            setFastlyLogs(data.logs);
-            
-            if (!isRefresh) {
-              toast({
-                title: "Success",
-                description: `Loaded ${data.logs.length} Fastly CDN logs`,
-                variant: "default"
-              });
-            }
-          } else {
-            console.log('No Fastly logs found in response');
-            setFastlyLogs([]);
-            
-            if (!isRefresh) {
-              toast({
-                title: "No Logs Found",
-                description: "No Fastly CDN logs available yet. Check your Fastly configuration to ensure logs are being sent to your endpoint.",
-                variant: "default"
-              });
-            }
-          }
-        } catch (error) {
-          console.log('Falling back to source=fastly filter from regular logs due to error:', error);
-          // Fall back to regular logs
-          await fetchRegularLogs();
-        }
-      } else {
-        await fetchRegularLogs();
-      }
-    } catch (error) {
-      console.error('Error fetching Fastly logs:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch Fastly logs",
-        variant: "destructive"
-      });
-    } finally {
-      setFastlyLoading(false);
-    }
-  };
-  
-  // Helper function to fetch logs from regular storage
-  const fetchRegularLogs = async () => {
-    console.log('Falling back to source=fastly filter from regular logs');
-    try {
-      // This is a fallback mechanism when the Fastly real-time API is not available
-      const response = await fetch(`/api/logs?source=fastly&key=${encodeURIComponent(apiKey.trim())}`);
-      console.log('Fallback logs response:', response.status, response.statusText);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log('Fallback logs data:', data);
-      
-      // Filter for Fastly logs only
-      const fastlyLogs = data.logs ? data.logs.filter((log: any) => log.source === 'fastly' || log.source === 'fastly-realtime') : [];
-      console.log(`Found ${fastlyLogs.length} Fastly logs in regular logs`);
-      
-      if (fastlyLogs.length > 0) {
-        setFastlyLogs(fastlyLogs);
-      } else {
-        console.log('No Fastly logs found in regular logs');
-        setFastlyLogs([]);
-      }
-    } catch (error) {
-      console.error('Error fetching regular logs:', error);
-      setFastlyLogs([]);
-    }
-  };
-
-  // Function to save Fastly credentials
-  const saveFastlyCredentials = async () => {
-    try {
-      console.log('Saving Fastly credentials...');
-      setFastlyLoading(true);
-      
-      if (!fastlyApiKey || !fastlyServiceId) {
-        console.log('Missing Fastly credentials');
-        toast({
-          title: "Missing Fields",
-          description: "Please enter both API Key and Service ID",
-          variant: "destructive"
-        });
-        setFastlyLoading(false);
-        return;
-      }
-      
-      console.log('Saving Fastly credentials:', {
-        serviceId: fastlyServiceId,
-        hasApiKey: !!fastlyApiKey
-      });
-      
-      // Include explicit content-type header and properly structure the request
-      const response = await fetch('/api/fastly-credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey.trim()
-        },
-        body: JSON.stringify({
-          apiKey: fastlyApiKey,
-          serviceId: fastlyServiceId,
-          skipValidation: true // Skip validation for now to avoid connection issues
-        })
-      });
-      
-      console.log('Fastly credentials save response status:', response.status);
-      
-      if (response.status === 401) {
-        console.error('Authentication failed with status 401');
-        toast({
-          title: "Authentication Failed",
-          description: "Invalid API key. Please check and try again.",
-          variant: "destructive"
-        });
-        setIsAuthenticated(false);
-        setFastlyLoading(false);
-        return;
-      }
-      
-      // Log both the status and the response body for debugging
-      const data = await response.json();
-      console.log('Fastly credentials save response:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to save Fastly credentials');
-      }
-      
-      if (data.success) {
-        setFastlyConfigured(true);
-        
-        // Save to localStorage for convenience
-        localStorage.setItem('fastlyApiKey', fastlyApiKey);
-        localStorage.setItem('fastlyServiceId', fastlyServiceId);
-        
-        toast({
-          title: "Success",
-          description: "Fastly credentials saved successfully",
-          variant: "default"
-        });
-        
-        // Fetch logs with the new credentials
-        fetchFastlyLogs();
-      } else {
-        throw new Error(data.error || 'Failed to save Fastly credentials');
-      }
-    } catch (error) {
-      console.error('Error saving Fastly credentials:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save Fastly credentials",
-        variant: "destructive"
-      });
-    } finally {
-      setFastlyLoading(false);
-    }
-  };
-
-  // Function to check if Fastly is configured
-  const checkFastlyConfiguration = async () => {
-    try {
-      if (!isAuthenticated || !apiKey) {
-        return;
-      }
-      
-      setFastlyLoading(true);
-      const response = await fetch(`/api/fastly-credentials?key=${encodeURIComponent(apiKey.trim())}`);
-      
-      if (!response.ok) {
-        console.error('Failed to check Fastly configuration:', response.status, response.statusText);
-        setFastlyConfigured(false);
-        setFastlyLoading(false);
-        return;
-      }
-      
-      const data = await response.json();
-      
-      // Only set configured if we have both serviceId and a valid API key
-      if (data.success && data.isConfigured && data.serviceId) {
-        // Get API key from localStorage
-        const storedApiKey = localStorage.getItem('fastlyApiKey');
-        
-        if (storedApiKey) {
-          setFastlyApiKey(storedApiKey);
-          setFastlyServiceId(data.serviceId || '');
-          setFastlyConfigured(true);
-        } else {
-          // We have a stored configuration but missing API key in localStorage
-          setFastlyConfigured(false);
-          toast({
-            title: "Incomplete Configuration",
-            description: "Fastly Service ID found, but API Key is missing. Please re-enter your credentials.",
-            variant: "destructive"
-          });
-        }
-      } else {
-        setFastlyConfigured(false);
-      }
-      setFastlyLoading(false);
-    } catch (error) {
-      console.error('Error checking Fastly configuration:', error);
-      setFastlyConfigured(false);
-      setFastlyLoading(false);
-    }
-  };
-
-  // Setup automatic polling for new logs
-  useEffect(() => {
-    // Clear any existing interval when component mounts or unmounts
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-    }
-    
-    // Only start polling if authenticated and auto-refresh is enabled
-    if (isAuthenticated) {
-      console.log('Starting real-time log polling...');
-      
-      // Poll every 5 seconds for new logs (silently)
-      pollRef.current = setInterval(() => {
-        console.log('Polling for new logs...');
-        fetchLogs(false, true);
-      }, 5000);
-    }
-    
-    // Cleanup interval on unmount
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-      }
-    };
-  }, [isAuthenticated]);
-
-  // When tab changes to analytics, fetch analytics data
-  useEffect(() => {
-    if (activeTab === 'analytics' && isAuthenticated && !analytics) {
-      fetchAnalytics();
-    }
-  }, [activeTab, isAuthenticated, analytics]);
 
   // Function to fetch logs by IP
   const fetchLogsByIp = async () => {
@@ -1249,166 +953,6 @@ const AdminPage = () => {
             </div>
           </>
         );
-      
-      case 'fastly':
-        return (
-          <>
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4">Fastly CDN Logs</h2>
-              
-              {!fastlyConfigured ? (
-                <div className="mb-4">
-                  <h3 className="text-lg font-medium mb-2">Configure Fastly Credentials</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Fastly API Key</label>
-                      <Input 
-                        type="password" 
-                        placeholder="Enter Fastly API Key" 
-                        value={fastlyApiKey}
-                        onChange={(e) => setFastlyApiKey(e.target.value)}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Find this in your Fastly account under Personal API tokens
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Fastly Service ID</label>
-                      <Input 
-                        type="text" 
-                        placeholder="Enter Fastly Service ID" 
-                        value={fastlyServiceId}
-                        onChange={(e) => setFastlyServiceId(e.target.value)}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Find this in your service configuration or URL
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={saveFastlyCredentials}
-                      disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
-                    >
-                      {fastlyLoading ? 'Saving...' : 'Save Credentials'}
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      onClick={() => {
-                        if (fastlyApiKey && fastlyServiceId) {
-                          fetchFastlyLogs();
-                        } else {
-                          toast({
-                            title: "Missing Fields",
-                            description: "Please enter both API Key and Service ID",
-                            variant: "destructive"
-                          });
-                        }
-                      }}
-                      disabled={fastlyLoading || !fastlyApiKey || !fastlyServiceId}
-                    >
-                      Test Connection
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2">
-                    You can find your Fastly API key in your Fastly account settings under "Personal API tokens" and your Service ID in the service configuration.
-                  </p>
-                </div>
-              ) : (
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <p className="text-sm text-gray-600">
-                      <span className="font-medium">Service ID:</span> {fastlyServiceId}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      <span className="font-medium">Endpoint:</span> https://rt.fastly.com/v1/channel/{fastlyServiceId}/logs
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setFastlyConfigured(false)}
-                    >
-                      Change Credentials
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => fetchFastlyLogs(true)}
-                      disabled={fastlyLoading}
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Refresh
-                    </Button>
-                  </div>
-                </div>
-              )}
-              
-              <div className="border rounded-md overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Client IP</TableHead>
-                      <TableHead>Method</TableHead>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Cache</TableHead>
-                      <TableHead>Country</TableHead>
-                      <TableHead>Response Time</TableHead>
-                      <TableHead>Bytes</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {fastlyLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center py-4">
-                          Loading Fastly logs...
-                        </TableCell>
-                      </TableRow>
-                    ) : fastlyLogs.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center py-4">
-                          No Fastly logs available. {!fastlyConfigured && 'Configure your Fastly credentials to view logs.'}
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      fastlyLogs.map((log) => (
-                        <TableRow key={log.id}>
-                          <TableCell>{formatDate(log.timestamp)}</TableCell>
-                          <TableCell>{log.clientIP}</TableCell>
-                          <TableCell>{log.method || 'N/A'}</TableCell>
-                          <TableCell className="max-w-[200px] truncate" title={log.url}>
-                            {log.url || 'N/A'}
-                          </TableCell>
-                          <TableCell>
-                            <span className={
-                              log.status >= 200 && log.status < 300 ? 'text-green-500' :
-                              log.status >= 400 && log.status < 500 ? 'text-orange-500' :
-                              log.status >= 500 ? 'text-red-500' : 'text-gray-500'
-                            }>
-                              {log.status || 'N/A'}
-                            </span>
-                          </TableCell>
-                          <TableCell>{log.cacheStatus || 'N/A'}</TableCell>
-                          <TableCell>{log.country || 'N/A'}</TableCell>
-                          <TableCell>{log.responseTime ? `${log.responseTime}ms` : 'N/A'}</TableCell>
-                          <TableCell>{log.bytesSent ? `${(log.bytesSent / 1024).toFixed(2)}KB` : 'N/A'}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              <div className="mt-4 text-sm text-gray-500">
-                <p>Total logs: {fastlyLogs.length}</p>
-                <p>Last updated: {new Date().toLocaleString()}</p>
-              </div>
-            </Card>
-          </>
-        );
       default:
         return <div>Select a tab to view content</div>;
     }
@@ -1424,15 +968,42 @@ const AdminPage = () => {
         case 'logs':
           fetchLogs();
           break;
-        case 'fastly':
-          checkFastlyConfiguration();
-          if (fastlyConfigured) {
-            fetchFastlyLogs();
-          }
-          break;
       }
     }
   }, [activeTab, isAuthenticated]);
+
+  // Setup automatic polling for new logs
+  useEffect(() => {
+    // Clear any existing interval when component mounts or unmounts
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+    }
+    
+    // Only start polling if authenticated
+    if (isAuthenticated) {
+      console.log('Starting real-time log polling...');
+      
+      // Poll every 5 seconds for new logs (silently)
+      pollRef.current = setInterval(() => {
+        console.log('Polling for new logs...');
+        fetchLogs(false, true);
+      }, 5000);
+    }
+    
+    // Cleanup interval on unmount
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+      }
+    };
+  }, [isAuthenticated]);
+
+  // When tab changes to analytics, fetch analytics data
+  useEffect(() => {
+    if (activeTab === 'analytics' && isAuthenticated && !analytics) {
+      fetchAnalytics();
+    }
+  }, [activeTab, isAuthenticated, analytics]);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -1471,13 +1042,6 @@ const AdminPage = () => {
             >
               <List className="w-4 h-4 mr-2" />
               Logs
-            </button>
-            <button 
-              className={`px-4 py-2 font-medium ${activeTab === 'fastly' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-              onClick={() => setActiveTab('fastly')}
-            >
-              <Cloud className="w-4 h-4 mr-2" />
-              Fastly CDN
             </button>
           </div>
           
