@@ -3,14 +3,22 @@
   "version": "1.0.0",
   "description": "Bot detection testing tools for TomatoWebsite",
   "scripts": {
-    "test:http": "node bot-tester.js",
-    "test:browser": "node browser-test.js",
-    "test:advanced": "node advanced-bot-test.js",
-    "test:all": "npm run test:http && npm run test:browser"
+    
+    "test:mass": "node mass-bot-simulator.js",
+    "test:all": "npm run test:mass"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "chart.js": "^3.9.1",
+    "cheerio": "^1.0.0-rc.12",
     "node-fetch": "^2.6.7",
+    "node-libcurl": "^3.0.0",
     "playwright": "^1.32.0",
-    "puppeteer": "^19.7.0"
+    "puppeteer": "^19.7.0",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9",
+    "scrapy-js": "^1.0.2",
+    "user-agents": "^1.0.1304",
+    "uuid": "^9.0.0"
   }
 }

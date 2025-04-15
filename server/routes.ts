@@ -262,95 +262,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // API endpoint to get logs
-  app.get('/api/logs', async (req: Request, res: Response) => {
+  app.get('/api/logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Validate API key
-      const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
-      console.log('Validating API key:', req.query.key);
-      if (req.query.key !== apiKey) {
-        return res.status(401).json({ error: 'Unauthorized' });
+      // Check if the logs file exists
+      if (!fs.existsSync(LOG_FILE_PATH)) {
+        // Create an empty logs file if it doesn't exist
+        fs.writeFileSync(LOG_FILE_PATH, JSON.stringify([], null, 2));
       }
       
-      // Get logs from storage
-      const logs = await storage.getLogs();
+      // Read the logs from the file
+      const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
+      const allLogs = fileContent ? JSON.parse(fileContent) : [];
       
-      // Get query parameters for filtering
-      const country = req.query.country as string;
-      const source = req.query.source as string;
-      const startDate = req.query.startDate as string;
-      const endDate = req.query.endDate as string;
-      const botStatus = req.query.botStatus as string;
-      const bypassStatus = req.query.bypassStatus as string;
-      const botType = req.query.botType as string;
-      const ipAddress = req.query.ipAddress as string;
+      // Support filtering logs by source
+      const { source, ip } = req.query;
       
-      // Apply filters if they exist
-      let filteredLogs = [...logs];
+      let filteredLogs = allLogs;
       
-      if (country) {
-        filteredLogs = filteredLogs.filter(log => log.country === country);
-      }
-      
+      // Filter by source if provided
       if (source) {
-        filteredLogs = filteredLogs.filter(log => log.source === source);
+        filteredLogs = filteredLogs.filter((log: any) => log.source === source);
       }
       
-      if (ipAddress) {
-        filteredLogs = filteredLogs.filter(log => log.ipAddress === ipAddress);
+      // Filter by IP if provided
+      if (ip) {
+        filteredLogs = filteredLogs.filter((log: any) => log.ipAddress === ip);
       }
       
-      if (botType) {
-        filteredLogs = filteredLogs.filter(log => log.botType === botType);
-      }
-      
-      if (startDate) {
-        const startDateTime = new Date(startDate).getTime();
-        filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() >= startDateTime);
-      }
-      
-      if (endDate) {
-        const endDateTime = new Date(endDate).getTime();
-        filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() <= endDateTime);
-      }
-      
-      if (botStatus === 'true') {
-        filteredLogs = filteredLogs.filter(log => log.isBotConfirmed === true);
-      } else if (botStatus === 'false') {
-        filteredLogs = filteredLogs.filter(log => log.isBotConfirmed === false);
-      }
-      
-      if (bypassStatus === 'true') {
-        filteredLogs = filteredLogs.filter(log => log.bypassAttempt === true);
-      } else if (bypassStatus === 'false') {
-        filteredLogs = filteredLogs.filter(log => log.bypassAttempt === false);
-      }
-      
-      res.json({ logs: filteredLogs });
+      res.status(200).json({ 
+        success: true, 
+        logs: filteredLogs,
+        total: filteredLogs.length,
+        filtered: source || ip ? true : false,
+        source: source || 'all',
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       console.error('Error fetching logs:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to fetch logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
-  // API endpoint to clear all logs
-  app.delete('/api/logs', async (req: Request, res: Response) => {
+  // API endpoint to delete all logs (Clear All functionality)
+  app.delete('/api/logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Validate API key
-      const apiKey = process.env.API_KEY || 'tomato-api-key-9c8b7a6d5e4f3g2h1i';
-      console.log('Validating API key for log clearing:', req.query.key);
-      if (req.query.key !== apiKey) {
-        return res.status(401).json({ error: 'Unauthorized' });
+      console.log('API: Clearing all logs');
+      
+      // Check if the logs file exists
+      if (!fs.existsSync(LOG_FILE_PATH)) {
+        // Nothing to clear
+        return res.status(200).json({ 
+          success: true, 
+          message: 'No logs to clear',
+          count: 0
+        });
       }
       
-      // Clear all logs
-      await storage.clearLogs();
-      res.json({ success: true, message: 'All logs have been cleared successfully' });
+      // Write an empty array to the log file
+      fs.writeFileSync(LOG_FILE_PATH, JSON.stringify([], null, 2));
+      
+      // Return success response
+      res.status(200).json({ 
+        success: true, 
+        message: 'All logs have been cleared successfully'
+      });
     } catch (error) {
-      console.error('Error clearing logs:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error clearing all logs:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to clear logs',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
-  
+
   // API endpoint to get IP blacklist
   app.get('/api/ip-blacklist', async (req: Request, res: Response) => {
     try {
@@ -1223,7 +1212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             isBotConfirmed: true, // Assume all imported Cloudflare logs are from bots
             botType: cloudflareLog.botCategory || 'unknown',
             source: 'cloudflare-import',
-            timestamp: new Date(cloudflareLog.timestamp)
+            timestamp: new Date()
           };
           
           await storage.createBotLog(log);
@@ -1410,63 +1399,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Clear system logs (admin, dev paths, etc.)
+  // Clear system logs (admin, dev paths)
   app.post('/api/clear-system-logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      // Define patterns for system paths
-      const systemPathPatterns = [
-        '/admin',
-        '/@vite',
-        '/@react-refresh',
-        'vite',
-        '.js',
-        '.css',
-        '.map'
-      ];
+      console.log('API: Clearing system logs (admin/dev paths)');
       
-      // Read the current logs
+      // Read the existing logs
       let logs = [];
       if (fs.existsSync(LOG_FILE_PATH)) {
-        const fileContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
-        logs = fileContent ? JSON.parse(fileContent) : [];
+        const logsData = fs.readFileSync(LOG_FILE_PATH, 'utf8');
+        logs = JSON.parse(logsData);
       }
       
-      // Filter out system logs
+      // Filter out system logs (admin, development paths)
       const filteredLogs = logs.filter((log: any) => {
-        // Skip logs without a path property
-        if (!log.path) return true;
-        
-        // Check if the log path matches any system path pattern
-        return !systemPathPatterns.some(pattern => {
-          if (pattern.startsWith('/')) {
-            // Exact path match
-            return log.path === pattern;
-          } else {
-            // Substring match
-            return log.path.includes(pattern);
-          }
-        });
+        const path = log.path || '';
+        return !(
+          path.startsWith('/admin') || 
+          path.startsWith('/api/') || 
+          path.startsWith('/@') || 
+          path.includes('vite') ||
+          path.includes('dev')
+        );
       });
       
-      // Count how many logs were removed
-      const removedCount = logs.length - filteredLogs.length;
-      
-      // Save the filtered logs back to the file
+      // Write the filtered logs back to the file
       fs.writeFileSync(LOG_FILE_PATH, JSON.stringify(filteredLogs, null, 2));
       
-      // Send success response
+      // Return success
       res.status(200).json({ 
         success: true, 
-        message: `Successfully removed ${removedCount} system log entries`,
-        logsRemaining: filteredLogs.length
+        message: 'System logs cleared successfully',
+        removed: logs.length - filteredLogs.length
       });
     } catch (error) {
       console.error('Error clearing system logs:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error clearing system logs',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+      res.status(500).json({ error: 'Failed to clear system logs' });
     }
   });
 
@@ -1580,6 +1548,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             statusCode: serviceCheckResponse.status
           });
         }
+        
+        // Service exists and API key is valid
+        console.log('Fastly credentials validated successfully');
       } catch (serviceCheckError) {
         console.error('Error checking Fastly service:', serviceCheckError);
       }
@@ -1651,7 +1622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: parseInt(log.status) || null,
           userAgent: log.user_agent || log.useragent || null,
           referer: log.referer || null,
-          responseTime: parseFloat(log.response_time) || parseFloat(log.time_elapsed) || null,
+          responseTime: parseFloat(log.response_time) || parseFloat(log.ttfb) || null,
           bytesSent: parseInt(log.bytes_sent) || parseInt(log.bytes) || null,
           cacheStatus: log.cache_status || log.cachestatus || null,
           country: log.country || log.geo_country || null,

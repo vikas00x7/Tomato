@@ -253,8 +253,12 @@ const AdminPage = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey.trim())}`, {
+      const response = await fetch(`/api/logs`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey.trim()
+        }
       });
       
       if (response.status === 401) {
@@ -268,7 +272,9 @@ const AdminPage = () => {
       }
       
       if (!response.ok) {
-        throw new Error('Failed to clear logs');
+        const errorText = await response.text();
+        console.error('API Error:', response.status, errorText);
+        throw new Error(`Failed to clear logs: ${response.status} ${response.statusText}`);
       }
       
       // Clear logs locally
@@ -283,7 +289,7 @@ const AdminPage = () => {
       console.error('Error clearing logs:', error);
       toast({
         title: "Error",
-        description: "Failed to clear logs.",
+        description: error instanceof Error ? error.message : "Failed to clear logs.",
         variant: "destructive"
       });
     } finally {
@@ -306,12 +312,13 @@ const AdminPage = () => {
         description: "Clearing system logs...",
       });
       
-      const response = await fetch(`/api/clear-system-logs?key=${encodeURIComponent(apiKey.trim())}`, {
+      const response = await fetch(`/api/clear-system-logs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey.trim()
-        }
+        },
+        body: JSON.stringify({ key: apiKey.trim() })
       });
       
       if (response.status === 401) {
@@ -325,7 +332,9 @@ const AdminPage = () => {
       }
       
       if (!response.ok) {
-        throw new Error('Failed to clear system logs');
+        const errorText = await response.text();
+        console.error('API Error:', response.status, errorText);
+        throw new Error(`Failed to clear system logs: ${response.status} ${response.statusText}`);
       }
       
       toast({
@@ -339,7 +348,7 @@ const AdminPage = () => {
       console.error('Error clearing system logs:', error);
       toast({
         title: "Error",
-        description: "Failed to clear system logs.",
+        description: error instanceof Error ? error.message : "Failed to clear system logs.",
         variant: "destructive"
       });
     } finally {
