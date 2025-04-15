@@ -61,10 +61,10 @@ const ALLOWED_BOT_PATHS = [
 
 // Detection confidence levels
 const CONFIDENCE = {
-  LOW: 30,
-  MEDIUM: 60,
-  HIGH: 90,
-  THRESHOLD: 70 // Confidence threshold to mark as a bot
+  LOW: 20,
+  MEDIUM: 35,
+  HIGH: 70,
+  THRESHOLD: 90 // Raised threshold to reduce false positives
 };
 
 // Cached timing data to detect behavioral patterns
@@ -277,7 +277,9 @@ export const detectBot = (req: Request): {
   }
   
   // Determine if this is a bot based on confidence threshold
-  const isBot = confidence >= CONFIDENCE.THRESHOLD;
+  // Cap confidence at 100% for cleaner logging
+  const cappedConfidence = Math.min(confidence, 100);
+  const isBot = cappedConfidence >= CONFIDENCE.THRESHOLD;
   
   // Set explicit botType for humans if none was set but we confirmed it's not a bot
   if (!isBot && !botType) {
@@ -287,7 +289,7 @@ export const detectBot = (req: Request): {
   return { 
     isBot, 
     authorized: isAuthorizedBot,
-    confidence,
+    confidence: cappedConfidence,
     reasons,
     botType
   };
@@ -416,7 +418,7 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
   }
   
   // Check for unnatural patterns, but only if we have enough data
-  if (timingData.requestTimes.length < 3) {
+  if (timingData.requestTimes.length < 5) {  // Increased from 3 to 5
     return { isUnnatural: false };
   }
   
@@ -426,7 +428,7 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
   let reason = '';
   
   // Check for too-consistent timing (AI bots often have machine-precise timing)
-  if (timings.length >= 5) {
+  if (timings.length >= 8) {  // Increased from 5 to 8
     const avgTiming = timings.reduce((a, b) => a + b, 0) / timings.length;
     
     // Calculate standard deviation
@@ -434,28 +436,28 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
     const stdDev = Math.sqrt(variance);
     
     // Extremely low standard deviation suggests automated behavior
-    // Human timing naturally varies considerably
-    if (stdDev < 50 && avgTiming < 5000) {
+    // Human timing naturally varies considerably - made this less sensitive
+    if (stdDev < 20 && avgTiming < 1000) {  // More restrictive conditions
       isUnnatural = true;
       reason = `Suspiciously consistent timing (stdDev: ${stdDev.toFixed(2)}ms)`;
     }
   }
   
   // Check for unnaturally fast navigation through many pages
-  if (timingData.requestTimes.length >= 3) {
-    const fastRequests = timingData.requestTimes.filter(t => t < 1000).length;
+  if (timingData.requestTimes.length >= 5) {  // Increased from 3 to 5
+    const fastRequests = timingData.requestTimes.filter(t => t < 200).length;  // Reduced from 1000 to 200
     // If most requests are very quick in succession, it's suspicious
-    if (fastRequests >= Math.min(5, timingData.requestTimes.length * 0.7)) {
+    if (fastRequests >= Math.min(8, timingData.requestTimes.length * 0.9)) {  // More restrictive
       isUnnatural = true;
-      reason = `Too many rapid requests (${fastRequests} requests < 1s)`;
+      reason = `Too many rapid requests (${fastRequests} requests < 200ms)`;
     }
   }
   
   // Check for unusual navigation patterns
   const pages = timingData.pageSequence;
-  if (pages.length >= 4) {
+  if (pages.length >= 8) {  // Increased from 4 to 8
     // Check for exactly repeating patterns, which is highly unusual for humans
-    const patternLength = 2; // Look for repeating pairs of pages
+    const patternLength = 3;  // Increased from 2 to 3
     let hasRepeatingPattern = true;
     
     for (let i = 0; i < patternLength; i++) {
@@ -479,8 +481,14 @@ function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, r
 
 // Bot detection middleware
 export const botDetectionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  // Skip bot detection for static files and API endpoints
-  if (req.path.includes('.') || req.path.startsWith('/api')) {
+  // Skip bot detection for static files, API endpoints, admin routes, and paywall
+  if (
+    req.path.includes('.') || 
+    req.path.startsWith('/api') || 
+    req.path.startsWith('/admin') || 
+    req.path === '/login' ||
+    req.path.startsWith('/paywall')
+  ) {
     return next();
   }
   
