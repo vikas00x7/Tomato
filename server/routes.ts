@@ -575,18 +575,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
               let botName = 'other';
               
               // Identify specific AI bot types
-              if (userAgent.includes('gptbot') || userAgent.includes('chatgpt')) {
+              if (userAgent.includes('gptbot') || userAgent.includes('chatgpt') || userAgent.includes('openai')) {
                 botName = 'GPTBot';
               } else if (userAgent.includes('perplexity')) {
                 botName = 'Perplexity';
               } else if (userAgent.includes('claude') || userAgent.includes('anthropic')) {
                 botName = 'Claude';
-              } else if (userAgent.includes('bard') || userAgent.includes('gemini')) {
+              } else if (userAgent.includes('bard') || userAgent.includes('gemini') || userAgent.includes('google-gemini')) {
                 botName = 'Gemini';
-              } else if (userAgent.includes('cohere')) {
+              } else if (userAgent.includes('cohere') || userAgent.includes('cohere-ai')) {
                 botName = 'Cohere';
-              } else if (userAgent.includes('bing')) {
+              } else if (userAgent.includes('bing') || userAgent.includes('searchbot')) {
                 botName = 'Bing AI';
+              } else if (userAgent.includes('browsergpt')) {
+                botName = 'BrowserGPT';
+              } else if (userAgent.includes('llama') || userAgent.includes('meta.com')) {
+                botName = 'Llama';
               }
               
               // Create entry for this bot if it doesn't exist

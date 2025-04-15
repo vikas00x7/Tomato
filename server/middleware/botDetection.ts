@@ -5,13 +5,13 @@ import geoip from 'geoip-lite';
 // Bot detection patterns - refined to reduce false positives
 const BOT_USER_AGENT_PATTERNS = [
   // Search engine bots - high confidence
-  'googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp',
+  'googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'slurp', 'duckduckbot',
   
   // Common crawlers - high confidence
-  'crawler', 'spider', 'ahrefsbot', 'semrushbot',
+  'crawler', 'spider', 'ahrefsbot', 'semrushbot', 'uptimerobot', 'pingdom',
   
   // Automation tools - medium confidence
-  'puppeteer', 'selenium', 'headless', 'phantomjs',
+  'puppeteer', 'selenium', 'headless', 'phantomjs', 'statuscake', 'uptimebot',
   
   // Generic patterns - low confidence (require additional signals)
   'bot', 'scrape'
@@ -20,13 +20,16 @@ const BOT_USER_AGENT_PATTERNS = [
 // AI-specific bot patterns - added for AI assistant detection
 const AI_BOT_PATTERNS = [
   // Official AI assistant user agents
-  'chatgpt', 'gptbot', 'claude-web', 'anthropic', 'bard', 'openai',
-  'cohere', 'perplexity', 'browsergpt', 'ai-assisted', 'ai-browser',
+  'chatgpt', 'gptbot', 'claude-web', 'anthropic', 'claude/', 'claude-bot',
+  'bard', 'openai', 'google-gemini', 'gemini',
+  'cohere', 'cohere-ai', 'perplexity', 'perplexity/', 
+  'browsergpt', 'ai-assisted', 'ai-browser',
   
   // New AI agents (2024-2025)
-  'claude-3', 'gpt-4', 'gemini-pro', 'llama', 'mistral', 'pi.ai',
-  'phind-bot', 'kagi-bot', 'you.com', 'neeva', 'codeium', 'copilot-browse',
-  'anthropic-ai', 'meta-llama', 'vicuna', 'searxng', 'searx', 'golaxy',
+  'claude-3', 'gpt-4', 'gemini-pro', 'llama', 'llama70b-crawler', 'meta.com/llama',
+  'mistral', 'pi.ai', 'phind-bot', 'kagi-bot', 'you.com', 'neeva', 
+  'codeium', 'copilot-browse', 'anthropic-ai', 'meta-llama', 
+  'vicuna', 'searxng', 'searx', 'golaxy', 'searchbot',
   
   // Common AI crawling services
   'diffbot', 'aimbot', 'botasaurus', 'intelli-bot', 'ai-crawler',
@@ -36,8 +39,9 @@ const AI_BOT_PATTERNS = [
 // Professional scraping tools - added for commercial scraper detection
 const SCRAPING_TOOLS_PATTERNS = [
   'firecrawl', 'octoparse', 'parsehub', 'scrapy', 'scrapinghub',
-  'webscrapingapi', 'scrapingbee', 'brightdata', 'proxycrawl',
-  'datahen', 'webscraper', 'crawlera', 'zyte', 'apify'
+  'webscrapingapi', 'scrapingbee', 'brightdata', 'brightdata/', 'proxycrawl',
+  'datahen', 'webscraper', 'crawlera', 'zyte', 'apify', 'headlesschrome',
+  'dataseo', 'zoominfobot', 'dataforseobot'
 ];
 
 // Combine all detection patterns

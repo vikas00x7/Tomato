@@ -71,6 +71,10 @@ const AdminPage = () => {
   const [lastLogCount, setLastLogCount] = useState(0);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [logsPerPage] = useState(50);
+
   // Function to fetch analytics data
   const fetchAnalytics = async () => {
     if (!isAuthenticated) return;
@@ -190,10 +194,9 @@ const AdminPage = () => {
 
   // Function to fetch logs by IP
   const fetchLogsByIp = async () => {
-    if (!ipFilter.trim()) {
-      fetchLogs();
-      return;
-    }
+    if (!isAuthenticated || !ipFilter.trim()) return;
+    
+    setCurrentPage(1); // Reset to first page when filtering
     
     try {
       setLoading(true);
@@ -547,6 +550,16 @@ const AdminPage = () => {
 
   // Function to render the current tab content
   const renderTabContent = () => {
+    // Calculate pagination
+    const indexOfLastLog = currentPage * logsPerPage;
+    const indexOfFirstLog = indexOfLastLog - logsPerPage;
+    const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
+    const totalPages = Math.ceil(logs.length / logsPerPage);
+
+    const handlePageChange = (pageNumber: number) => {
+      setCurrentPage(pageNumber);
+    };
+
     switch (activeTab) {
       case 'analytics':
         return (
@@ -929,12 +942,12 @@ const AdminPage = () => {
                       <TableRow>
                         <TableCell colSpan={9} className="text-center py-8">Loading...</TableCell>
                       </TableRow>
-                    ) : logs.length === 0 ? (
+                    ) : currentLogs.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={9} className="text-center py-8">No logs found</TableCell>
                       </TableRow>
                     ) : (
-                      logs.map((log) => (
+                      currentLogs.map((log) => (
                         <TableRow key={log.id}>
                           <TableCell>{log.id}</TableCell>
                           <TableCell>{formatDate(log.timestamp)}</TableCell>
@@ -969,6 +982,42 @@ const AdminPage = () => {
               <p>Total logs: {logs.length}</p>
               <p>Last updated: {new Date().toLocaleString()}</p>
               <p>Real-time updates: Enabled</p>
+            </div>
+            
+            <div className="flex justify-center mt-4">
+              <Button 
+                onClick={() => handlePageChange(1)} 
+                variant="outline" 
+                size="sm" 
+                disabled={currentPage === 1}
+              >
+                First
+              </Button>
+              <Button 
+                onClick={() => handlePageChange(currentPage - 1)} 
+                variant="outline" 
+                size="sm" 
+                disabled={currentPage === 1}
+              >
+                Prev
+              </Button>
+              <p className="mx-2">Page {currentPage} of {totalPages}</p>
+              <Button 
+                onClick={() => handlePageChange(currentPage + 1)} 
+                variant="outline" 
+                size="sm" 
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+              <Button 
+                onClick={() => handlePageChange(totalPages)} 
+                variant="outline" 
+                size="sm" 
+                disabled={currentPage === totalPages}
+              >
+                Last
+              </Button>
             </div>
           </>
         );
