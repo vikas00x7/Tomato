@@ -23,8 +23,14 @@ const AI_BOT_PATTERNS = [
   'chatgpt', 'gptbot', 'claude-web', 'anthropic', 'bard', 'openai',
   'cohere', 'perplexity', 'browsergpt', 'ai-assisted', 'ai-browser',
   
+  // New AI agents (2024-2025)
+  'claude-3', 'gpt-4', 'gemini-pro', 'llama', 'mistral', 'pi.ai',
+  'phind-bot', 'kagi-bot', 'you.com', 'neeva', 'codeium', 'copilot-browse',
+  'anthropic-ai', 'meta-llama', 'vicuna', 'searxng', 'searx', 'golaxy',
+  
   // Common AI crawling services
-  'diffbot', 'aimbot', 'botasaurus', 'intelli-bot', 'ai-crawler'
+  'diffbot', 'aimbot', 'botasaurus', 'intelli-bot', 'ai-crawler',
+  'ai-agent', 'web-agent', 'ai-search', 'web-intelligence'
 ];
 
 // Professional scraping tools - added for commercial scraper detection
@@ -65,8 +71,24 @@ const CONFIDENCE = {
 const requestTimingCache = new Map<string, {
   lastRequestTime: number,
   requestTimes: number[],
-  pageSequence: string[]
+  pageSequence: string[],
+  jsEnabled?: boolean,
+  cookiesEnabled?: boolean,
+  screenInfo?: string,
+  timezone?: string,
+  fingerprints: string[]
 }>();
+
+// Browser capabilities that legitimate browsers should support
+const BROWSER_CAPABILITIES = [
+  'navigator.webdriver',
+  'window.chrome',
+  'navigator.plugins',
+  'navigator.languages',
+  'navigator.productSub',
+  'window.DeviceOrientationEvent',
+  'window.DeviceMotionEvent'
+];
 
 // Check if this visitor is likely a bot with a confidence score
 export const detectBot = (req: Request): {
@@ -79,6 +101,12 @@ export const detectBot = (req: Request): {
   const userAgent = (req.headers['user-agent'] || '').toLowerCase();
   const referer = req.headers['referer'] || '';
   const ip = getClientIp(req);
+  const accept = req.headers['accept'] || '';
+  const acceptLanguage = req.headers['accept-language'] || '';
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  const connection = req.headers['connection'] || '';
+  const cookies = req.headers['cookie'] || '';
+  
   let confidence = 0;
   const reasons: string[] = [];
   let botType: string | undefined;
@@ -144,7 +172,28 @@ export const detectBot = (req: Request): {
     botType = botType || 'possible_ai';
   }
   
-  // 5. Detect unusual timing patterns (AI browsing tends to be very consistent)
+  // 5. Enhanced AI bot detection: Check for additional AI-specific patterns
+  if (!botType || botType === 'possible_ai') {
+    // Check for AI-like behavior in referrers
+    const referrerPatterns = ['ai.', 'gpt.', 'chat.', 'claude.', 'bing.com/search', 'bard.google'];
+    if (referer && referrerPatterns.some(pattern => referer.toLowerCase().includes(pattern))) {
+      confidence += CONFIDENCE.MEDIUM;
+      reasons.push(`AI service referrer detected (${referer})`);
+      botType = botType || 'ai_assistant';
+    }
+    
+    // Detect anonymized or streamlined user agents (common in AI browsers)
+    if (
+      userAgent.length < 50 || // Unusually short user agent
+      userAgent.includes('mozilla') && userAgent.split(' ').length <= 3 // Simplified Mozilla UA
+    ) {
+      confidence += CONFIDENCE.LOW;
+      reasons.push('Simplified or anonymized user agent (possible AI browser)');
+      botType = botType || 'possible_ai';
+    }
+  }
+  
+  // 6. Detect unusual timing patterns (AI browsing tends to be very consistent)
   const timing = checkRequestTiming(req, ip);
   if (timing.isUnnatural) {
     confidence += CONFIDENCE.MEDIUM;
@@ -152,7 +201,68 @@ export const detectBot = (req: Request): {
     botType = botType || 'timing_anomaly';
   }
   
-  // 6. Check for authorized bot signatures
+  // 7. Browser fingerprinting checks
+  const fingerprint = req.query.fingerprint || req.headers['x-browser-fingerprint'];
+  const clientHints = req.headers['sec-ch-ua-platform'] && req.headers['sec-ch-ua'];
+  
+  // Check for fingerprint inconsistencies
+  if (fingerprint) {
+    // Store fingerprint for this IP if we're tracking it
+    const timingData = requestTimingCache.get(ip);
+    if (timingData) {
+      // If fingerprint changes for the same IP in a short time period, it's suspicious
+      if (!timingData.fingerprints.includes(fingerprint as string)) {
+        timingData.fingerprints.push(fingerprint as string);
+        
+        // Multiple different fingerprints from same IP is suspicious
+        if (timingData.fingerprints.length > 2) {
+          confidence += CONFIDENCE.MEDIUM;
+          reasons.push(`Multiple different fingerprints from same IP (${timingData.fingerprints.length})`);
+          botType = botType || 'possible_ai';
+        }
+      }
+      
+      // Store JS capability info if provided
+      if (req.query.jsEnabled !== undefined) {
+        timingData.jsEnabled = req.query.jsEnabled === 'true';
+      }
+      
+      // Store cookie capability info if provided
+      if (req.query.cookiesEnabled !== undefined) {
+        timingData.cookiesEnabled = req.query.cookiesEnabled === 'true';
+      }
+      
+      // If browser reports no JS or cookies, highly suspicious
+      if (timingData.jsEnabled === false || timingData.cookiesEnabled === false) {
+        confidence += CONFIDENCE.HIGH;
+        reasons.push(`Limited browser capabilities: JS:${timingData.jsEnabled}, Cookies:${timingData.cookiesEnabled}`);
+        botType = botType || 'automation';
+      }
+      
+      // Store the timing data back
+      requestTimingCache.set(ip, timingData);
+    }
+  } else if (req.method === 'GET' && !req.path.includes('/api/') && !req.path.includes('.')) {
+    // For page requests, missing fingerprint is suspicious for modern browsers
+    // But only for actual page requests, not API or asset requests
+    if (clientHints) {
+      // Modern browser with client hints but no fingerprint - unusual
+      confidence += CONFIDENCE.LOW;
+      reasons.push('Modern browser missing fingerprint data');
+    }
+  }
+  
+  // 8. Header consistency checks
+  const headerConsistencyScore = checkHeaderConsistency(req);
+  if (headerConsistencyScore > 0) {
+    confidence += headerConsistencyScore;
+    reasons.push(`Inconsistent header patterns (score: ${headerConsistencyScore})`);
+    if (headerConsistencyScore >= CONFIDENCE.MEDIUM && !botType) {
+      botType = 'possible_ai';
+    }
+  }
+  
+  // 9. Check for authorized bot signatures
   const isAuthorizedBot = AUTHORIZED_BOT_PATTERNS.some(pattern => 
     userAgent.includes(pattern)
   );
@@ -183,6 +293,70 @@ export const detectBot = (req: Request): {
   };
 };
 
+// Check for inconsistencies in HTTP headers that might indicate bot activity
+function checkHeaderConsistency(req: Request): number {
+  let score = 0;
+  const headers = req.headers;
+  const userAgent = (headers['user-agent'] || '').toLowerCase();
+  
+  // Chrome browser checks
+  if (userAgent.includes('chrome')) {
+    // Chrome browsers should have these headers
+    if (!headers['sec-ch-ua'] || !headers['sec-ch-ua-mobile'] || !headers['sec-ch-ua-platform']) {
+      score += CONFIDENCE.MEDIUM;
+    }
+    
+    // If claiming to be Chrome but missing Chrome-specific capabilities
+    if (!headers['upgrade-insecure-requests'] && !headers['sec-fetch-site']) {
+      score += CONFIDENCE.LOW;
+    }
+  }
+  
+  // Safari checks
+  if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
+    // Safari typically includes these
+    if (headers['sec-fetch-site'] || headers['sec-ch-ua']) {
+      // Safari doesn't use these Chrome-specific headers, so this is inconsistent
+      score += CONFIDENCE.MEDIUM;
+    }
+  }
+  
+  // Firefox checks
+  if (userAgent.includes('firefox')) {
+    if (headers['sec-ch-ua']) {
+      // Firefox doesn't typically use this Chrome header
+      score += CONFIDENCE.LOW;
+    }
+  }
+  
+  // Check accept headers
+  const accept = headers['accept'];
+  if (accept) {
+    // Browsers typically have more complex accept headers
+    if (accept === '*/*' && req.method === 'GET' && !req.path.includes('/api/')) {
+      // Simple wildcard accept header for a page request is suspicious
+      score += CONFIDENCE.LOW;
+    }
+  }
+  
+  // AI bots often have weird accept-language values
+  const acceptLanguage = headers['accept-language'];
+  if (acceptLanguage) {
+    // Unusual patterns in accept-language
+    if (acceptLanguage === 'en' || acceptLanguage === 'en-US' || acceptLanguage.length < 3) {
+      score += CONFIDENCE.LOW;
+    }
+    
+    // Real browsers typically send more detailed language preferences
+    const langParts = acceptLanguage.split(',');
+    if (langParts.length === 1 && !acceptLanguage.includes('q=')) {
+      score += CONFIDENCE.LOW;
+    }
+  }
+  
+  return score;
+}
+
 // Extract client IP with CloudFlare and proxy support
 function getClientIp(req: Request): string {
   // First check CloudFlare-specific headers
@@ -209,61 +383,98 @@ function getClientIp(req: Request): string {
 // Check for unnatural timing patterns in requests
 function checkRequestTiming(req: Request, ip: string): { isUnnatural: boolean, reason?: string } {
   const now = Date.now();
-  const cacheKey = `${ip}-${req.headers['user-agent'] || ''}`;
+  const path = req.path || '/';
   
-  // Initialize or get existing timing data
-  if (!requestTimingCache.has(cacheKey)) {
-    requestTimingCache.set(cacheKey, {
+  // Initialize timing data for this IP if not exists
+  if (!requestTimingCache.has(ip)) {
+    requestTimingCache.set(ip, {
       lastRequestTime: now,
       requestTimes: [],
-      pageSequence: [req.path]
+      pageSequence: [path],
+      fingerprints: []
     });
     return { isUnnatural: false };
   }
   
-  const timing = requestTimingCache.get(cacheKey)!;
-  const timeSinceLastRequest = now - timing.lastRequestTime;
+  // Get existing timing data
+  const timingData = requestTimingCache.get(ip)!;
+  
+  // Calculate time since last request
+  const timeSinceLastRequest = now - timingData.lastRequestTime;
   
   // Update timing data
-  timing.requestTimes.push(timeSinceLastRequest);
-  timing.pageSequence.push(req.path);
-  timing.lastRequestTime = now;
+  timingData.requestTimes.push(timeSinceLastRequest);
+  timingData.lastRequestTime = now;
+  timingData.pageSequence.push(path);
   
-  // Keep only the last 10 requests
-  if (timing.requestTimes.length > 10) {
-    timing.requestTimes.shift();
-    timing.pageSequence.shift();
+  // Limit the size of stored data
+  if (timingData.requestTimes.length > 20) {
+    timingData.requestTimes.shift();
+  }
+  if (timingData.pageSequence.length > 20) {
+    timingData.pageSequence.shift();
   }
   
-  // Not enough data to make a determination
-  if (timing.requestTimes.length < 3) {
+  // Check for unnatural patterns, but only if we have enough data
+  if (timingData.requestTimes.length < 3) {
     return { isUnnatural: false };
   }
   
-  // Check for unusually consistent timing patterns (often seen with AI bots)
-  const timings = timing.requestTimes;
-  const avgTime = timings.reduce((a, b) => a + b, 0) / timings.length;
-  const deviations = timings.map(t => Math.abs(t - avgTime));
-  const avgDeviation = deviations.reduce((a, b) => a + b, 0) / deviations.length;
+  // Analyze timing consistency - bots often have very consistent timing
+  const timings = timingData.requestTimes;
+  let isUnnatural = false;
+  let reason = '';
   
-  // If timing is too consistent (low deviation) across multiple requests
-  if (timings.length >= 5 && avgDeviation < 100 && avgTime < 2000) {
-    return { 
-      isUnnatural: true, 
-      reason: 'Suspiciously consistent request timing' 
-    };
+  // Check for too-consistent timing (AI bots often have machine-precise timing)
+  if (timings.length >= 5) {
+    const avgTiming = timings.reduce((a, b) => a + b, 0) / timings.length;
+    
+    // Calculate standard deviation
+    const variance = timings.reduce((a, b) => a + Math.pow(b - avgTiming, 2), 0) / timings.length;
+    const stdDev = Math.sqrt(variance);
+    
+    // Extremely low standard deviation suggests automated behavior
+    // Human timing naturally varies considerably
+    if (stdDev < 50 && avgTiming < 5000) {
+      isUnnatural = true;
+      reason = `Suspiciously consistent timing (stdDev: ${stdDev.toFixed(2)}ms)`;
+    }
   }
   
-  // Check for sequential access pattern (going through pages in order)
-  const uniquePages = new Set(timing.pageSequence).size;
-  if (timing.pageSequence.length >= 7 && uniquePages === timing.pageSequence.length) {
-    return { 
-      isUnnatural: true, 
-      reason: 'Sequential page access pattern' 
-    };
+  // Check for unnaturally fast navigation through many pages
+  if (timingData.requestTimes.length >= 3) {
+    const fastRequests = timingData.requestTimes.filter(t => t < 1000).length;
+    // If most requests are very quick in succession, it's suspicious
+    if (fastRequests >= Math.min(5, timingData.requestTimes.length * 0.7)) {
+      isUnnatural = true;
+      reason = `Too many rapid requests (${fastRequests} requests < 1s)`;
+    }
   }
   
-  return { isUnnatural: false };
+  // Check for unusual navigation patterns
+  const pages = timingData.pageSequence;
+  if (pages.length >= 4) {
+    // Check for exactly repeating patterns, which is highly unusual for humans
+    const patternLength = 2; // Look for repeating pairs of pages
+    let hasRepeatingPattern = true;
+    
+    for (let i = 0; i < patternLength; i++) {
+      if (pages[pages.length - 1 - i] !== pages[pages.length - 1 - patternLength - i]) {
+        hasRepeatingPattern = false;
+        break;
+      }
+    }
+    
+    if (hasRepeatingPattern) {
+      isUnnatural = true;
+      reason = `Repeating navigation pattern detected`;
+    }
+  }
+  
+  // Save the updated timing data
+  requestTimingCache.set(ip, timingData);
+  
+  return { isUnnatural, reason };
 }
 
 // Bot detection middleware

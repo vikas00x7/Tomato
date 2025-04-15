@@ -540,76 +540,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
         humanCount: logs.filter(log => !log.isBotConfirmed).length,
         bypassAttempts: logs.filter(log => log.bypassAttempt).length,
         
-        // AI Bot analytics
-        aiBotAnalytics: {
-          // Count by AI bot type
-          typeDistribution: logs
+        // Enhanced bot analytics by type
+        botAnalytics: {
+          // Count visits by bot type
+          botTypeDistribution: logs
+            .filter(log => log.isBotConfirmed)
+            .reduce((acc, log) => {
+              // Get bot type from the log
+              const botType = log.botType || 'unknown';
+              acc[botType] = (acc[botType] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+          
+          // Detailed AI assistant analytics
+          aiAssistants: logs
             .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
             .reduce((acc, log) => {
-              // Extract the specific bot name from user agent
+              // Extract AI bot name from user agent
               const userAgent = (log.userAgent || '').toLowerCase();
               let botName = 'other';
               
+              // Identify specific AI bot types
               if (userAgent.includes('gptbot') || userAgent.includes('chatgpt')) {
-                botName = 'gptbot';
+                botName = 'GPTBot';
               } else if (userAgent.includes('perplexity')) {
-                botName = 'perplexity';
+                botName = 'Perplexity';
               } else if (userAgent.includes('claude') || userAgent.includes('anthropic')) {
-                botName = 'claude';
+                botName = 'Claude';
               } else if (userAgent.includes('bard') || userAgent.includes('gemini')) {
-                botName = 'gemini';
+                botName = 'Gemini';
               } else if (userAgent.includes('cohere')) {
-                botName = 'cohere';
+                botName = 'Cohere';
               } else if (userAgent.includes('bing')) {
-                botName = 'bing';
+                botName = 'Bing AI';
               }
               
-              acc[botName] = (acc[botName] || 0) + 1;
-              return acc;
-            }, {} as Record<string, number>),
-            
-          // Count by action taken
-          actionDistribution: logs
-            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
-            .reduce((acc, log) => {
-              // Determine the action based on response in the log
-              let action = 'allowed';
+              // Create entry for this bot if it doesn't exist
+              if (!acc[botName]) {
+                acc[botName] = {
+                  total: 0,
+                  allowed: 0,
+                  blocked: 0,
+                  paywall: 0
+                };
+              }
               
-              // Check path to determine if it was redirected to paywall
+              // Increment total count
+              acc[botName].total++;
+              
+              // Determine action taken (blocked, redirected to paywall, or allowed)
               const path = (log.path || '').toLowerCase();
               if (path.includes('/paywall') || path.includes('/subscribe')) {
-                action = 'paywall';
-              } 
-              // Check if it was blocked based on bypass attempt flag
-              else if (log.bypassAttempt) {
-                action = 'blocked';
+                acc[botName].paywall++;
+              } else if (log.bypassAttempt) {
+                acc[botName].blocked++;
+              } else {
+                acc[botName].allowed++;
               }
               
-              acc[action] = (acc[action] || 0) + 1;
               return acc;
-            }, {} as Record<string, number>),
-            
-          // Count of total AI bots
-          total: logs.filter(log => log.isBotConfirmed && log.botType === 'ai_assistant').length,
-          
-          // Count by source (where they came from)
-          sourceDistribution: logs
-            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
-            .reduce((acc, log) => {
-              if (log.source) {
-                acc[log.source] = (acc[log.source] || 0) + 1;
-              }
-              return acc;
-            }, {} as Record<string, number>),
-            
-          // Daily trend of AI bot visits
-          dailyTrend: logs
-            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
-            .reduce((acc, log) => {
-              const date = new Date(log.timestamp).toISOString().split('T')[0];
-              acc[date] = (acc[date] || 0) + 1;
-              return acc;
-            }, {} as Record<string, number>)
+            }, {} as Record<string, { total: number, allowed: number, blocked: number, paywall: number }>),
         },
         
         // Country distribution
@@ -1705,7 +1695,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const serviceCheckResponse = await fetch(serviceCheckUrl, {
             method: 'GET',
             headers: {
-              'Fastly-Key': apiKey,
+              'Fastly-Key': apiKey as string,
               'Accept': 'application/json'
             }
           });
@@ -1825,8 +1815,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         newLogs = incomingLogs.map((log, index) => ({
           id: log.id || `fastly-${index}-${Date.now()}`,
           timestamp: log.timestamp || new Date().toISOString(),
-          ipAddress: log.client_ip || log.clientip || 'unknown',
-          userAgent: log.user_agent || log.useragent || null,
+          ipAddress: log.clientIP || log.clientip || 'unknown',
+          userAgent: log.userAgent || log.useragent || null,
           path: log.url || log.request_url || null,
           country: log.country || log.geo_country || null,
           isBotConfirmed: false, // Fastly doesn't provide bot detection
@@ -1844,8 +1834,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         newLogs = [{
           id: `fastly-${Date.now()}`,
           timestamp: incomingLogs.timestamp || new Date().toISOString(),
-          ipAddress: incomingLogs.client_ip || incomingLogs.clientip || 'unknown',
-          userAgent: incomingLogs.user_agent || incomingLogs.useragent || null,
+          ipAddress: incomingLogs.clientIP || incomingLogs.clientip || 'unknown',
+          userAgent: incomingLogs.userAgent || incomingLogs.useragent || null,
           path: incomingLogs.url || incomingLogs.request_url || '/unknown',
           country: incomingLogs.country || incomingLogs.geo_country || null,
           isBotConfirmed: false,

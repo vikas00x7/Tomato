@@ -4,19 +4,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud, ZoomIn, ZoomOut, RefreshCcw } from 'lucide-react';
+import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart as RechartPieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  ZoomableGroup
-} from "react-simple-maps";
-import { scaleLinear } from "d3-scale";
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 interface BotLog {
   id: number;
@@ -43,12 +35,14 @@ interface AnalyticsData {
   sourceDistribution: Record<string, number>;
   dailyTraffic: Record<string, number>;
   topIPs: { ip: string; count: number }[];
-  aiBotAnalytics: {
-    typeDistribution: Record<string, number>;
-    actionDistribution: Record<string, number>;
-    total: number;
-    sourceDistribution: Record<string, number>;
-    dailyTrend: Record<string, number>;
+  botAnalytics: {
+    botTypeDistribution: Record<string, number>;
+    aiAssistants: Record<string, {
+      total: number;
+      allowed: number;
+      blocked: number;
+      paywall: number;
+    }>;
   };
 }
 
@@ -81,27 +75,6 @@ const AdminPage = () => {
   // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
-
-  // State to track selected country for filtering
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-
-  // State for map zoom controls
-  const [mapZoom, setMapZoom] = useState(1.2);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([0, 20]);
-
-  // Functions to control map zoom
-  const handleZoomIn = () => {
-    setMapZoom(prev => Math.min(prev + 0.5, 6)); // Max zoom level: 6
-  };
-
-  const handleZoomOut = () => {
-    setMapZoom(prev => Math.max(prev - 0.5, 0.5)); // Min zoom level: 0.5
-  };
-
-  const handleMapReset = () => {
-    setMapZoom(1.2); // Default zoom level
-    setMapCenter([0, 20]); // Default center position
-  };
 
   // Function to fetch analytics data
   const fetchAnalytics = async () => {
@@ -310,7 +283,7 @@ const AdminPage = () => {
       console.log('Fallback logs response:', response.status, response.statusText);
       
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch Fastly logs: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -465,55 +438,6 @@ const AdminPage = () => {
       console.error('Error checking Fastly configuration:', error);
       setFastlyConfigured(false);
       setFastlyLoading(false);
-    }
-  };
-
-  // Function to handle country click for filtering
-  const handleCountryClick = (countryCode: string, countryName: string) => {
-    // Set the selected country for filtering
-    setSelectedCountry(countryCode);
-    
-    // Filter logs by the selected country
-    fetchLogsByCountry(countryCode);
-    
-    // Show notification
-    toast({
-      title: `Selected ${countryName}`,
-      description: `Filtering logs for visitors from ${countryName}`,
-    });
-    
-    // Switch to logs tab
-    setActiveTab('logs');
-  };
-
-  // Function to fetch logs by country
-  const fetchLogsByCountry = async (countryCode: string) => {
-    try {
-      setLoading(true);
-      
-      // Query API with country filter
-      const response = await fetch(`/api/logs?country=${encodeURIComponent(countryCode)}&key=${encodeURIComponent(apiKey.trim())}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch logs: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      setLogs(data.logs || []);
-      
-      toast({
-        title: "Country Logs",
-        description: `Showing ${data.logs?.length || 0} logs from ${countryCode}`,
-      });
-    } catch (error) {
-      console.error('Error fetching logs by country:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch logs for the selected country.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -804,69 +728,6 @@ const AdminPage = () => {
       }));
   }, [analytics?.countryDistribution]);
 
-  // Get country ISO code for mapping to the world map
-  const getCountryISOCode = (countryCode: string): string => {
-    // Map country codes to ISO codes used in our GeoJSON
-    const countryCodeMap: Record<string, string> = {
-      'US': 'USA',
-      'GB': 'GB',
-      'CA': 'CA',
-      'AU': 'AU',
-      'DE': 'DE',
-      'FR': 'FR',
-      'IT': 'IT',
-      'RU': 'RU',
-      'CN': 'CN',
-      'IN': 'IN',
-      'BR': 'BR',
-      'MX': 'MX'
-    };
-    
-    return countryCodeMap[countryCode] || countryCode;
-  };
-
-  // Map ISO-A2 to our country code for data matching
-  const mapIsoA2ToCountryCode = (isoA2: string): string => {
-    // Direct mapping for most used country codes
-    return isoA2;
-  };
-
-  // Prepare max value for country scale
-  const maxCountryValue = useMemo(() => {
-    if (!analytics?.countryDistribution) return 0;
-    
-    const values = Object.values(analytics.countryDistribution);
-    return values.length ? Math.max(...values) : 0;
-  }, [analytics?.countryDistribution]);
-  
-  // Create a color scale for countries - Using a warmer color scheme
-  const colorScale = scaleLinear<string>()
-    .domain([0, maxCountryValue > 0 ? maxCountryValue / 2 : 5, maxCountryValue > 0 ? maxCountryValue : 10])
-    .range(["#FFE0B2", "#FF9800", "#E65100"]);
-    
-  // Enhanced tooltip content with richer information (plain text version)
-  const enhancedTooltipContent = (countryName: string, visitorCount: number, countryCode?: string) => {
-    // Calculate percentage of total visits
-    const totalVisits = analytics?.totalVisits || 0;
-    const percentage = totalVisits ? Math.round((visitorCount / totalVisits) * 100) : 0;
-    
-    // Format info for better display
-    const countryText = countryCode ? `${countryName} (${countryCode})` : countryName;
-    let tooltip = `${countryText}\n${visitorCount} visitors`;
-    
-    // Add percentage if it's meaningful
-    if (percentage > 0) {
-      tooltip += ` (${percentage}% of total)`;
-    }
-    
-    // Add hint for clickable countries
-    if (visitorCount > 0) {
-      tooltip += '\nClick to filter logs';
-    }
-    
-    return tooltip;
-  };
-
   // Prepare data for bot vs human chart
   const botVsHumanData = useMemo(() => {
     if (!analytics) return [];
@@ -913,47 +774,53 @@ const AdminPage = () => {
       }));
   }, [analytics?.sourceDistribution]);
 
-  // Prepare data for AI bot type distribution chart
+  // AI Bot Type Distribution - Pie Chart Data
   const aiBotTypeData = useMemo(() => {
-    if (!analytics?.aiBotAnalytics?.typeDistribution) return [];
+    if (!analytics?.botAnalytics?.aiAssistants) return [];
     
-    return Object.entries(analytics.aiBotAnalytics.typeDistribution)
-      .map(([botType, count]) => ({
-        name: botType === 'gptbot' ? 'GPTBot' : 
-              botType === 'perplexity' ? 'Perplexity' : 
-              botType === 'claude' ? 'Claude/Anthropic' : 
-              botType === 'gemini' ? 'Gemini/Bard' : 
-              botType === 'cohere' ? 'Cohere' : 
-              botType === 'bing' ? 'Bing AI' : 
-              botType === 'other' ? 'Other AI Bots' : botType,
-        value: count
+    return Object.entries(analytics.botAnalytics.aiAssistants)
+      .map(([botName, stats]) => ({
+        name: botName,
+        value: stats.total
       }));
-  }, [analytics?.aiBotAnalytics?.typeDistribution]);
+  }, [analytics?.botAnalytics?.aiAssistants]);
 
-  // Prepare data for AI bot action distribution chart
+  // AI Bot Action Distribution - Stacked Bar Chart Data
   const aiBotActionData = useMemo(() => {
-    if (!analytics?.aiBotAnalytics?.actionDistribution) return [];
+    if (!analytics?.botAnalytics?.aiAssistants) return [];
     
-    return Object.entries(analytics.aiBotAnalytics.actionDistribution)
-      .map(([action, count]) => ({
-        name: action === 'allowed' ? 'Allowed Access' : 
-              action === 'paywall' ? 'Redirected to Paywall' : 
-              action === 'blocked' ? 'Blocked' : action,
-        value: count
-      }));
-  }, [analytics?.aiBotAnalytics?.actionDistribution]);
+    // Format data for stacked bar chart
+    return Object.entries(analytics.botAnalytics.aiAssistants).map(([botName, stats]) => ({
+      name: botName,
+      Allowed: stats.allowed,
+      Blocked: stats.blocked,
+      Paywall: stats.paywall
+    }));
+  }, [analytics?.botAnalytics?.aiAssistants]);
 
-  // Prepare data for AI bot daily trend chart
-  const aiBotTrendData = useMemo(() => {
-    if (!analytics?.aiBotAnalytics?.dailyTrend) return [];
+  // Prepare data for overall bot type distribution
+  const botTypeDistributionData = useMemo(() => {
+    if (!analytics?.botAnalytics?.botTypeDistribution) return [];
     
-    return Object.entries(analytics.aiBotAnalytics.dailyTrend)
-      .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
-      .map(([date, count]) => ({
-        date: date,
-        visits: count
-      }));
-  }, [analytics?.aiBotAnalytics?.dailyTrend]);
+    return Object.entries(analytics.botAnalytics.botTypeDistribution)
+      .map(([botType, count]) => {
+        // Format bot type names for display
+        let displayName = botType;
+        if (botType === 'ai_assistant') displayName = 'AI Assistant';
+        else if (botType === 'search_engine') displayName = 'Search Engine';
+        else if (botType === 'crawler') displayName = 'Web Crawler';
+        else if (botType === 'automation') displayName = 'Automation Tool';
+        else if (botType === 'scraping_tool') displayName = 'Scraping Tool';
+        else if (botType === 'generic_bot') displayName = 'Generic Bot';
+        else if (botType === 'authorized_bot') displayName = 'Authorized Bot';
+        else if (botType === 'unknown') displayName = 'Unknown';
+        
+        return {
+          name: displayName,
+          value: count
+        };
+      });
+  }, [analytics?.botAnalytics?.botTypeDistribution]);
 
   // Function to render the current tab content
   const renderTabContent = () => {
@@ -1039,153 +906,24 @@ const AdminPage = () => {
               
               {/* Country Distribution */}
               <Card className="p-4">
-                <h3 className="text-lg font-medium mb-4">Visitor Countries</h3>
+                <h3 className="text-lg font-medium mb-2">Visitor Countries</h3>
                 {analyticsLoading ? (
                   <div className="h-64 flex items-center justify-center">
                     <p>Loading chart data...</p>
                   </div>
                 ) : (
-                  <div className="relative">
-                    <ComposableMap
-                      projection="geoMercator"
-                      projectionConfig={{
-                        scale: 120,
-                        rotate: [-10, 0, 0],
-                        center: [0, 20]
-                      }}
-                      style={{
-                        width: "100%",
-                        height: "450px",
-                        backgroundColor: "#F8F9FA"
-                      }}
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                      data={countryChartData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                     >
-                      <ZoomableGroup zoom={mapZoom} center={mapCenter} maxZoom={6}>
-                        <Geographies geography="/world.json">
-                          {({ geographies }: { geographies: any[] }) =>
-                            geographies.map((geo: any) => {
-                              // Get the country code (2-letter ISO)
-                              const countryCode = geo.properties.iso_a2;
-                              
-                              // Check if we have data for this country
-                              const visitorCount = countryCode && analytics?.countryDistribution?.[countryCode] || 0;
-                              
-                              // Special case for US which might be showing as 'US' in your data
-                              const specialCaseCount = countryCode === 'US' ? analytics?.countryDistribution?.['US'] || 0 : 0;
-                              
-                              // Use the higher of the two counts
-                              const finalCount = Math.max(visitorCount, specialCaseCount);
-                              
-                              // Add a subtle outline for the selected country
-                              const isSelected = selectedCountry === countryCode;
-                              
-                              return (
-                                <Geography
-                                  key={geo.rsmKey}
-                                  geography={geo}
-                                  style={{
-                                    default: {
-                                      fill: finalCount > 0 ? colorScale(finalCount) : "#EAEAEC",
-                                      stroke: isSelected ? "#000000" : "#FFFFFF",
-                                      strokeWidth: isSelected ? 1.5 : 0.5,
-                                      outline: "none",
-                                    },
-                                    hover: {
-                                      fill: finalCount > 0 ? colorScale(Math.min(finalCount * 1.2, maxCountryValue)) : "#F2F2F2",
-                                      stroke: "#333333",
-                                      strokeWidth: 1,
-                                      outline: "none",
-                                      cursor: "pointer"
-                                    },
-                                    pressed: {
-                                      fill: finalCount > 0 ? colorScale(Math.min(finalCount * 0.8, maxCountryValue)) : "#E2E2E2",
-                                      stroke: "#111111",
-                                      strokeWidth: 1,
-                                      outline: "none",
-                                    },
-                                  }}
-                                  onClick={() => handleCountryClick(countryCode, geo.properties.name)}
-                                  data-tooltip-id="country-tooltip"
-                                  data-tooltip-content={enhancedTooltipContent(geo.properties.name, finalCount, countryCode)}
-                                  data-tooltip-place="top"
-                                />
-                              );
-                            })
-                          }
-                        </Geographies>
-                        
-                        {/* Add markers for top countries */}
-                        {analytics?.topIPs?.slice(0, 3).map((item, index) => {
-                          // Get geo coordinates for the IP if available
-                          const geo = analytics?.countryDistribution && Object.entries(analytics.countryDistribution)
-                            .sort((a, b) => b[1] - a[1])
-                            .slice(0, 3)[index];
-                            
-                          if (!geo) return null;
-                          
-                          // Approximate coordinates for common countries
-                          const coordinates: Record<string, [number, number]> = {
-                            'US': [-95, 40],
-                            'GB': [0, 55],
-                            'CA': [-100, 60],
-                            'AU': [135, -30],
-                            'IN': [80, 20],
-                            'DE': [10, 51],
-                            'FR': [2, 47]
-                          };
-                          
-                          const position = coordinates[geo[0]] || null;
-                          if (!position) return null;
-                          
-                          return (
-                            <circle
-                              key={index}
-                              cx={position[0]}
-                              cy={position[1]}
-                              r={5}
-                              fill="#FF5722"
-                              stroke="#FFFFFF"
-                              strokeWidth={2}
-                              data-tooltip-id="country-tooltip"
-                              data-tooltip-content={enhancedTooltipContent(geo[0], geo[1], geo[0])}
-                              data-tooltip-place="top"
-                            />
-                          );
-                        })}
-                      </ZoomableGroup>
-                    </ComposableMap>
-                    
-                    {/* Enhanced legend */}
-                    <div className="absolute top-2 right-2 bg-white/90 p-3 rounded-md shadow-md text-xs">
-                      <h4 className="font-medium text-sm mb-2">Visitor Intensity</h4>
-                      <div className="grid grid-cols-3 gap-1 mb-2">
-                        <div className="w-5 h-5" style={{ backgroundColor: colorScale(0) }}></div>
-                        <div className="w-5 h-5" style={{ backgroundColor: colorScale(maxCountryValue/2) }}></div>
-                        <div className="w-5 h-5" style={{ backgroundColor: colorScale(maxCountryValue) }}></div>
-                        <div className="text-center">Low</div>
-                        <div className="text-center">Med</div>
-                        <div className="text-center">High</div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm mt-2 pt-2 border-t border-gray-200">
-                        <span>Total Countries: {Object.keys(analytics?.countryDistribution || {}).length}</span>
-                      </div>
-                      <div className="mt-2 text-xs text-gray-600">
-                        Click any country to filter logs
-                      </div>
-                    </div>
-                    
-                    {/* Zoom controls */}
-                    <div className="absolute bottom-2 right-2 bg-white/90 p-2 rounded-md shadow-md flex flex-col gap-2">
-                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleZoomIn} title="Zoom In">
-                        <ZoomIn className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleZoomOut} title="Zoom Out">
-                        <ZoomOut className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleMapReset} title="Reset View">
-                        <RefreshCcw className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="#8884d8" name="Visits" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 )}
               </Card>
               
@@ -1239,14 +977,10 @@ const AdminPage = () => {
             
             {/* Traffic Source Distribution */}
             <Card className="p-4">
-              <h3 className="text-lg font-medium mb-4">Traffic Source Distribution</h3>
+              <h3 className="text-lg font-medium mb-2">Traffic Source Distribution</h3>
               {analyticsLoading ? (
                 <div className="h-64 flex items-center justify-center">
-                  <p>Loading data...</p>
-                </div>
-              ) : sourceDistributionData.length === 0 ? (
-                <div className="h-64 flex items-center justify-center">
-                  <p>No data available</p>
+                  <p>Loading chart data...</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={350}>
@@ -1275,79 +1009,12 @@ const AdminPage = () => {
               )}
             </Card>
             
-            {/* AI Bot Analytics */}
-            <Card className="p-4">
-              <h3 className="text-lg font-medium mb-4">AI Bot Analytics</h3>
-              {analyticsLoading ? (
-                <div className="h-64 flex items-center justify-center">
-                  <p>Loading data...</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* AI Bot Type Distribution */}
-                  <Card className="p-4">
-                    <h3 className="text-lg font-medium mb-2">AI Bot Type Distribution</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart
-                        data={aiBotTypeData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#82ca9d" name="Visits" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </Card>
-                  
-                  {/* AI Bot Action Distribution */}
-                  <Card className="p-4">
-                    <h3 className="text-lg font-medium mb-2">AI Bot Action Distribution</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart
-                        data={aiBotActionData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#82ca9d" name="Visits" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </Card>
-                  
-                  {/* AI Bot Daily Trend */}
-                  <Card className="p-4">
-                    <h3 className="text-lg font-medium mb-2">AI Bot Daily Trend</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart
-                        data={aiBotTrendData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="visits" stroke="#8884d8" activeDot={{ r: 8 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </Card>
-                </div>
-              )}
-            </Card>
-            
             {/* Top IP Addresses */}
             <Card className="p-4">
               <h3 className="text-lg font-medium mb-4">Top IP Addresses</h3>
               {analyticsLoading ? (
                 <div className="h-64 flex items-center justify-center">
                   <p>Loading data...</p>
-                </div>
-              ) : analytics?.topIPs?.length === 0 ? (
-                <div className="h-64 flex items-center justify-center">
-                  <p>No data available</p>
                 </div>
               ) : (
                 <Table>
@@ -1359,27 +1026,114 @@ const AdminPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {analytics?.topIPs?.map((item) => (
-                      <TableRow key={item.ip}>
-                        <TableCell>{item.ip}</TableCell>
-                        <TableCell>{item.count}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              setIpFilter(item.ip);
-                              fetchLogsByIp();
-                              setActiveTab('logs');
-                            }}
-                          >
-                            View Logs
-                          </Button>
-                        </TableCell>
+                    {analytics?.topIPs && analytics.topIPs.length > 0 ? (
+                      analytics.topIPs.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.ip}</TableCell>
+                          <TableCell>{item.count}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => {
+                                  setIpFilter(item.ip);
+                                  setActiveTab('logs');
+                                  fetchLogsByIp();
+                                }}
+                              >
+                                View Logs
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center py-4">No data available</TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
+              )}
+            </Card>
+            
+            {/* AI Bot Type Distribution */}
+            <Card className="p-4">
+              <h3 className="text-lg font-medium mb-2">AI Bot Type Distribution</h3>
+              {analyticsLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <p>Loading chart data...</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <RechartPieChart>
+                    <Pie
+                      data={aiBotTypeData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {aiBotTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </RechartPieChart>
+                </ResponsiveContainer>
+              )}
+            </Card>
+            
+            {/* AI Bot Action Distribution */}
+            <Card className="p-4">
+              <h3 className="text-lg font-medium mb-2">AI Bot Action Distribution</h3>
+              {analyticsLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <p>Loading chart data...</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={aiBotActionData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="Allowed" fill="#82ca9d" name="Allowed" />
+                    <Bar dataKey="Blocked" fill="#8884d8" name="Blocked" />
+                    <Bar dataKey="Paywall" fill="#ffc658" name="Paywall" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </Card>
+            
+            {/* Bot Type Distribution */}
+            <Card className="p-4">
+              <h3 className="text-lg font-medium mb-2">Bot Type Distribution</h3>
+              {analyticsLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <p>Loading chart data...</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={botTypeDistributionData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#8884d8" name="Count" />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </Card>
             
@@ -1731,20 +1485,6 @@ const AdminPage = () => {
           {renderTabContent()}
         </>
       )}
-      <ReactTooltip 
-        id="country-tooltip" 
-        place="top"
-        clickable={true}
-        style={{
-          backgroundColor: "white",
-          color: "#333",
-          padding: "10px 12px",
-          borderRadius: "6px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-          zIndex: 9999,
-          maxWidth: "280px"
-        }}
-      />
     </div>
   );
 };
