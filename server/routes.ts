@@ -195,16 +195,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to get recent bot logs (protected)
   app.get('/api/logs', validateApiKey, async (req: Request, res: Response) => {
     try {
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
-      const logs = await storage.getBotLogs(limit);
+      // Set cache control headers to prevent 304 responses during polling
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       
-      res.status(200).json({ logs });
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+      const source = req.query.source as string | undefined;
+      const ip = req.query.ip as string | undefined;
+      
+      // Generate a timestamp query parameter to force fresh content
+      const timestamp = Date.now();
+      
+      let logs = await storage.getBotLogs(limit);
+      
+      // Filter by source if specified
+      if (source) {
+        logs = logs.filter(log => log.source === source);
+      }
+      
+      // Filter by IP if specified
+      if (ip) {
+        logs = logs.filter(log => log.ipAddress === ip);
+      }
+      
+      res.status(200).json({ 
+        logs,
+        timestamp,
+        count: logs.length
+      });
     } catch (error) {
-      console.error('Error retrieving bot logs:', error);
+      console.error('Error fetching bot logs:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
-  
+
   // API endpoint to get logs by IP (protected)
   app.get('/api/logs/ip/:ip', validateApiKey, async (req: Request, res: Response) => {
     try {

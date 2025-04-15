@@ -114,8 +114,9 @@ const AdminPage = () => {
         setLoading(true);
       }
       
-      // Use query parameter approach only
-      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey.trim())}`);
+      // Add a timestamp parameter to prevent caching
+      const timestamp = Date.now();
+      const response = await fetch(`/api/logs?key=${encodeURIComponent(apiKey.trim())}&_t=${timestamp}`);
       
       if (response.status === 401) {
         // Specific error for unauthorized
@@ -129,11 +130,20 @@ const AdminPage = () => {
       }
       
       if (!response.ok) {
-        throw new Error('Failed to fetch logs');
+        throw new Error(`Failed to fetch logs: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
+      
+      // Check if we have valid data structure
+      if (!data) {
+        throw new Error('Received empty response');
+      }
+      
+      // Handle the new response format that includes timestamp and count
       const newLogs = data.logs || [];
+      
+      console.log(`Received ${newLogs.length} logs, server timestamp: ${data.timestamp}`);
       
       // Check if we have new logs
       const hasNewLogs = newLogs.length > lastLogCount;
@@ -150,8 +160,8 @@ const AdminPage = () => {
         
         // Fetch analytics data after successful authentication
         fetchAnalytics();
-      } else if (isRefresh && !silent) {
-        // Refresh success toast
+      } else if (isRefresh && !silent && hasNewLogs) {
+        // Only show refresh toast if there are actually new logs and it's not a silent refresh
         toast({
           title: "Logs Refreshed",
           description: `Successfully retrieved ${newLogs.length} logs.`,
@@ -162,7 +172,7 @@ const AdminPage = () => {
       if (!silent) {
         toast({
           title: "Error",
-          description: "Failed to fetch logs. Check your API key.",
+          description: error instanceof Error ? error.message : "Failed to fetch logs. Check your API key.",
           variant: "destructive"
         });
       }
