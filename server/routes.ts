@@ -540,6 +540,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
         humanCount: logs.filter(log => !log.isBotConfirmed).length,
         bypassAttempts: logs.filter(log => log.bypassAttempt).length,
         
+        // AI Bot analytics
+        aiBotAnalytics: {
+          // Count by AI bot type
+          typeDistribution: logs
+            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
+            .reduce((acc, log) => {
+              // Extract the specific bot name from user agent
+              const userAgent = (log.userAgent || '').toLowerCase();
+              let botName = 'other';
+              
+              if (userAgent.includes('gptbot') || userAgent.includes('chatgpt')) {
+                botName = 'gptbot';
+              } else if (userAgent.includes('perplexity')) {
+                botName = 'perplexity';
+              } else if (userAgent.includes('claude') || userAgent.includes('anthropic')) {
+                botName = 'claude';
+              } else if (userAgent.includes('bard') || userAgent.includes('gemini')) {
+                botName = 'gemini';
+              } else if (userAgent.includes('cohere')) {
+                botName = 'cohere';
+              } else if (userAgent.includes('bing')) {
+                botName = 'bing';
+              }
+              
+              acc[botName] = (acc[botName] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+            
+          // Count by action taken
+          actionDistribution: logs
+            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
+            .reduce((acc, log) => {
+              // Determine the action based on response in the log
+              let action = 'allowed';
+              
+              // Check path to determine if it was redirected to paywall
+              const path = (log.path || '').toLowerCase();
+              if (path.includes('/paywall') || path.includes('/subscribe')) {
+                action = 'paywall';
+              } 
+              // Check if it was blocked based on bypass attempt flag
+              else if (log.bypassAttempt) {
+                action = 'blocked';
+              }
+              
+              acc[action] = (acc[action] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+            
+          // Count of total AI bots
+          total: logs.filter(log => log.isBotConfirmed && log.botType === 'ai_assistant').length,
+          
+          // Count by source (where they came from)
+          sourceDistribution: logs
+            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
+            .reduce((acc, log) => {
+              if (log.source) {
+                acc[log.source] = (acc[log.source] || 0) + 1;
+              }
+              return acc;
+            }, {} as Record<string, number>),
+            
+          // Daily trend of AI bot visits
+          dailyTrend: logs
+            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
+            .reduce((acc, log) => {
+              const date = new Date(log.timestamp).toISOString().split('T')[0];
+              acc[date] = (acc[date] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>)
+        },
+        
         // Country distribution
         countryDistribution: logs.reduce((acc, log) => {
           if (log.country) {
@@ -1774,17 +1846,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           timestamp: incomingLogs.timestamp || new Date().toISOString(),
           ipAddress: incomingLogs.client_ip || incomingLogs.clientip || 'unknown',
           userAgent: incomingLogs.user_agent || incomingLogs.useragent || null,
-          path: incomingLogs.url || incomingLogs.request_url || null,
+          path: incomingLogs.url || incomingLogs.request_url || '/unknown',
           country: incomingLogs.country || incomingLogs.geo_country || null,
           isBotConfirmed: false,
           botType: null,
           bypassAttempt: false,
           source: 'fastly',
-          method: incomingLogs.method || null,
-          status: incomingLogs.status || null,
-          responseTime: incomingLogs.response_time || incomingLogs.ttfb || null,
-          cacheStatus: incomingLogs.cache_status || incomingLogs.cachestatus || null,
-          bytesSent: incomingLogs.bytes_sent || incomingLogs.bytes || null
+          method: incomingLogs.method || 'GET',
+          status: incomingLogs.status || 200,
+          responseTime: incomingLogs.response_time || incomingLogs.ttfb || 0,
+          cacheStatus: incomingLogs.cache_status || incomingLogs.cachestatus || 'MISS'
         }];
       }
       
