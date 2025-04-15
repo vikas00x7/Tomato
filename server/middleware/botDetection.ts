@@ -369,13 +369,22 @@ function getClientIp(req: Request): string {
       : req.headers['cf-connecting-ip'];
   } else if (req.headers['x-forwarded-for']) {
     // If using another proxy or load balancer, get the first IP in the chain
-    const forwardedIps = Array.isArray(req.headers['x-forwarded-for'])
-      ? req.headers['x-forwarded-for'][0]
-      : String(req.headers['x-forwarded-for']);
+    const forwardedFor = req.headers['x-forwarded-for'];
+    let forwardedIps: string;
+    
+    if (Array.isArray(forwardedFor)) {
+      // If it's an array, take the first entry
+      forwardedIps = forwardedFor[0];
+    } else {
+      // Otherwise convert to string
+      forwardedIps = String(forwardedFor);
+    }
     
     // The x-forwarded-for header can contain multiple IPs separated by commas
-    // The leftmost IP is the original client IP
-    return forwardedIps.split(',')[0].trim();
+    // We want to ensure we only get the first IP (client's real IP)
+    const firstIp = forwardedIps.split(',')[0].trim();
+    console.log(`Extracted IP from x-forwarded-for: ${firstIp} (from full value: ${forwardedIps})`);
+    return firstIp;
   } else {
     // Fall back to the socket address if no proxy headers are present
     return req.socket.remoteAddress || 'unknown';
@@ -587,6 +596,49 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
     return next();
   }
   
+  // Check if this is already a redirect to prevent loops
+  const redirectCount = parseInt(req.query.redirect_count as string || '0');
+  
+  // Log the bot visit for analytics before any potential redirect
+  // This ensures we capture all bot types in our analytics, even if they get redirected
+  try {
+    const logData = {
+      ipAddress: req.botInfo.ipAddress,
+      userAgent: req.headers['user-agent'] as string,
+      path: req.path,
+      timestamp: new Date(),
+      country: req.botInfo.country,
+      isBotConfirmed: true,
+      botType: botType || 'unknown',
+      bypassAttempt: false,
+      source: botType === 'ai_assistant' ? 'ai-browser' : 'bot-visitor',
+      redirectCount
+    };
+
+    // Log asynchronously but don't block the response
+    storage.createBotLog(logData)
+      .catch(err => console.error('Error logging bot in access control:', err));
+  } catch (error) {
+    console.error('Error logging bot visit:', error);
+  }
+  
+  // If we've already redirected too many times, show the block page instead of redirecting again
+  if (redirectCount > 2) {
+    console.log(`Preventing redirect loop for ${botType} bot (redirect count: ${redirectCount})`);
+    const blockPage = `
+      <html>
+        <head><title>Access Limited</title></head>
+        <body>
+          <h1>Access Limited</h1>
+          <p>This content is not available to automated browsing tools.</p>
+          <p>Bot type detected: ${botType || 'Unknown'}</p>
+          <p>Confidence: ${confidence}%</p>
+        </body>
+      </html>
+    `;
+    return res.status(403).send(blockPage);
+  }
+  
   // Special handling for AI assistants - we want to direct them to specific content
   if (botType === 'ai_assistant') {
     // Allow AI tools to access specific content to ensure they can summarize your site properly
@@ -594,8 +646,8 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
       return next();
     }
     
-    // For all other paths, redirect to paywall with AI-specific messaging
-    return res.redirect(`/paywall?source=ai_assistant&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
+    // For all other paths, redirect to paywall with AI-specific messaging and increment redirect count
+    return res.redirect(`/paywall?source=ai_assistant&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}&redirect_count=${redirectCount + 1}`);
   }
   
   // If an unauthorized bot, redirect to paywall
@@ -603,8 +655,8 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
     // Log the redirect for debugging
     console.log(`Redirecting unauthorized bot to paywall. Confidence: ${confidence}%. Type: ${botType}. Path: ${req.path}`);
     
-    // Instead of blocking with 403, redirect to paywall
-    return res.redirect(`/paywall?source=bot_detection&botType=${botType}&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}`);
+    // Instead of blocking with 403, redirect to paywall with redirect counter
+    return res.redirect(`/paywall?source=bot_detection&botType=${botType}&returnUrl=${encodeURIComponent(req.originalUrl || req.url)}&confidence=${confidence}&redirect_count=${redirectCount + 1}`);
   }
   
   // If an authorized bot, check if path is allowed or needs paywall
@@ -614,8 +666,8 @@ export const accessControlMiddleware = (req: Request, res: Response, next: NextF
       return next();
     }
     
-    // For other paths, redirect to paywall
-    return res.redirect(`/paywall?source=authorized_bot&returnPath=${encodeURIComponent(req.path)}`);
+    // For other paths, redirect to paywall with redirect counter
+    return res.redirect(`/paywall?source=authorized_bot&returnPath=${encodeURIComponent(req.path)}&redirect_count=${redirectCount + 1}`);
   }
   
   // Default case - allow access
