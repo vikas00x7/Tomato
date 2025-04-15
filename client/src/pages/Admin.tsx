@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud } from 'lucide-react';
+import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud, ZoomIn, ZoomOut, RefreshCcw } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart as RechartPieChart, Pie, Cell, LineChart, Line
@@ -84,6 +84,24 @@ const AdminPage = () => {
 
   // State to track selected country for filtering
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+
+  // State for map zoom controls
+  const [mapZoom, setMapZoom] = useState(1.2);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([0, 20]);
+
+  // Functions to control map zoom
+  const handleZoomIn = () => {
+    setMapZoom(prev => Math.min(prev + 0.5, 6)); // Max zoom level: 6
+  };
+
+  const handleZoomOut = () => {
+    setMapZoom(prev => Math.max(prev - 0.5, 0.5)); // Min zoom level: 0.5
+  };
+
+  const handleMapReset = () => {
+    setMapZoom(1.2); // Default zoom level
+    setMapCenter([0, 20]); // Default center position
+  };
 
   // Function to fetch analytics data
   const fetchAnalytics = async () => {
@@ -826,44 +844,27 @@ const AdminPage = () => {
     .domain([0, maxCountryValue > 0 ? maxCountryValue / 2 : 5, maxCountryValue > 0 ? maxCountryValue : 10])
     .range(["#FFE0B2", "#FF9800", "#E65100"]);
     
-  // Format country tooltip content for simple format
-  const formatCountryTooltip = (countryName: string, visitorCount: number) => {
-    return `${countryName}: ${visitorCount} visits`;
-  };
-  
-  // Format hotspot tooltip content
-  const formatHotspotTooltip = (countryCode: string, visitorCount: number) => {
-    return `${countryCode}: ${visitorCount} visits`;
-  };
-
-  // Custom tooltip formatter for map
-  const renderTooltipContent = (content: string) => {
-    if (!content) return '';
+  // Enhanced tooltip content with richer information (plain text version)
+  const enhancedTooltipContent = (countryName: string, visitorCount: number, countryCode?: string) => {
+    // Calculate percentage of total visits
+    const totalVisits = analytics?.totalVisits || 0;
+    const percentage = totalVisits ? Math.round((visitorCount / totalVisits) * 100) : 0;
     
-    // For country tooltips (format: "Country Name: X visits")
-    if (content.includes(':')) {
-      const [countryName, visitInfo] = content.split(':');
-      const visitCount = parseInt(visitInfo.trim().split(' ')[0]) || 0;
-      
-      // Return formatted info
-      return `
-        <div class="tooltip-container">
-          <div class="tooltip-title">${countryName}</div>
-          <div class="tooltip-visits">
-            <span class="visit-count">${visitCount}</span> visitors
-          </div>
-          ${visitCount > 0 ? `<div class="tooltip-tip">Click to view logs</div>` : ''}
-        </div>
-      `;
+    // Format info for better display
+    const countryText = countryCode ? `${countryName} (${countryCode})` : countryName;
+    let tooltip = `${countryText}\n${visitorCount} visitors`;
+    
+    // Add percentage if it's meaningful
+    if (percentage > 0) {
+      tooltip += ` (${percentage}% of total)`;
     }
     
-    // For hotspot tooltips
-    return `
-      <div class="tooltip-container">
-        <div class="tooltip-title">Traffic Hotspot</div>
-        <div class="tooltip-info">${content.replace('Hot spot: ', '')}</div>
-      </div>
-    `;
+    // Add hint for clickable countries
+    if (visitorCount > 0) {
+      tooltip += '\nClick to filter logs';
+    }
+    
+    return tooltip;
   };
 
   // Prepare data for bot vs human chart
@@ -1058,7 +1059,7 @@ const AdminPage = () => {
                         backgroundColor: "#F8F9FA"
                       }}
                     >
-                      <ZoomableGroup zoom={1.2} center={[0, 20]} maxZoom={6}>
+                      <ZoomableGroup zoom={mapZoom} center={mapCenter} maxZoom={6}>
                         <Geographies geography="/world.json">
                           {({ geographies }: { geographies: any[] }) =>
                             geographies.map((geo: any) => {
@@ -1104,7 +1105,7 @@ const AdminPage = () => {
                                   }}
                                   onClick={() => handleCountryClick(countryCode, geo.properties.name)}
                                   data-tooltip-id="country-tooltip"
-                                  data-tooltip-content={`${geo.properties.name}: ${finalCount} visits`}
+                                  data-tooltip-content={enhancedTooltipContent(geo.properties.name, finalCount, countryCode)}
                                   data-tooltip-place="top"
                                 />
                               );
@@ -1145,7 +1146,7 @@ const AdminPage = () => {
                               stroke="#FFFFFF"
                               strokeWidth={2}
                               data-tooltip-id="country-tooltip"
-                              data-tooltip-content={`${geo[0]}: ${geo[1]} visits`}
+                              data-tooltip-content={enhancedTooltipContent(geo[0], geo[1], geo[0])}
                               data-tooltip-place="top"
                             />
                           );
@@ -1170,6 +1171,19 @@ const AdminPage = () => {
                       <div className="mt-2 text-xs text-gray-600">
                         Click any country to filter logs
                       </div>
+                    </div>
+                    
+                    {/* Zoom controls */}
+                    <div className="absolute bottom-2 right-2 bg-white/90 p-2 rounded-md shadow-md flex flex-col gap-2">
+                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleZoomIn} title="Zoom In">
+                        <ZoomIn className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleZoomOut} title="Zoom Out">
+                        <ZoomOut className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" className="w-8 h-8" onClick={handleMapReset} title="Reset View">
+                        <RefreshCcw className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -1720,15 +1734,15 @@ const AdminPage = () => {
       <ReactTooltip 
         id="country-tooltip" 
         place="top"
+        clickable={true}
         style={{
           backgroundColor: "white",
           color: "#333",
-          padding: "8px 10px",
-          borderRadius: "4px",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
-          fontSize: "14px",
-          maxWidth: "250px",
-          zIndex: 9999
+          padding: "10px 12px",
+          borderRadius: "6px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+          zIndex: 9999,
+          maxWidth: "280px"
         }}
       />
     </div>
