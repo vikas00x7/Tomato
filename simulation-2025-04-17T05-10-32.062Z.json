@@ -1,0 +1,160 @@
+{
+  "totalRequests": 500,
+  "humans": 152,
+  "bots": 348,
+  "allowed": 93,
+  "redirected": 407,
+  "error": 0,
+  "botTypes": {
+    "Perplexity": 19,
+    "DuckDuckGo": 15,
+    "Meta": 20,
+    "Ahrefs": 18,
+    "Apify": 10,
+    "OtherBot": 24,
+    "Google": 44,
+    "BrowserGPT": 11,
+    "Cohere": 8,
+    "Scraper": 19,
+    "Mistral": 9,
+    "BingSearch": 14,
+    "BaiduSearch": 15,
+    "You.com": 11,
+    "OpenAI": 21,
+    "Phind": 7,
+    "Headless": 17,
+    "Claude": 21,
+    "YahooSearch": 11,
+    "Selenium": 11,
+    "SEMrush": 11,
+    "YandexSearch": 12
+  },
+  "aiAssistants": {
+    "Perplexity": {
+      "requests": 19,
+      "allowed": 3,
+      "redirected": 16,
+      "error": 0
+    },
+    "Meta": {
+      "requests": 20,
+      "allowed": 0,
+      "redirected": 20,
+      "error": 0
+    },
+    "Google": {
+      "requests": 44,
+      "allowed": 21,
+      "redirected": 23,
+      "error": 0
+    },
+    "BrowserGPT": {
+      "requests": 11,
+      "allowed": 0,
+      "redirected": 11,
+      "error": 0
+    },
+    "Cohere": {
+      "requests": 8,
+      "allowed": 0,
+      "redirected": 8,
+      "error": 0
+    },
+    "Mistral": {
+      "requests": 9,
+      "allowed": 0,
+      "redirected": 9,
+      "error": 0
+    },
+    "You.com": {
+      "requests": 11,
+      "allowed": 0,
+      "redirected": 11,
+      "error": 0
+    },
+    "OpenAI": {
+      "requests": 21,
+      "allowed": 0,
+      "redirected": 21,
+      "error": 0
+    },
+    "Phind": {
+      "requests": 7,
+      "allowed": 0,
+      "redirected": 7,
+      "error": 0
+    },
+    "Claude": {
+      "requests": 21,
+      "allowed": 0,
+      "redirected": 21,
+      "error": 0
+    }
+  },
+  "botActions": {
+    "allowed": 76,
+    "redirected": 272,
+    "error": 0
+  },
+  "startTime": "2025-04-17T05:10:28.054Z",
+  "endTime": "2025-04-17T05:10:32.040Z",
+  "duration": 3.986,
+  "pathStats": {
+    "/": {
+      "total": 75,
+      "human": 20,
+      "bot": 55,
+      "allowed": 21,
+      "redirected": 54,
+      "error": 0
+    },
+    "/contact": {
+      "total": 69,
+      "human": 18,
+      "bot": 51,
+      "allowed": 12,
+      "redirected": 57,
+      "error": 0
+    },
+    "/about": {
+      "total": 75,
+      "human": 26,
+      "bot": 49,
+      "allowed": 17,
+      "redirected": 58,
+      "error": 0
+    },
+    "/blog/1": {
+      "total": 62,
+      "human": 22,
+      "bot": 40,
+      "allowed": 16,
+      "redirected": 46,
+      "error": 0
+    },
+    "/menu": {
+      "total": 82,
+      "human": 26,
+      "bot": 56,
+      "allowed": 7,
+      "redirected": 75,
+      "error": 0
+    },
+    "/blog": {
+      "total": 74,
+      "human": 23,
+      "bot": 51,
+      "allowed": 13,
+      "redirected": 61,
+      "error": 0
+    },
+    "/blog/2": {
+      "total": 63,
+      "human": 17,
+      "bot": 46,
+      "allowed": 7,
+      "redirected": 56,
+      "error": 0
+    }
+  }
+}

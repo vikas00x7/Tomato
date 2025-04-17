@@ -1,0 +1,846 @@
+{
+  "stats": {
+    "totalBots": 10,
+    "startTime": "2025-04-16T16:07:20.031Z",
+    "botTypeDistribution": {
+      "SCRAPER": 1,
+      "GENERIC_BOT": 2,
+      "SEARCH_ENGINE": 2,
+      "AI_ASSISTANT": 2,
+      "SECURITY": 1,
+      "SOCIAL_MEDIA": 2
+    },
+    "behaviorDistribution": {
+      "aggressive": 1,
+      "standard": 6,
+      "ai": 2,
+      "monitoring": 1
+    },
+    "requestResults": {
+      "success": 54,
+      "redirected": 44,
+      "blocked": 0,
+      "error": 3
+    },
+    "endTime": "2025-04-16T16:07:33.643Z",
+    "runtime": 13.612
+  },
+  "results": [
+    {
+      "id": "283bf43c",
+      "timestamp": "2025-04-16T16:07:20.584Z",
+      "botType": "SCRAPER",
+      "userAgent": "Mozilla/5.0 (compatible; DataForSeoBot/1.0; +https://dataforseo.com/dataforseo-bot)",
+      "behavior": "aggressive",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/menu",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/menu",
+          "success": true
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/about",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog",
+          "success": true
+        },
+        {
+          "path": "/blog/1",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/1",
+          "success": true
+        },
+        {
+          "path": "/blog/2",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/2",
+          "success": true
+        },
+        {
+          "path": "/blog/3",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/3",
+          "success": true
+        },
+        {
+          "path": "/blog/4",
+          "status": "ERROR",
+          "error": "Maximum number of redirects exceeded",
+          "success": false
+        },
+        {
+          "path": "/blog/5",
+          "status": "ERROR",
+          "error": "Maximum number of redirects exceeded",
+          "success": false
+        },
+        {
+          "path": "/blog/6",
+          "status": "ERROR",
+          "error": "Maximum number of redirects exceeded",
+          "success": false
+        }
+      ]
+    },
+    {
+      "id": "6b8b0488",
+      "timestamp": "2025-04-16T16:07:22.091Z",
+      "botType": "SEARCH_ENGINE",
+      "userAgent": "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/menu",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/menu",
+          "success": true
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/about",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog",
+          "success": true
+        },
+        {
+          "path": "/blog/1",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/1",
+          "success": true
+        },
+        {
+          "path": "/blog/2",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/2",
+          "success": true
+        },
+        {
+          "path": "/blog/3",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/3",
+          "success": true
+        },
+        {
+          "path": "/blog/4",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/4",
+          "success": true
+        },
+        {
+          "path": "/blog/5",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/5",
+          "success": true
+        },
+        {
+          "path": "/blog/6",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/6",
+          "success": true
+        }
+      ]
+    },
+    {
+      "id": "4d08f80f",
+      "timestamp": "2025-04-16T16:07:22.107Z",
+      "botType": "GENERIC_BOT",
+      "userAgent": "Mozilla/5.0 (compatible; SimplePie/1.5)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/menu",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/about",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/contact",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/1",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/2",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/3",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/4",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/5",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/6",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        }
+      ]
+    },
+    {
+      "id": "631e951a",
+      "timestamp": "2025-04-16T16:07:22.207Z",
+      "botType": "SEARCH_ENGINE",
+      "userAgent": "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/menu",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/menu",
+          "success": true
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/about",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog",
+          "success": true
+        },
+        {
+          "path": "/blog/1",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/1",
+          "success": true
+        },
+        {
+          "path": "/blog/2",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/2",
+          "success": true
+        },
+        {
+          "path": "/blog/3",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/3",
+          "success": true
+        },
+        {
+          "path": "/blog/4",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/4",
+          "success": true
+        },
+        {
+          "path": "/blog/5",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/5",
+          "success": true
+        },
+        {
+          "path": "/blog/6",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/6",
+          "success": true
+        }
+      ]
+    },
+    {
+      "id": "1a593b09",
+      "timestamp": "2025-04-16T16:07:26.213Z",
+      "botType": "AI_ASSISTANT",
+      "userAgent": "Mozilla/5.0 (compatible; Cohere-AI/1.0; research-bot)",
+      "behavior": "ai",
+      "results": [
+        {
+          "path": "/",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/menu",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/about",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/contact",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/1",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/2",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/3",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/4",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/5",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/6",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        }
+      ]
+    },
+    {
+      "id": "a429a4c5",
+      "timestamp": "2025-04-16T16:07:27.270Z",
+      "botType": "SECURITY",
+      "userAgent": "Mozilla/5.0 (compatible; SiteMonitor/1.0; +https://www.site-monitoring.com)",
+      "behavior": "monitoring",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        }
+      ]
+    },
+    {
+      "id": "54200381",
+      "timestamp": "2025-04-16T16:07:28.793Z",
+      "botType": "SOCIAL_MEDIA",
+      "userAgent": "Mozilla/5.0 (compatible; Twitterbot/1.0; +https://dev.twitter.com/cards/)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/menu",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/menu",
+          "success": true
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/about",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog",
+          "success": true
+        },
+        {
+          "path": "/blog/1",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/1",
+          "success": true
+        },
+        {
+          "path": "/blog/2",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/2",
+          "success": true
+        },
+        {
+          "path": "/blog/3",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/3",
+          "success": true
+        },
+        {
+          "path": "/blog/4",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/4",
+          "success": true
+        },
+        {
+          "path": "/blog/5",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/5",
+          "success": true
+        },
+        {
+          "path": "/blog/6",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/6",
+          "success": true
+        }
+      ]
+    },
+    {
+      "id": "4acf2f2c",
+      "timestamp": "2025-04-16T16:07:28.869Z",
+      "botType": "SOCIAL_MEDIA",
+      "userAgent": "Mozilla/5.0 (compatible; Twitterbot/1.0; +https://dev.twitter.com/cards/)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/",
+          "success": true
+        },
+        {
+          "path": "/menu",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/menu",
+          "success": true
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/about",
+          "success": true
+        },
+        {
+          "path": "/contact",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/contact",
+          "success": true
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog",
+          "success": true
+        },
+        {
+          "path": "/blog/1",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/1",
+          "success": true
+        },
+        {
+          "path": "/blog/2",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/2",
+          "success": true
+        },
+        {
+          "path": "/blog/3",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/3",
+          "success": true
+        },
+        {
+          "path": "/blog/4",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/4",
+          "success": true
+        },
+        {
+          "path": "/blog/5",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/5",
+          "success": true
+        },
+        {
+          "path": "/blog/6",
+          "status": 200,
+          "redirected": false,
+          "finalUrl": "http://127.0.0.1:5000/blog/6",
+          "success": true
+        }
+      ]
+    },
+    {
+      "id": "179f752b",
+      "timestamp": "2025-04-16T16:07:29.166Z",
+      "botType": "GENERIC_BOT",
+      "userAgent": "Mozilla/5.0 (compatible; WebSiteInspector)",
+      "behavior": "standard",
+      "results": [
+        {
+          "path": "/",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/menu",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/about",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/contact",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/1",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/2",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/3",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/4",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/5",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        },
+        {
+          "path": "/blog/6",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=possible_ai&returnUrl=%2Fpaywall&confidence=95&redirect_count=3",
+          "success": false
+        }
+      ]
+    },
+    {
+      "id": "ce500eac",
+      "timestamp": "2025-04-16T16:07:33.410Z",
+      "botType": "AI_ASSISTANT",
+      "userAgent": "Mozilla/5.0 (compatible; Cohere-AI/1.0; research-bot)",
+      "behavior": "ai",
+      "results": [
+        {
+          "path": "/",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/menu",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/about",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/contact",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/1",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/2",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/3",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/4",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/5",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        },
+        {
+          "path": "/blog/6",
+          "status": 403,
+          "redirected": true,
+          "finalUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=90&redirect_count=3",
+          "detected": false,
+          "success": false
+        }
+      ]
+    }
+  ]
+}

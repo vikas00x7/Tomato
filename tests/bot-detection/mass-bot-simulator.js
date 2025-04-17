@@ -12,11 +12,11 @@ const { setTimeout } = require('timers/promises');
 const UserAgent = require('user-agents');
 
 // Configuration
-const TARGET_WEBSITE = 'https://www.bunnylovesoaps.com';
+const TARGET_WEBSITE = 'http://127.0.0.1:5000';
 const TARGET_PATHS = ['/', '/menu', '/about', '/contact', '/blog', '/blog/1', '/blog/2', '/blog/3', '/blog/4', '/blog/5', '/blog/6'];
 const RESULTS_DIR = './results/mass-sim';
 const LOG_FILE = path.join(RESULTS_DIR, `bot-simulation-${new Date().toISOString().replace(/:/g, '-')}.json`);
-const TOTAL_SIMULATIONS = 500;
+const TOTAL_SIMULATIONS = 30;
 const MAX_CONCURRENT = 10;
 const SIM_DELAY_MIN = 50;  // minimum delay between requests in ms
 const SIM_DELAY_MAX = 200; // maximum delay between requests in ms

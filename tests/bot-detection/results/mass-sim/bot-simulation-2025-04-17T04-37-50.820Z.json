@@ -1,0 +1,21 @@
+{
+  "startTime": "2025-04-17T04:37:50.821Z",
+  "configuration": {
+    "targetWebsite": "https://www.bunnylovesoaps.com",
+    "targetPaths": [
+      "/",
+      "/menu",
+      "/about",
+      "/contact",
+      "/blog",
+      "/blog/1",
+      "/blog/2",
+      "/blog/3",
+      "/blog/4",
+      "/blog/5",
+      "/blog/6"
+    ],
+    "totalSimulations": 500
+  },
+  "results": []
+}

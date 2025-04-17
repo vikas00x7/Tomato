@@ -1,0 +1,963 @@
+{
+  "startTime": "2025-04-16T17:30:20.692Z",
+  "configuration": {
+    "targetWebsite": "http://127.0.0.1:5000",
+    "targetPaths": [
+      "/",
+      "/about",
+      "/contact",
+      "/blog",
+      "/menu"
+    ]
+  },
+  "results": [
+    {
+      "visitor": "ChatGPT Bot",
+      "userAgent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",
+      "type": "AI_ASSISTANT",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 32,
+          "timestamp": "2025-04-16T17:30:20.731Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:20.956Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 19,
+          "timestamp": "2025-04-16T17:30:21.187Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:21.405Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 14,
+          "timestamp": "2025-04-16T17:30:21.634Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Gemini Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Google-Gemini/1.0; +https://developers.google.com/gemini)",
+      "type": "AI_ASSISTANT",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 13,
+          "timestamp": "2025-04-16T17:30:21.856Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:22.075Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 16,
+          "timestamp": "2025-04-16T17:30:22.304Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:22.523Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 16,
+          "timestamp": "2025-04-16T17:30:22.751Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Claude Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Claude/1.0; https://anthropic.com/claude-bot)",
+      "type": "AI_ASSISTANT",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:22.975Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 15,
+          "timestamp": "2025-04-16T17:30:23.203Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:23.434Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 16,
+          "timestamp": "2025-04-16T17:30:23.653Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 15,
+          "timestamp": "2025-04-16T17:30:23.885Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Scraper Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Scrapy/2.8.0; +https://scrapy.org)",
+      "type": "SCRAPER",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 16,
+          "timestamp": "2025-04-16T17:30:24.103Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 15,
+          "timestamp": "2025-04-16T17:30:24.334Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 14,
+          "timestamp": "2025-04-16T17:30:24.554Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 13,
+          "timestamp": "2025-04-16T17:30:24.779Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:25.005Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Google Search Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "type": "SEARCH_ENGINE",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 12,
+          "timestamp": "2025-04-16T17:30:25.231Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 12,
+          "timestamp": "2025-04-16T17:30:25.453Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 14,
+          "timestamp": "2025-04-16T17:30:25.671Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 11,
+          "timestamp": "2025-04-16T17:30:25.897Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 11,
+          "timestamp": "2025-04-16T17:30:26.117Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Bing Search Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+      "type": "SEARCH_ENGINE",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 10,
+          "timestamp": "2025-04-16T17:30:26.332Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 8,
+          "timestamp": "2025-04-16T17:30:26.548Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 8,
+          "timestamp": "2025-04-16T17:30:26.762Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 11,
+          "timestamp": "2025-04-16T17:30:26.982Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 10,
+          "timestamp": "2025-04-16T17:30:27.200Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Facebook Bot",
+      "userAgent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+      "type": "SOCIAL_MEDIA",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 15,
+          "timestamp": "2025-04-16T17:30:27.418Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:27.637Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:27.870Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:28.104Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:28.323Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Twitter Bot",
+      "userAgent": "Mozilla/5.0 (compatible; Twitterbot/1.0; +https://dev.twitter.com/cards/)",
+      "type": "SOCIAL_MEDIA",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 15,
+          "timestamp": "2025-04-16T17:30:28.552Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:28.775Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:29.005Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:29.236Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:29.456Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Security Bot",
+      "userAgent": "Mozilla/5.0 (compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)",
+      "type": "SECURITY",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:29.686Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "responseTime": 19,
+          "timestamp": "2025-04-16T17:30:29.908Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:30.138Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "responseTime": 17,
+          "timestamp": "2025-04-16T17:30:30.375Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 403,
+          "redirected": true,
+          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "responseTime": 18,
+          "timestamp": "2025-04-16T17:30:30.602Z"
+        }
+      ]
+    },
+    {
+      "visitor": "Human-like Bot",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+      "type": "HUMAN_LIKE",
+      "results": [
+        {
+          "url": "http://127.0.0.1:5000/",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 9,
+          "timestamp": "2025-04-16T17:30:30.814Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/about",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 10,
+          "timestamp": "2025-04-16T17:30:31.033Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/contact",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 11,
+          "timestamp": "2025-04-16T17:30:31.247Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/blog",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 10,
+          "timestamp": "2025-04-16T17:30:31.467Z"
+        },
+        {
+          "url": "http://127.0.0.1:5000/menu",
+          "status": 200,
+          "redirected": false,
+          "redirectUrl": null,
+          "responseTime": 6,
+          "timestamp": "2025-04-16T17:30:31.674Z"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalVisitors": 10,
+    "runtime": "11.19",
+    "startTime": "2025-04-16T17:30:20.698Z",
+    "endTime": "2025-04-16T17:30:31.887Z",
+    "visitorResults": [
+      {
+        "visitor": "ChatGPT Bot",
+        "userAgent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",
+        "type": "AI_ASSISTANT",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 32,
+            "timestamp": "2025-04-16T17:30:20.731Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:20.956Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 19,
+            "timestamp": "2025-04-16T17:30:21.187Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:21.405Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 14,
+            "timestamp": "2025-04-16T17:30:21.634Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Gemini Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Google-Gemini/1.0; +https://developers.google.com/gemini)",
+        "type": "AI_ASSISTANT",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 13,
+            "timestamp": "2025-04-16T17:30:21.856Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:22.075Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 16,
+            "timestamp": "2025-04-16T17:30:22.304Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:22.523Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 16,
+            "timestamp": "2025-04-16T17:30:22.751Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Claude Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Claude/1.0; https://anthropic.com/claude-bot)",
+        "type": "AI_ASSISTANT",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:22.975Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 15,
+            "timestamp": "2025-04-16T17:30:23.203Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:23.434Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 16,
+            "timestamp": "2025-04-16T17:30:23.653Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 15,
+            "timestamp": "2025-04-16T17:30:23.885Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Scraper Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Scrapy/2.8.0; +https://scrapy.org)",
+        "type": "SCRAPER",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 16,
+            "timestamp": "2025-04-16T17:30:24.103Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 15,
+            "timestamp": "2025-04-16T17:30:24.334Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 14,
+            "timestamp": "2025-04-16T17:30:24.554Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 13,
+            "timestamp": "2025-04-16T17:30:24.779Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:25.005Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Google Search Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "type": "SEARCH_ENGINE",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 12,
+            "timestamp": "2025-04-16T17:30:25.231Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 12,
+            "timestamp": "2025-04-16T17:30:25.453Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 14,
+            "timestamp": "2025-04-16T17:30:25.671Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 11,
+            "timestamp": "2025-04-16T17:30:25.897Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 11,
+            "timestamp": "2025-04-16T17:30:26.117Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Bing Search Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+        "type": "SEARCH_ENGINE",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 10,
+            "timestamp": "2025-04-16T17:30:26.332Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 8,
+            "timestamp": "2025-04-16T17:30:26.548Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 8,
+            "timestamp": "2025-04-16T17:30:26.762Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 11,
+            "timestamp": "2025-04-16T17:30:26.982Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 10,
+            "timestamp": "2025-04-16T17:30:27.200Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Facebook Bot",
+        "userAgent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+        "type": "SOCIAL_MEDIA",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 15,
+            "timestamp": "2025-04-16T17:30:27.418Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:27.637Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:27.870Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:28.104Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:28.323Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Twitter Bot",
+        "userAgent": "Mozilla/5.0 (compatible; Twitterbot/1.0; +https://dev.twitter.com/cards/)",
+        "type": "SOCIAL_MEDIA",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 15,
+            "timestamp": "2025-04-16T17:30:28.552Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:28.775Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:29.005Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:29.236Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:29.456Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Security Bot",
+        "userAgent": "Mozilla/5.0 (compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)",
+        "type": "SECURITY",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:29.686Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "responseTime": 19,
+            "timestamp": "2025-04-16T17:30:29.908Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:30.138Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "responseTime": 17,
+            "timestamp": "2025-04-16T17:30:30.375Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 403,
+            "redirected": true,
+            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "responseTime": 18,
+            "timestamp": "2025-04-16T17:30:30.602Z"
+          }
+        ]
+      },
+      {
+        "visitor": "Human-like Bot",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "type": "HUMAN_LIKE",
+        "results": [
+          {
+            "url": "http://127.0.0.1:5000/",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 9,
+            "timestamp": "2025-04-16T17:30:30.814Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/about",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 10,
+            "timestamp": "2025-04-16T17:30:31.033Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/contact",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 11,
+            "timestamp": "2025-04-16T17:30:31.247Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/blog",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 10,
+            "timestamp": "2025-04-16T17:30:31.467Z"
+          },
+          {
+            "url": "http://127.0.0.1:5000/menu",
+            "status": 200,
+            "redirected": false,
+            "redirectUrl": null,
+            "responseTime": 6,
+            "timestamp": "2025-04-16T17:30:31.674Z"
+          }
+        ]
+      }
+    ]
+  }
+}

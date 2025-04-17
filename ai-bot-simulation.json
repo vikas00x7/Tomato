@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-04-17T05:00:47.662Z",
+  "stats": {
+    "totalRequests": 10,
+    "humans": 2,
+    "bots": 8,
+    "allowed": 4,
+    "redirected": 6,
+    "botTypes": {
+      "GoogleSearch": 1,
+      "BingSearch": 1,
+      "OpenAI": 1,
+      "Claude": 1,
+      "Perplexity": 1,
+      "Google": 1,
+      "Meta": 1,
+      "BrowserGPT": 1
+    },
+    "aiAssistants": {
+      "OpenAI": {
+        "requests": 1,
+        "allowed": 0,
+        "redirected": 1
+      },
+      "Claude": {
+        "requests": 1,
+        "allowed": 0,
+        "redirected": 1
+      },
+      "Perplexity": {
+        "requests": 1,
+        "allowed": 1,
+        "redirected": 0
+      },
+      "Google": {
+        "requests": 1,
+        "allowed": 1,
+        "redirected": 0
+      },
+      "Meta": {
+        "requests": 1,
+        "allowed": 0,
+        "redirected": 1
+      },
+      "BrowserGPT": {
+        "requests": 1,
+        "allowed": 0,
+        "redirected": 1
+      }
+    },
+    "botActions": {
+      "allowed": 4,
+      "redirected": 4
+    }
+  }
+}

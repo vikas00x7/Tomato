@@ -312,18 +312,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('API: Clearing all logs');
       
-      // Check if the logs file exists
-      if (!fs.existsSync(LOG_FILE_PATH)) {
-        // Nothing to clear
-        return res.status(200).json({ 
-          success: true, 
-          message: 'No logs to clear',
-          count: 0
-        });
-      }
-      
-      // Write an empty array to the log file
-      fs.writeFileSync(LOG_FILE_PATH, JSON.stringify([], null, 2));
+      // Use the storage clearLogs method which properly resets the ID counter
+      await storage.clearLogs();
       
       // Return success response
       res.status(200).json({ 
@@ -1374,7 +1364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Don't assume this is a human - perform bot detection
       const { detectBot } = await import('./middleware/botDetection');
-      const { isBot, botType: detectedBotType } = detectBot(req);
+      const { isBot } = detectBot(req);
       
       // Add to bot logs
       await storage.createBotLog({
@@ -1389,7 +1379,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           requestId: fingerprint.requestId || 'unknown',
           browserDetails: fingerprint.browserDetails || {}
         },
-        botType: detectedBotType || (isBot ? 'unknown_bot' : 'human'), // Use detected bot type or default values
+        botType: isBot ? 'unknown_bot' : 'human', // Use fallback logic directly
         bypassAttempt: false,
         headers: {
           ...req.headers

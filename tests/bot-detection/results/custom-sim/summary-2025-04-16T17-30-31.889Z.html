@@ -1,0 +1,172 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Custom Visitor Simulation Results</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        .stat-box { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .redirected { color: #e74c3c; }
+        .allowed { color: #27ae60; }
+        .chart-container { width: 500px; height: 300px; margin: 20px 0; }
+      </style>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+      <h1>Custom Visitor Simulation Results</h1>
+      <p>Generated on: 4/16/2025, 11:00:31 PM</p>
+      
+      <div class="stat-box">
+        <h2>Simulation Stats</h2>
+        <p><strong>Total Visitors:</strong> 10</p>
+        <p><strong>Runtime:</strong> 11.19 seconds</p>
+        <p><strong>Start Time:</strong> 4/16/2025, 11:00:20 PM</p>
+        <p><strong>End Time:</strong> 4/16/2025, 11:00:31 PM</p>
+      </div>
+      
+      <div class="stat-box">
+        <h2>Request Results</h2>
+        <p><strong>Allowed Requests:</strong> 15</p>
+        <p><strong>Redirected Requests:</strong> 35</p>
+        <p><strong>Error Requests:</strong> 0</p>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="resultsChart"></canvas>
+      </div>
+      
+      <h2>Visitor Results</h2>
+      <table>
+        <tr>
+          <th>Visitor</th>
+          <th>Type</th>
+          <th>Redirected?</th>
+          <th>Allowed Paths</th>
+          <th>Redirected Paths</th>
+        </tr>
+        
+      <tr class="redirected">
+        <td>ChatGPT Bot</td>
+        <td>AI_ASSISTANT</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Gemini Bot</td>
+        <td>AI_ASSISTANT</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Claude Bot</td>
+        <td>AI_ASSISTANT</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Scraper Bot</td>
+        <td>SCRAPER</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="allowed">
+        <td>Google Search Bot</td>
+        <td>SEARCH_ENGINE</td>
+        <td class="allowed">No</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+        <td>None</td>
+      </tr>
+    
+      <tr class="allowed">
+        <td>Bing Search Bot</td>
+        <td>SEARCH_ENGINE</td>
+        <td class="allowed">No</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+        <td>None</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Facebook Bot</td>
+        <td>SOCIAL_MEDIA</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Twitter Bot</td>
+        <td>SOCIAL_MEDIA</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="redirected">
+        <td>Security Bot</td>
+        <td>SECURITY</td>
+        <td class="redirected">Yes</td>
+        <td>None</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+      </tr>
+    
+      <tr class="allowed">
+        <td>Human-like Bot</td>
+        <td>HUMAN_LIKE</td>
+        <td class="allowed">No</td>
+        <td>/, /about, /contact, /blog, /menu</td>
+        <td>None</td>
+      </tr>
+    
+      </table>
+      
+      <script>
+        // Results Chart
+        new Chart(document.getElementById('resultsChart').getContext('2d'), {
+          type: 'pie',
+          data: {
+            labels: ['Allowed', 'Redirected', 'Error'],
+            datasets: [{
+              data: [15, 35, 0],
+              backgroundColor: [
+                'rgba(39, 174, 96, 0.6)',
+                'rgba(231, 76, 60, 0.6)',
+                'rgba(127, 140, 141, 0.6)'
+              ],
+              borderColor: [
+                'rgba(39, 174, 96, 1)',
+                'rgba(231, 76, 60, 1)',
+                'rgba(127, 140, 141, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              },
+              title: {
+                display: true,
+                text: 'Request Results'
+              }
+            }
+          }
+        });
+      </script>
+    </body>
+    </html>
+  

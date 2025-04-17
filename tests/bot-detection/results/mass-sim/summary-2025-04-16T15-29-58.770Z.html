@@ -1,0 +1,104 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Bot Simulation Summary</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        .stat-box { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        .chart-container { width: 600px; height: 400px; margin: 20px 0; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+      </style>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+      <h1>Bot Simulation Summary</h1>
+      <p>Generated: 4/16/2025, 8:59:58 PM</p>
+      
+      <div class="stat-box">
+        <h2>Simulation Stats</h2>
+        <p><strong>Total Bots:</strong> 10</p>
+        <p><strong>Runtime:</strong> 24.075 seconds</p>
+        <p><strong>Start Time:</strong> 4/16/2025, 8:59:34 PM</p>
+        <p><strong>End Time:</strong> 4/16/2025, 8:59:58 PM</p>
+      </div>
+      
+      <div class="stat-box">
+        <h2>Request Results</h2>
+        <p><strong>Success:</strong> 45</p>
+        <p><strong>Redirected:</strong> 11</p>
+        <p><strong>Blocked:</strong> 0</p>
+        <p><strong>Error:</strong> 22</p>
+      </div>
+      
+      <h2>Bot Type Distribution</h2>
+      <div class="chart-container">
+        <canvas id="botTypeChart"></canvas>
+      </div>
+      
+      <h2>Behavior Distribution</h2>
+      <div class="chart-container">
+        <canvas id="behaviorChart"></canvas>
+      </div>
+      
+      <script>
+        // Bot Type Chart
+        new Chart(document.getElementById('botTypeChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ["SECURITY","HUMAN_LIKE","SEARCH_ENGINE","GENERIC_BOT","SOCIAL_MEDIA","SCRAPER"],
+            datasets: [{
+              label: 'Number of Bots',
+              data: [2,2,1,1,2,2],
+              backgroundColor: 'rgba(54, 162, 235, 0.5)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+        
+        // Behavior Chart
+        new Chart(document.getElementById('behaviorChart').getContext('2d'), {
+          type: 'pie',
+          data: {
+            labels: ["monitoring","human","standard","aggressive"],
+            datasets: [{
+              label: 'Behaviors',
+              data: [2,2,4,2],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                'rgba(153, 102, 255, 0.5)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true
+          }
+        });
+      </script>
+    </body>
+    </html>
+  
