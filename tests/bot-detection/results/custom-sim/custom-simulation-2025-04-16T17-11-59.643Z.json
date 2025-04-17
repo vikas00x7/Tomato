@@ -1,7 +1,7 @@
 {
   "startTime": "2025-04-16T17:11:59.643Z",
   "configuration": {
-    "targetWebsite": "http://127.0.0.1:5000",
+    "targetWebsite": "https://cdn.bunnylovesoaps.com/",
     "targetPaths": [
       "/",
       "/about",
@@ -17,42 +17,42 @@
       "type": "AI_ASSISTANT",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 73,
           "timestamp": "2025-04-16T17:11:59.722Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 29,
           "timestamp": "2025-04-16T17:11:59.957Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 35,
           "timestamp": "2025-04-16T17:12:00.198Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 38,
           "timestamp": "2025-04-16T17:12:00.450Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 28,
           "timestamp": "2025-04-16T17:12:00.687Z"
         }
@@ -64,42 +64,42 @@
       "type": "AI_ASSISTANT",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 35,
           "timestamp": "2025-04-16T17:12:00.934Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 36,
           "timestamp": "2025-04-16T17:12:01.179Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 34,
           "timestamp": "2025-04-16T17:12:01.425Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 33,
           "timestamp": "2025-04-16T17:12:01.670Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 34,
           "timestamp": "2025-04-16T17:12:01.913Z"
         }
@@ -111,42 +111,42 @@
       "type": "AI_ASSISTANT",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 32,
           "timestamp": "2025-04-16T17:12:02.162Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 34,
           "timestamp": "2025-04-16T17:12:02.403Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 35,
           "timestamp": "2025-04-16T17:12:02.650Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 35,
           "timestamp": "2025-04-16T17:12:02.900Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 34,
           "timestamp": "2025-04-16T17:12:03.140Z"
         }
@@ -158,42 +158,42 @@
       "type": "SCRAPER",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 36,
           "timestamp": "2025-04-16T17:12:03.380Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 40,
           "timestamp": "2025-04-16T17:12:03.633Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 34,
           "timestamp": "2025-04-16T17:12:03.870Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 38,
           "timestamp": "2025-04-16T17:12:04.117Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 44,
           "timestamp": "2025-04-16T17:12:04.362Z"
         }
@@ -205,7 +205,7 @@
       "type": "SEARCH_ENGINE",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -213,7 +213,7 @@
           "timestamp": "2025-04-16T17:12:04.583Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -221,7 +221,7 @@
           "timestamp": "2025-04-16T17:12:04.813Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -229,7 +229,7 @@
           "timestamp": "2025-04-16T17:12:05.032Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -237,7 +237,7 @@
           "timestamp": "2025-04-16T17:12:05.264Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -252,7 +252,7 @@
       "type": "SEARCH_ENGINE",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -260,7 +260,7 @@
           "timestamp": "2025-04-16T17:12:05.726Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -268,7 +268,7 @@
           "timestamp": "2025-04-16T17:12:05.962Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -276,7 +276,7 @@
           "timestamp": "2025-04-16T17:12:06.194Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -284,7 +284,7 @@
           "timestamp": "2025-04-16T17:12:06.419Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -299,42 +299,42 @@
       "type": "SOCIAL_MEDIA",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 45,
           "timestamp": "2025-04-16T17:12:06.908Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 36,
           "timestamp": "2025-04-16T17:12:07.150Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 38,
           "timestamp": "2025-04-16T17:12:07.400Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 49,
           "timestamp": "2025-04-16T17:12:07.650Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 46,
           "timestamp": "2025-04-16T17:12:07.908Z"
         }
@@ -346,42 +346,42 @@
       "type": "SOCIAL_MEDIA",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 40,
           "timestamp": "2025-04-16T17:12:08.152Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 50,
           "timestamp": "2025-04-16T17:12:08.414Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 47,
           "timestamp": "2025-04-16T17:12:08.666Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 65,
           "timestamp": "2025-04-16T17:12:08.947Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
           "responseTime": 47,
           "timestamp": "2025-04-16T17:12:09.207Z"
         }
@@ -393,42 +393,42 @@
       "type": "SECURITY",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
           "responseTime": 43,
           "timestamp": "2025-04-16T17:12:09.452Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
           "responseTime": 53,
           "timestamp": "2025-04-16T17:12:09.715Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
           "responseTime": 43,
           "timestamp": "2025-04-16T17:12:09.971Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
           "responseTime": 49,
           "timestamp": "2025-04-16T17:12:10.233Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 403,
           "redirected": true,
-          "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+          "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
           "responseTime": 49,
           "timestamp": "2025-04-16T17:12:10.496Z"
         }
@@ -440,7 +440,7 @@
       "type": "HUMAN_LIKE",
       "results": [
         {
-          "url": "http://127.0.0.1:5000/",
+          "url": "https://cdn.bunnylovesoaps.com//",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -448,7 +448,7 @@
           "timestamp": "2025-04-16T17:12:10.723Z"
         },
         {
-          "url": "http://127.0.0.1:5000/about",
+          "url": "https://cdn.bunnylovesoaps.com//about",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -456,7 +456,7 @@
           "timestamp": "2025-04-16T17:12:10.949Z"
         },
         {
-          "url": "http://127.0.0.1:5000/contact",
+          "url": "https://cdn.bunnylovesoaps.com//contact",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -464,7 +464,7 @@
           "timestamp": "2025-04-16T17:12:11.182Z"
         },
         {
-          "url": "http://127.0.0.1:5000/blog",
+          "url": "https://cdn.bunnylovesoaps.com//blog",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -472,7 +472,7 @@
           "timestamp": "2025-04-16T17:12:11.407Z"
         },
         {
-          "url": "http://127.0.0.1:5000/menu",
+          "url": "https://cdn.bunnylovesoaps.com//menu",
           "status": 200,
           "redirected": false,
           "redirectUrl": null,
@@ -494,42 +494,42 @@
         "type": "AI_ASSISTANT",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 73,
             "timestamp": "2025-04-16T17:11:59.722Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 29,
             "timestamp": "2025-04-16T17:11:59.957Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 35,
             "timestamp": "2025-04-16T17:12:00.198Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 38,
             "timestamp": "2025-04-16T17:12:00.450Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 28,
             "timestamp": "2025-04-16T17:12:00.687Z"
           }
@@ -541,42 +541,42 @@
         "type": "AI_ASSISTANT",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 35,
             "timestamp": "2025-04-16T17:12:00.934Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 36,
             "timestamp": "2025-04-16T17:12:01.179Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 34,
             "timestamp": "2025-04-16T17:12:01.425Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 33,
             "timestamp": "2025-04-16T17:12:01.670Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 34,
             "timestamp": "2025-04-16T17:12:01.913Z"
           }
@@ -588,42 +588,42 @@
         "type": "AI_ASSISTANT",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 32,
             "timestamp": "2025-04-16T17:12:02.162Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 34,
             "timestamp": "2025-04-16T17:12:02.403Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 35,
             "timestamp": "2025-04-16T17:12:02.650Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 35,
             "timestamp": "2025-04-16T17:12:02.900Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=ai_assistant&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 34,
             "timestamp": "2025-04-16T17:12:03.140Z"
           }
@@ -635,42 +635,42 @@
         "type": "SCRAPER",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 36,
             "timestamp": "2025-04-16T17:12:03.380Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 40,
             "timestamp": "2025-04-16T17:12:03.633Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 34,
             "timestamp": "2025-04-16T17:12:03.870Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 38,
             "timestamp": "2025-04-16T17:12:04.117Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=scraper&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 44,
             "timestamp": "2025-04-16T17:12:04.362Z"
           }
@@ -682,7 +682,7 @@
         "type": "SEARCH_ENGINE",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -690,7 +690,7 @@
             "timestamp": "2025-04-16T17:12:04.583Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -698,7 +698,7 @@
             "timestamp": "2025-04-16T17:12:04.813Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -706,7 +706,7 @@
             "timestamp": "2025-04-16T17:12:05.032Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -714,7 +714,7 @@
             "timestamp": "2025-04-16T17:12:05.264Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -729,7 +729,7 @@
         "type": "SEARCH_ENGINE",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -737,7 +737,7 @@
             "timestamp": "2025-04-16T17:12:05.726Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -745,7 +745,7 @@
             "timestamp": "2025-04-16T17:12:05.962Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -753,7 +753,7 @@
             "timestamp": "2025-04-16T17:12:06.194Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -761,7 +761,7 @@
             "timestamp": "2025-04-16T17:12:06.419Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -776,42 +776,42 @@
         "type": "SOCIAL_MEDIA",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 45,
             "timestamp": "2025-04-16T17:12:06.908Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 36,
             "timestamp": "2025-04-16T17:12:07.150Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 38,
             "timestamp": "2025-04-16T17:12:07.400Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 49,
             "timestamp": "2025-04-16T17:12:07.650Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 46,
             "timestamp": "2025-04-16T17:12:07.908Z"
           }
@@ -823,42 +823,42 @@
         "type": "SOCIAL_MEDIA",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 40,
             "timestamp": "2025-04-16T17:12:08.152Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 50,
             "timestamp": "2025-04-16T17:12:08.414Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 47,
             "timestamp": "2025-04-16T17:12:08.666Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 65,
             "timestamp": "2025-04-16T17:12:08.947Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=social_media&returnUrl=%2Fpaywall&confidence=100&redirect_count=3",
             "responseTime": 47,
             "timestamp": "2025-04-16T17:12:09.207Z"
           }
@@ -870,42 +870,42 @@
         "type": "SECURITY",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
             "responseTime": 43,
             "timestamp": "2025-04-16T17:12:09.452Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
             "responseTime": 53,
             "timestamp": "2025-04-16T17:12:09.715Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
             "responseTime": 43,
             "timestamp": "2025-04-16T17:12:09.971Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
             "responseTime": 49,
             "timestamp": "2025-04-16T17:12:10.233Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 403,
             "redirected": true,
-            "redirectUrl": "http://127.0.0.1:5000/paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
+            "redirectUrl": "https://cdn.bunnylovesoaps.com//paywall?source=bot_detection&botType=generic_bot&returnUrl=%2Fpaywall&confidence=80&redirect_count=3",
             "responseTime": 49,
             "timestamp": "2025-04-16T17:12:10.496Z"
           }
@@ -917,7 +917,7 @@
         "type": "HUMAN_LIKE",
         "results": [
           {
-            "url": "http://127.0.0.1:5000/",
+            "url": "https://cdn.bunnylovesoaps.com//",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -925,7 +925,7 @@
             "timestamp": "2025-04-16T17:12:10.723Z"
           },
           {
-            "url": "http://127.0.0.1:5000/about",
+            "url": "https://cdn.bunnylovesoaps.com//about",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -933,7 +933,7 @@
             "timestamp": "2025-04-16T17:12:10.949Z"
           },
           {
-            "url": "http://127.0.0.1:5000/contact",
+            "url": "https://cdn.bunnylovesoaps.com//contact",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -941,7 +941,7 @@
             "timestamp": "2025-04-16T17:12:11.182Z"
           },
           {
-            "url": "http://127.0.0.1:5000/blog",
+            "url": "https://cdn.bunnylovesoaps.com//blog",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,
@@ -949,7 +949,7 @@
             "timestamp": "2025-04-16T17:12:11.407Z"
           },
           {
-            "url": "http://127.0.0.1:5000/menu",
+            "url": "https://cdn.bunnylovesoaps.com//menu",
             "status": 200,
             "redirected": false,
             "redirectUrl": null,

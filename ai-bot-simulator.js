@@ -10,7 +10,7 @@ const path = require('path');
 const { fileURLToPath } = require('url');
 
 // Configuration
-const TARGET_WEBSITE = 'http://127.0.0.1:5000';
+const TARGET_WEBSITE = 'https://cdn.bunnylovesoaps.com/';
 const TARGET_PATHS = ['/', '/menu', '/about', '/contact', '/blog', '/blog/1'];
 const RESULTS_DIR = './ai-bot-sim-results';
 const TOTAL_SIMULATIONS = 10; // Run 10 visits per AI bot type

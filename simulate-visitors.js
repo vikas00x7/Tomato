@@ -57,13 +57,13 @@ const userAgents = [
 
 // Target URLs to simulate visits to
 const targetUrls = [
-  'http://127.0.0.1:5000/',
-  'http://127.0.0.1:5000/menu',
-  'http://127.0.0.1:5000/about',
-  'http://127.0.0.1:5000/contact',
-  'http://127.0.0.1:5000/blog',
-  'http://127.0.0.1:5000/blog/1',
-  'http://127.0.0.1:5000/blog/2',
+  'https://cdn.bunnylovesoaps.com//',
+  'https://cdn.bunnylovesoaps.com//menu',
+  'https://cdn.bunnylovesoaps.com//about',
+  'https://cdn.bunnylovesoaps.com//contact',
+  'https://cdn.bunnylovesoaps.com//blog',
+  'https://cdn.bunnylovesoaps.com//blog/1',
+  'https://cdn.bunnylovesoaps.com//blog/2',
     
 ];
 

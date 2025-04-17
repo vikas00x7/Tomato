@@ -1,0 +1,160 @@
+{
+  "totalRequests": 500,
+  "humans": 152,
+  "bots": 348,
+  "allowed": 153,
+  "redirected": 347,
+  "error": 0,
+  "botTypes": {
+    "Claude": 29,
+    "YandexSearch": 14,
+    "BingSearch": 11,
+    "Google": 47,
+    "Cohere": 14,
+    "Headless": 23,
+    "SEMrush": 6,
+    "OpenAI": 15,
+    "Apify": 6,
+    "Meta": 22,
+    "Selenium": 13,
+    "Perplexity": 19,
+    "DuckDuckGo": 15,
+    "BrowserGPT": 12,
+    "Scraper": 18,
+    "Phind": 16,
+    "Mistral": 12,
+    "You.com": 12,
+    "OtherBot": 17,
+    "YahooSearch": 9,
+    "Ahrefs": 13,
+    "BaiduSearch": 5
+  },
+  "aiAssistants": {
+    "Claude": {
+      "requests": 29,
+      "allowed": 22,
+      "redirected": 7,
+      "error": 0
+    },
+    "Google": {
+      "requests": 47,
+      "allowed": 31,
+      "redirected": 16,
+      "error": 0
+    },
+    "Cohere": {
+      "requests": 14,
+      "allowed": 0,
+      "redirected": 14,
+      "error": 0
+    },
+    "OpenAI": {
+      "requests": 15,
+      "allowed": 15,
+      "redirected": 0,
+      "error": 0
+    },
+    "Meta": {
+      "requests": 22,
+      "allowed": 0,
+      "redirected": 22,
+      "error": 0
+    },
+    "Perplexity": {
+      "requests": 19,
+      "allowed": 11,
+      "redirected": 8,
+      "error": 0
+    },
+    "BrowserGPT": {
+      "requests": 12,
+      "allowed": 0,
+      "redirected": 12,
+      "error": 0
+    },
+    "Phind": {
+      "requests": 16,
+      "allowed": 0,
+      "redirected": 16,
+      "error": 0
+    },
+    "Mistral": {
+      "requests": 12,
+      "allowed": 0,
+      "redirected": 12,
+      "error": 0
+    },
+    "You.com": {
+      "requests": 12,
+      "allowed": 12,
+      "redirected": 0,
+      "error": 0
+    }
+  },
+  "botActions": {
+    "allowed": 126,
+    "redirected": 222,
+    "error": 0
+  },
+  "startTime": "2025-04-17T06:00:24.154Z",
+  "endTime": "2025-04-17T06:00:35.421Z",
+  "duration": 11.267,
+  "pathStats": {
+    "//menu": {
+      "total": 77,
+      "human": 24,
+      "bot": 53,
+      "allowed": 24,
+      "redirected": 53,
+      "error": 0
+    },
+    "//contact": {
+      "total": 67,
+      "human": 14,
+      "bot": 53,
+      "allowed": 23,
+      "redirected": 44,
+      "error": 0
+    },
+    "//blog/2": {
+      "total": 75,
+      "human": 19,
+      "bot": 56,
+      "allowed": 25,
+      "redirected": 50,
+      "error": 0
+    },
+    "//about": {
+      "total": 75,
+      "human": 22,
+      "bot": 53,
+      "allowed": 24,
+      "redirected": 51,
+      "error": 0
+    },
+    "//": {
+      "total": 62,
+      "human": 23,
+      "bot": 39,
+      "allowed": 13,
+      "redirected": 49,
+      "error": 0
+    },
+    "//blog/1": {
+      "total": 71,
+      "human": 23,
+      "bot": 48,
+      "allowed": 22,
+      "redirected": 49,
+      "error": 0
+    },
+    "//blog": {
+      "total": 73,
+      "human": 27,
+      "bot": 46,
+      "allowed": 22,
+      "redirected": 51,
+      "error": 0
+    }
+  }
+}

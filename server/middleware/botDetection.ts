@@ -363,7 +363,7 @@ function checkHeaderConsistency(req: Request): number {
   return score;
 }
 
-// Extract client IP with CloudFlare and proxy support
+// Extract client IP with CloudFlare, Fastly, and proxy support
 function getClientIp(req: Request): string {
   // First check CloudFlare-specific headers
   if (req.headers['cf-connecting-ip']) {
@@ -371,7 +371,21 @@ function getClientIp(req: Request): string {
     return Array.isArray(req.headers['cf-connecting-ip']) 
       ? req.headers['cf-connecting-ip'][0] 
       : req.headers['cf-connecting-ip'];
-  } else if (req.headers['x-forwarded-for']) {
+  } 
+  // Check for Fastly-specific headers
+  else if (req.headers['fastly-client-ip']) {
+    // Fastly provides the client IP in this header
+    return Array.isArray(req.headers['fastly-client-ip'])
+      ? req.headers['fastly-client-ip'][0]
+      : req.headers['fastly-client-ip'];
+  }
+  // Check for True-Client-IP header (also used by some CDNs including Fastly)
+  else if (req.headers['true-client-ip']) {
+    return Array.isArray(req.headers['true-client-ip'])
+      ? req.headers['true-client-ip'][0]
+      : req.headers['true-client-ip'];
+  }
+  else if (req.headers['x-forwarded-for']) {
     // If using another proxy or load balancer, get the first IP in the chain
     const forwardedFor = req.headers['x-forwarded-for'];
     let forwardedIps: string;

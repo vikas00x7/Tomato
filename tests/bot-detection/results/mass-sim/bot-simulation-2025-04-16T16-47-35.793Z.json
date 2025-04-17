@@ -1,7 +1,7 @@
 {
   "startTime": "2025-04-16T16:47:35.794Z",
   "configuration": {
-    "targetWebsite": "http://127.0.0.1:5000",
+    "targetWebsite": "https://cdn.bunnylovesoaps.com/",
     "targetPaths": [
       "/",
       "/menu",
