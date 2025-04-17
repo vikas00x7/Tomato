@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-04-17T06:25:57.511Z",
+  "timestamp": "2025-04-17T06:41:51.727Z",
   "stats": {
     "totalRequests": 500,
-    "humans": 146,
-    "bots": 354,
-    "allowed": 96,
-    "redirected": 404,
+    "humans": 154,
+    "bots": 346,
+    "allowed": 95,
+    "redirected": 405,
     "error": 0,
-    "duration": 11.716,
-    "requestsPerSecond": "42.68"
+    "duration": 4.063,
+    "requestsPerSecond": "123.06"
   }
 }

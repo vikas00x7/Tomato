@@ -4,12 +4,12 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-#logs/bot_logs.json
-#logs/cloudflare_logs.json
-#Bot detection test results
-#tests/bot-detection/bot-test-results-*.html
-#tests/bot-detection/bot-test-results-*.json
-#tests/bot-detection/browser-test-*.png
-#tests/bot-detection/browser-test-*.html
-#tests/bot-detection/browser-test-*.json
-#tests/bot-detection/results/
+logs/bot_logs.json
+logs/cloudflare_logs.json
+Bot detection test results
+tests/bot-detection/bot-test-results-*.html
+tests/bot-detection/bot-test-results-*.json
+tests/bot-detection/browser-test-*.png
+tests/bot-detection/browser-test-*.html
+tests/bot-detection/browser-test-*.json
+tests/bot-detection/results/
