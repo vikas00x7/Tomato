@@ -568,21 +568,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Detailed AI assistant analytics
           aiAssistants: logs
-            .filter(log => log.isBotConfirmed && log.botType === 'ai_assistant')
+            .filter(log => log.isBotConfirmed)
             .reduce((acc, log) => {
               // Extract AI bot name from user agent
               const userAgent = (log.userAgent || '').toLowerCase();
               let botName = 'other';
               
-              // Identify specific AI bot types
+              // Identify specific AI bot types - Updated to match terminal categories
               if (userAgent.includes('gptbot') || userAgent.includes('chatgpt') || userAgent.includes('openai')) {
-                botName = 'GPTBot';
+                botName = 'OpenAI';  // Changed from 'GPTBot' to 'OpenAI'
               } else if (userAgent.includes('perplexity')) {
                 botName = 'Perplexity';
               } else if (userAgent.includes('claude') || userAgent.includes('anthropic')) {
                 botName = 'Claude';
-              } else if (userAgent.includes('bard') || userAgent.includes('gemini') || userAgent.includes('google-gemini')) {
-                botName = 'Gemini';
+              } else if (userAgent.includes('bard') || userAgent.includes('gemini') || userAgent.includes('google')) {
+                botName = 'Google';  // Changed from 'Gemini' to 'Google'
               } else if (userAgent.includes('cohere') || userAgent.includes('cohere-ai')) {
                 botName = 'Cohere';
               } else if (userAgent.includes('bing') || userAgent.includes('searchbot')) {
@@ -591,6 +591,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 botName = 'BrowserGPT';
               } else if (userAgent.includes('llama') || userAgent.includes('meta.com')) {
                 botName = 'Llama';
+              } else {
+                // Skip this entry if it's not one of our tracked AI assistants
+                return acc;
               }
               
               // Create entry for this bot if it doesn't exist
