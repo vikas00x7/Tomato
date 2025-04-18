@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import testimonials from "../../data/testimonials.json";
 
+// Define Testimonial interface
+interface Testimonial {
+  id: number;
+  name: string;
+  image: string;
+  quote: string;
+  rating: number;
+}
+
 interface StarRatingProps {
   rating: number;
 }
@@ -34,7 +43,7 @@ const StarRating = ({ rating }: StarRatingProps) => {
 };
 
 const Testimonials = () => {
-  const [displayedTestimonials, setDisplayedTestimonials] = useState([]);
+  const [displayedTestimonials, setDisplayedTestimonials] = useState<Testimonial[]>([]);
   
   useEffect(() => {
     // In a real application, you might want to randomize these or fetch them from an API
@@ -53,7 +62,7 @@ const Testimonials = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {displayedTestimonials.map((testimonial: any) => (
+          {displayedTestimonials.map((testimonial: Testimonial) => (
             <div key={testimonial.id} className="bg-gray-50 p-8 rounded-lg shadow-sm relative">
               <div className="text-tomato-500 text-5xl absolute -top-5 left-6 opacity-20">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" viewBox="0 0 20 20" fill="currentColor">

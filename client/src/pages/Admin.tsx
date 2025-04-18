@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { RefreshCw, PieChart, List, Activity, FileText, Users, Shield, Cloud } from 'lucide-react';
+import type { ReactElement, FormEvent, ChangeEvent } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart as RechartPieChart, Pie, Cell, LineChart, Line
@@ -46,13 +47,34 @@ interface AnalyticsData {
   };
 }
 
+// Chart data interfaces
+interface ChartDataPoint {
+  name: string;
+  value: number;
+}
+
+interface StackedBarDataPoint {
+  name: string;
+  [key: string]: string | number;
+}
+
+interface PageVisitDataPoint {
+  name: string;
+  visits: number;
+}
+
+interface TrafficDataPoint {
+  date: string;
+  visits: number;
+}
+
 // Define tabs for the admin dashboard
 type TabType = 'analytics' | 'logs';
 
 // COLORS for charts
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
+const COLORS: string[] = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
 
-const AdminPage = () => {
+const AdminPage = (): ReactElement => {
   const { toast } = useToast();
   const [logs, setLogs] = useState<BotLog[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
@@ -69,14 +91,14 @@ const AdminPage = () => {
   
   // For log polling
   const [lastLogCount, setLastLogCount] = useState(0);
-  const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage] = useState(50);
 
   // Function to fetch analytics data
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (): Promise<void> => {
     if (!isAuthenticated) return;
     
     try {
@@ -112,7 +134,7 @@ const AdminPage = () => {
   };
 
   // Function to fetch logs
-  const fetchLogs = async (isRefresh = false, silent = false) => {
+  const fetchLogs = async (isRefresh = false, silent = false): Promise<void> => {
     try {
       if (!silent) {
         setLoading(true);
@@ -193,7 +215,7 @@ const AdminPage = () => {
   };
 
   // Function to fetch logs by IP
-  const fetchLogsByIp = async () => {
+  const fetchLogsByIp = async (): Promise<void> => {
     if (!isAuthenticated || !ipFilter.trim()) return;
     
     setCurrentPage(1); // Reset to first page when filtering
@@ -227,7 +249,7 @@ const AdminPage = () => {
   };
 
   // Function to export logs
-  const exportLogs = async () => {
+  const exportLogs = async (): Promise<void> => {
     if (!isAuthenticated) return;
     
     try {
@@ -246,7 +268,7 @@ const AdminPage = () => {
   };
 
   // Function to clear all logs
-  const clearAllLogs = async () => {
+  const clearAllLogs = async (): Promise<void> => {
     if (!isAuthenticated) return;
     
     // Confirm with the user before deleting all logs
@@ -301,7 +323,7 @@ const AdminPage = () => {
   };
 
   // Clear system logs (admin, dev paths)
-  const clearSystemLogs = async () => {
+  const clearSystemLogs = async (): Promise<void> => {
     if (!isAuthenticated) return;
     
     if (!confirm('This will remove all logs for admin and development paths. Continue?')) {
@@ -360,7 +382,7 @@ const AdminPage = () => {
   };
 
   // Format date for display
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleString();
   };
@@ -378,24 +400,29 @@ const AdminPage = () => {
     // Format Vite/dev paths
     if (path.startsWith('/@')) return `Dev: ${path}`;
     
+    // Truncate long paths
+    if (path.length > 30) {
+      return path.substring(0, 27) + '...';
+    }
+    
     return path;
   };
 
   // Format bot type for display
   const formatBotType = (botType: string | null): string => {
-    if (!botType) return 'N/A';
+    if (!botType) return 'Unknown';
     
-    // Map technical bot types to user-friendly descriptions
+    // Map of bot types to display names
     const botTypeMap: Record<string, string> = {
-      'search_engine': 'Search Engine Bot',
+      'search_engine': 'Search Engine',
+      'ai_assistant': 'AI Assistant',
       'crawler': 'Web Crawler',
       'automation': 'Automation Tool',
-      'generic_bot': 'Generic Bot',
-      'ai_assistant': 'AI Assistant',
       'scraping_tool': 'Scraping Tool',
-      'possible_ai': 'Potential AI User',
-      'timing_anomaly': 'Behavioral Anomaly',
+      'generic_bot': 'Generic Bot',
       'authorized_bot': 'Authorized Bot',
+      'timing_anomaly': 'Suspicious Activity',
+      'possible_ai': 'Possible AI',
       'human': 'Human Visitor',
       'unknown': 'Unknown'
     };
@@ -424,7 +451,7 @@ const AdminPage = () => {
   };
 
   // Handle authentication
-  const handleAuthenticate = () => {
+  const handleAuthenticate = (): void => {
     if (!apiKey.trim()) {
       toast({
         title: "Error",
@@ -438,7 +465,7 @@ const AdminPage = () => {
   };
 
   // Filter logs by IP
-  const handleFilterByIp = () => {
+  const handleFilterByIp = (): void => {
     fetchLogsByIp();
   };
 
@@ -451,7 +478,7 @@ const AdminPage = () => {
       .map(([country, count]) => ({
         name: country === 'unknown' ? 'Unknown' : country,
         value: count
-      }));
+      })) as ChartDataPoint[];
   }, [analytics?.countryDistribution]);
 
   // Prepare data for bot vs human chart
@@ -461,7 +488,7 @@ const AdminPage = () => {
     return [
       { name: 'Human', value: analytics.humanCount },
       { name: 'Bot', value: analytics.botCount }
-    ];
+    ] as ChartDataPoint[];
   }, [analytics]);
 
   // Prepare data for page visits chart
@@ -474,7 +501,7 @@ const AdminPage = () => {
       .map(([path, count]) => ({
         name: formatPath(path),
         visits: count
-      }));
+      })) as PageVisitDataPoint[];
   }, [analytics?.pageVisits]);
 
   // Prepare data for traffic over time chart
@@ -486,7 +513,7 @@ const AdminPage = () => {
       .map(([date, count]) => ({
         date: date,
         visits: count
-      }));
+      })) as TrafficDataPoint[];
   }, [analytics?.dailyTraffic]);
 
   // Prepare data for source distribution chart
@@ -497,7 +524,7 @@ const AdminPage = () => {
       .map(([source, count]) => ({
         name: source === 'unknown' ? 'Unknown' : source,
         value: count
-      }));
+      })) as ChartDataPoint[];
   }, [analytics?.sourceDistribution]);
 
   // AI Bot Type Distribution - Pie Chart Data
@@ -508,20 +535,7 @@ const AdminPage = () => {
       .map(([botName, stats]) => ({
         name: botName,
         value: stats.total
-      }));
-  }, [analytics?.botAnalytics?.aiAssistants]);
-
-  // AI Bot Action Distribution - Stacked Bar Chart Data
-  const aiBotActionData = useMemo(() => {
-    if (!analytics?.botAnalytics?.aiAssistants) return [];
-    
-    // Format data for stacked bar chart
-    return Object.entries(analytics.botAnalytics.aiAssistants).map(([botName, stats]) => ({
-      name: botName,
-      Allowed: stats.allowed,
-      Blocked: stats.blocked,
-      Paywall: stats.paywall
-    }));
+      })) as ChartDataPoint[];
   }, [analytics?.botAnalytics?.aiAssistants]);
 
   // Prepare data for overall bot type distribution
@@ -545,18 +559,18 @@ const AdminPage = () => {
           name: displayName,
           value: count
         };
-      });
+      }) as ChartDataPoint[];
   }, [analytics?.botAnalytics?.botTypeDistribution]);
 
   // Function to render the current tab content
-  const renderTabContent = () => {
+  const renderTabContent = (): ReactElement => {
     // Calculate pagination
     const indexOfLastLog = currentPage * logsPerPage;
     const indexOfFirstLog = indexOfLastLog - logsPerPage;
     const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
     const totalPages = Math.ceil(logs.length / logsPerPage);
 
-    const handlePageChange = (pageNumber: number) => {
+    const handlePageChange = (pageNumber: number): void => {
       setCurrentPage(pageNumber);
     };
 
@@ -624,12 +638,12 @@ const AdminPage = () => {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {botVsHumanData.map((entry, index) => (
+                        {botVsHumanData.map((entry: ChartDataPoint, index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -729,16 +743,16 @@ const AdminPage = () => {
                       outerRadius={100}
                       paddingAngle={2}
                       cornerRadius={3}
-                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }: { name: string; percent: number }) => `${(percent * 100).toFixed(0)}%`}
                       labelLine={true}
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {sourceDistributionData.map((entry, index) => (
+                      {sourceDistributionData.map((entry: ChartDataPoint, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value, name) => [`${value} visits`, name]} />
+                    <Tooltip formatter={(value: number, name: string) => [`${value} visits`, name]} />
                     <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                   </RechartPieChart>
                 </ResponsiveContainer>
@@ -763,7 +777,7 @@ const AdminPage = () => {
                   </TableHeader>
                   <TableBody>
                     {analytics?.topIPs && analytics.topIPs.length > 0 ? (
-                      analytics.topIPs.map((item, index) => (
+                      analytics.topIPs.map((item: { ip: string; count: number }, index: number) => (
                         <TableRow key={index}>
                           <TableCell>{item.ip}</TableCell>
                           <TableCell>{item.count}</TableCell>
@@ -809,43 +823,18 @@ const AdminPage = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {aiBotTypeData.map((entry, index) => (
+                      {aiBotTypeData.map((entry: ChartDataPoint, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip />
                     <Legend />
                   </RechartPieChart>
-                </ResponsiveContainer>
-              )}
-            </Card>
-            
-            {/* AI Bot Action Distribution */}
-            <Card className="p-4">
-              <h3 className="text-lg font-medium mb-2">AI Bot Action Distribution</h3>
-              {analyticsLoading ? (
-                <div className="h-64 flex items-center justify-center">
-                  <p>Loading chart data...</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart
-                    data={aiBotActionData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="Allowed" fill="#82ca9d" name="Allowed" />
-                    <Bar dataKey="Blocked" fill="#8884d8" name="Blocked" />
-                    <Bar dataKey="Paywall" fill="#ffc658" name="Paywall" />
-                  </BarChart>
                 </ResponsiveContainer>
               )}
             </Card>
@@ -947,7 +936,7 @@ const AdminPage = () => {
                         <TableCell colSpan={9} className="text-center py-8">No logs found</TableCell>
                       </TableRow>
                     ) : (
-                      currentLogs.map((log) => (
+                      currentLogs.map((log: BotLog) => (
                         <TableRow key={log.id}>
                           <TableCell>{log.id}</TableCell>
                           <TableCell>{formatDate(log.timestamp)}</TableCell>
@@ -1044,26 +1033,35 @@ const AdminPage = () => {
   useEffect(() => {
     // Clear any existing interval when component mounts or unmounts
     if (pollRef.current) {
-      clearInterval(pollRef.current);
+      clearTimeout(pollRef.current);
     }
     
     // Only start polling if authenticated
     if (isAuthenticated) {
       console.log('Starting real-time log polling...');
       
-      // Poll every 5 seconds for new logs (silently)
-      pollRef.current = setInterval(() => {
-        console.log('Polling for new logs...');
-        fetchLogs(false, true);
-      }, 5000);
+      // Poll every 10 seconds for new logs (silently)
+      const pollFunction = () => {
+        fetchLogs(false, true)
+          .then(() => {
+            pollRef.current = setTimeout(pollFunction, 10000);
+          })
+          .catch(error => {
+            console.error('Error in poll function:', error);
+            pollRef.current = setTimeout(pollFunction, 10000);
+          });
+      };
+      
+      // Start polling
+      pollRef.current = setTimeout(pollFunction, 10000);
+      
+      // Cleanup interval on unmount
+      return () => {
+        if (pollRef.current) {
+          clearTimeout(pollRef.current);
+        }
+      };
     }
-    
-    // Cleanup interval on unmount
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-      }
-    };
   }, [isAuthenticated]);
 
   // When tab changes to analytics, fetch analytics data
@@ -1072,6 +1070,12 @@ const AdminPage = () => {
       fetchAnalytics();
     }
   }, [activeTab, isAuthenticated, analytics]);
+
+  // Handle form submissions
+  const handleSubmit = (e: React.FormEvent): void => {
+    e.preventDefault();
+    handleAuthenticate();
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">

@@ -2,8 +2,19 @@ import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import menuItems from "../../data/menuItems.json";
 
+// Define MenuItem interface
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  dietaryTags: string[];
+}
+
 const PopularDishes = () => {
-  const [popularDishes, setPopularDishes] = useState([]);
+  const [popularDishes, setPopularDishes] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     // In a real application, you might have a field that indicates popular items
@@ -23,7 +34,7 @@ const PopularDishes = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {popularDishes.map((dish: any) => (
+          {popularDishes.map((dish: MenuItem) => (
             <div key={dish.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <img
                 src={dish.image}

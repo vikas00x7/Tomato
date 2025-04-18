@@ -2,8 +2,21 @@ import { Link } from "wouter";
 import { useEffect, useState } from "react";
 import blogPosts from "../../data/blogPosts.json";
 
+// Define the BlogPost interface
+interface BlogPost {
+  id: number;
+  title: string;
+  author: string;
+  authorImage: string;
+  date: string;
+  content: string;
+  excerpt: string;
+  featuredImage: string;
+  category: string;
+}
+
 const BlogPreview = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   
   useEffect(() => {
     // Get the latest 3 posts
@@ -27,7 +40,7 @@ const BlogPreview = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {posts.map((post: any) => (
+          {posts.map((post: BlogPost) => (
             <article key={post.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <img
                 src={post.featuredImage}
